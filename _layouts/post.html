@@ -1,9 +1,16 @@
 ---
 layout: default
 ---
-<h2>{{ page.title }}</h2>
-<p class="meta">{{ page.date | date_to_string }}</p>
 
-<div class="post">
-{{ content }}
-</div>
+<article>
+  <section class="post-header">
+    <span class="grot huge bolder pink">{{ page.title }}</span><br/>
+    <span class="grot big bold darkblue">{{ page.subtitle }}</span><br/>
+    <p class="meta grot bold lighter darkblue">{{ page.date | date_to_xmlschema }} by {{ site.author }}</p>
+  </section>
+
+  <section class="post-body">
+    {{ content }}
+  </section>
+</article>
+
