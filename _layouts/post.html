@@ -7,13 +7,13 @@ layout: default
 </div>
 
 <article>
-  <section class="post-header">
-    <span class="grot huge bolder pink">{{ page.title }}</span><br/>
-    <span class="grot big bold darkblue">{{ page.subtitle }}</span><br/>
-    <p class="meta grot bold lighter darkblue">
+  <header class="post-header">
+    <div class="grot align-left huge bolder pink">{{ page.title }}</div>
+    <div class="grot align-left big bold darkblue">{{ page.subtitle }}</div>
+    <div class="meta grot bold lighter darkblue">
       Written by {{ site.author }} on {{ page.date | date_to_string }}
-    </p>
-  </section>
+    </div>
+  </header>
 
   <section class="post-body">
     {{ content }}

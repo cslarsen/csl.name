@@ -17,7 +17,7 @@ article {
   text-align: justify;
 }
 
-.huge {font-size: 50pt; }
+.huge { font-size: 50pt; }
 .big { font-size: 30pt; }
 .mediumsize { font-size: 18pt; }
 .bolder { font-weight: bolder; }
@@ -86,7 +86,8 @@ hr {
 }
 
 #main-content {
-  width: 80%;
+  max-width: 960px;
+  padding-right: 4em;
 }
 
 #header {
@@ -111,4 +112,8 @@ hr {
 
 #about a {
   color: black;
+}
+
+.align-left {
+  text-align: left;
 }
