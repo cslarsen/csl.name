@@ -14,6 +14,7 @@ body {
 article {
   padding-left: 4em;
   font-size: 14pt;
+  text-align: justify;
 }
 
 .huge {font-size: 50pt; }
@@ -58,10 +59,10 @@ hr {
 }
 
 .highlight {
-  margin-top: 3em;
-  margin-bottom: 3em;
-  background-color: #f8f8f8;
+  margin-top: 2em;
+  margin-bottom: 2em;
   padding-left: 2em;
+  background-color: #f8f8f8;
   font-size: 12pt;
   font-family: Monaco, monospace;
 }
@@ -85,7 +86,7 @@ hr {
 }
 
 #main-content {
-  width: 70%;
+  width: 80%;
 }
 
 #header {

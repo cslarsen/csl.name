@@ -3,7 +3,7 @@ layout: post
 title:  "Mickey Scheme"
 subtitle: "An R7RS interpreter"
 date:   2013-11-30 11:24:00 +01:00
-categories: scheme programming
+categories: scheme
 ---
 
 This is just an example post on the [Mickey Scheme][mickey] programming language.
