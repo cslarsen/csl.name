@@ -84,7 +84,7 @@ hr {
   margin-bottom: 3em;
   background-color: #f8f8f8;
   margin: 0pt;
-  padding-left: 42pt;
+  padding-left: 10em;
   font-size: 12pt;
   font-family: Monaco, monospace;
 }
@@ -114,4 +114,21 @@ hr {
 
 #main-content {
   width: 960px;
+}
+
+#header {
+  position: absolute;
+  top: 1em;
+  left: 5em;
+  padding: 0em;
+  margin: 0em;
+  color: #333;
+}
+
+#header a {
+  color: #666;
+}
+
+#header a:hover {
+  color: #666;
 }
