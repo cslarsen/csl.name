@@ -12,11 +12,11 @@ body {
 }
 
 article {
-  padding: 4em;
+  padding-left: 4em;
   font-size: 14pt;
 }
 
-.huge { font-size: 50pt; }
+.huge {font-size: 50pt; }
 .big { font-size: 30pt; }
 .mediumsize { font-size: 18pt; }
 .bolder { font-weight: bolder; }
@@ -57,44 +57,22 @@ hr {
   border-top: #666 1px solid;
 }
 
-.article-container {
-  position: absolute;
-  width: 52em;
-  left: 50%;
-  margin-top: 2.5em;
-  margin-left: -26em;
-  padding: 0.5em;
-}
-
-.article-header {
-}
-
-.article-body {
-  padding-left: 5em;
-  padding-right: 5em;
-  padding-top: 2.5em;
-  padding-bottom: 2.5em;
-
-  font-weight: 400;
-  text-align: justify;
-}
-
 .highlight {
   margin-top: 3em;
   margin-bottom: 3em;
   background-color: #f8f8f8;
-  margin: 0pt;
   padding-left: 2em;
   font-size: 12pt;
   font-family: Monaco, monospace;
 }
 
 .post-body {
-  margin-top: 40pt;
+  margin-top: 4em;
 }
 
 #footer {
   position: absolute;
+  background-color: white;
   bottom: 1em;
   font-size: 8pt;
   padding-left: 4em;
@@ -103,13 +81,7 @@ hr {
 }
 #footer a {
   color: #bbb;
-}
-#footer a:hover {
-  color: #bbb;
-}
-
-#footer a:visited {
-  color: #bbb;
+  text-decoration: underline;
 }
 
 #main-content {
@@ -117,11 +89,10 @@ hr {
 }
 
 #header {
-  position: absolute;
-  top: 1em;
-  left: 5em;
-  padding: 0em;
-  margin: 0em;
+  margin-top: 1em;
+  margin-bottom: 4em;
+  margin-left: 0em;
+  padding-left: 4em;
   color: #333;
 }
 
@@ -131,4 +102,12 @@ hr {
 
 #header a:hover {
   color: #666;
+}
+
+#about {
+  margin-left: 4em;
+}
+
+#about a {
+  color: black;
 }

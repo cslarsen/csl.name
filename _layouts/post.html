@@ -10,7 +10,9 @@ layout: default
   <section class="post-header">
     <span class="grot huge bolder pink">{{ page.title }}</span><br/>
     <span class="grot big bold darkblue">{{ page.subtitle }}</span><br/>
-    <p class="meta grot bold lighter darkblue">{{ page.date | date_to_xmlschema }} by {{ site.author }}</p>
+    <p class="meta grot bold lighter darkblue">
+      Written by {{ site.author }} on {{ page.date | date_to_string }}
+    </p>
   </section>
 
   <section class="post-body">

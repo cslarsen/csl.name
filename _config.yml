@@ -2,3 +2,8 @@ name: Christian Stigen Larsen
 author: Christian Stigen Larsen
 markdown: redcarpet
 pygments: true
+
+# Various settings
+email: csl@csl.name
+twitter: https://twitter.com/cstigenlarsen
+github: https://github.com/cslarsen
