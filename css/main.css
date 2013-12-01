@@ -21,6 +21,7 @@ article {
 .big { font-size: 40pt; }
 .microbig { font-size: 16pt; }
 .mediumsize { font-size: 18pt; }
+.mediumplus { font-size: 26pt; }
 .bolder { font-weight: bolder; }
 .bold { font-weight: bold; }
 .microbold { font-weight: 600; }
@@ -93,10 +94,10 @@ hr {
 
 #header {
   margin: 0em;
-  margin-bottom: 2em;
+  margin-bottom: 0em;
   padding: 1em;
   padding-left: 5em;
-  background-color: #eee;
+  background-color: white;
   color: #333;
   width: 100%;
 }
@@ -107,6 +108,16 @@ hr {
 
 #header a:hover {
   color: #666;
+}
+
+#subheader {
+  margin: 0em;
+  margin-bottom: 2em;
+  padding: 1em;
+  padding-left: 5em;
+  background-color: #eee;
+  color: #333;
+  width: 100%;
 }
 
 #about {
