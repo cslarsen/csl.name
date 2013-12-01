@@ -123,11 +123,11 @@ all the stuff in different directories. Here's what I did to prepare them,
 all in one jolly line of unix goodness:
 
 {% highlight bash %}
-find shakespeare/ -type f \        # for all files
-  | xargs sed 's/^[A-Za-z]*//g' \  # only keep alphabetical chars
-  | tr A-Z a-z \                   # translate to lowercase
-  | tr -dC a-z \                   # remove anything BUT alphabetical chars
-  > shakespeare.txt                # output to one big file
+$ find shakespeare/ -type f \        # for all files
+    | xargs sed 's/^[A-Za-z]*//g' \  # only keep alphabetical chars
+    | tr A-Z a-z \                   # translate to lowercase
+    | tr -dC a-z \                   # remove anything BUT alphabetical chars
+    > shakespeare.txt                # output to one big file
 {% endhighlight %}
 
 I compiled my code and ran it on the file:
@@ -165,8 +165,8 @@ sys 0m0.004s
 The longest palindromes appear in the lines:
 
 <p style="border-left: #ccc 4px solid; padding:2em;" class="bolder">
-GLOUCESTER
-
+GLOUCESTER<br/>
+<br/>
 So w<span class="pink">ill it madam till I</span> lie with you.
 </p>
 
@@ -179,8 +179,7 @@ $ find shakespeare/ -type f \
     | xargs cat \
     | sed -e 's/^[A-Za-z]*//g' \
     | tr A-Z a-z \
-    | tr -dC a-z \
-    > collected-works-no-names.txt
+    | tr -dC a-z > collected-works-no-names.txt
 
 $ cat collected-works-no-names.txt | ./pali
 ama
