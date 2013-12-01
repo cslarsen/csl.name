@@ -17,11 +17,13 @@ article {
   text-align: justify;
 }
 
-.huge { font-size: 50pt; }
-.big { font-size: 30pt; }
+.huge { font-size: 48pt; }
+.big { font-size: 40pt; }
+.microbig { font-size: 16pt; }
 .mediumsize { font-size: 18pt; }
 .bolder { font-weight: bolder; }
 .bold { font-weight: bold; }
+.microbold { font-weight: 600; }
 .lighter { font-weight: lighter; }
 
 .pink { color: #f4455d; }
@@ -68,7 +70,7 @@ hr {
 }
 
 .post-body {
-  margin-top: 4em;
+  margin-top: 2em;
 }
 
 #footer {
@@ -86,7 +88,7 @@ hr {
 }
 
 #main-content {
-  max-width: 960px;
+  max-width: 860px;
   padding-right: 4em;
 }
 
@@ -122,4 +124,24 @@ hr {
 
 .button {
   margin-right: 2em;
+}
+
+.height90 {
+  line-height: 90%;
+}
+
+.height95 {
+  line-height: 95%;
+}
+
+.height95 {
+  line-height: 98%;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.height110 {
+  line-height: 110%;
 }
