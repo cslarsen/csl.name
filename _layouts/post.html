@@ -4,7 +4,13 @@ layout: default
 
 <article>
   <header class="post-header">
-    <div class="grot height95 huge bolder pink">{{ page.title }}</div>
+    <div class="grot height95 huge bolder pink">
+      {% if page.formatted_title %}
+        {{ page.formatted_title }}
+      {% else %}
+        {{ page.title }}
+      {% endif %}
+    </div>
     <div class="grot big microbold darkblue uppercase">{{ page.subtitle }}</div>
     <div class="meta grot mediumsize darkblue">
       Posted {{ page.date | date_to_string }} by Christian Stigen Larsen
