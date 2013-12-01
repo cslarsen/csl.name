@@ -4,7 +4,9 @@ markdown: redcarpet
 pygments: true
 
 # Various settings
-email: csl@csl.name
-twitter: https://twitter.com/cstigenlarsen
-github: https://github.com/cslarsen
-linkedin: http://no.linkedin.com/pub/christian-s-larsen/0/935/b61
+email: "csl@csl.name"
+twitter: "https://twitter.com/cstigenlarsen"
+github: "https://github.com/cslarsen"
+linkedin: "http://no.linkedin.com/pub/christian-s-larsen/0/935/b61"
+facebook: "https://www.facebook.com/christianstigen"
+googleplus: "https://plus.google.com/112152592957527288979/posts"
