@@ -7,7 +7,10 @@ layout: default
     <div class="grot height95 huge bolder pink">{{ page.title }}</div>
     <div class="grot big microbold darkblue uppercase">{{ page.subtitle }}</div>
     <div class="meta grot mediumsize darkblue">
-      Posted {{ page.date | date_to_string }}{% if page.updated %} and last updated {{ page.updated | date_to_string }} {% endif %}
+      Posted {{ page.date | date_to_string }} by Christian Stigen Larsen
+      {% if page.updated %}
+        <p>Last updated on {{ page.updated | date_to_string }}</p>
+      {% endif %}
     </div>
   </header>
 
