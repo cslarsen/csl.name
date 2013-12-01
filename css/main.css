@@ -94,7 +94,7 @@ hr {
 
 #header {
   margin: 0em;
-  margin-bottom: 0em;
+  margin-bottom: 2em;
   padding: 1em;
   padding-left: 5em;
   background-color: #eee;
@@ -108,16 +108,6 @@ hr {
 
 #header a:hover {
   color: #666;
-}
-
-#subheader {
-  margin: 0em;
-  margin-bottom: 2em;
-  padding: 1em;
-  padding-left: 5em;
-  background-color: #ddd;
-  color: #333;
-  width: 100%;
 }
 
 #about {
