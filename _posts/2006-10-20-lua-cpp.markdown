@@ -336,7 +336,7 @@ int main(int argc, char** argv)
 }
 {% endhighlight %}
 
-<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><p><a href="http://christianstigenlarsen.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+<div id="disqus_thread"><script type="text/javascript" src="http://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><p><a href="http://christianstigenlarsen.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 </div>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
