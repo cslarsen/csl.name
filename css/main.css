@@ -12,8 +12,7 @@ body {
 }
 
 article {
-  padding-left: 4em;
-  font-size: 14pt;
+  font-size: 16pt;
   text-align: justify;
 }
 
@@ -53,50 +52,44 @@ a {
 a:hover {
 }
 
-hr {
-  margin-top:2em;
-  margin-bottom:2em;
-  height: 1px;
-  border:none;
-  border-top: #666 1px solid;
-}
-
 .highlight {
-  margin-top: 2em;
-  margin-bottom: 2em;
-  padding-left: 2em;
+  padding: 2em;
   background-color: #f8f8f8;
   font-size: 12pt;
   font-family: Monaco, monospace;
 }
 
 .post-body {
-  margin-top: 2em;
 }
 
 #footer {
-  margin-top: 2em;
-  margin-bottom: 1em;
-  background-color: white;
-  font-size: 8pt;
-  padding-left: 4em;
   color: #bbb;
-  font-size: 12pt;
+  font-size: 10pt;
+  background-color: white;
+  margin: 0 auto;
 }
 #footer a {
   color: #888;
 }
 
 #main-content {
-  max-width: 860px;
-  padding-right: 4em;
+  padding: 6em;
+  padding-top: 4.5em;
+  margin: 0 auto;
+}
+
+.post-header {
+  padding-bottom: 2.5em;
+  text-align: left;
+}
+
+.button {
+  margin-right: 2em;
 }
 
 #header {
-  margin: 0em;
-  margin-bottom: 2em;
   padding: 1em;
-  padding-left: 5em;
+  padding-left: 6em;
   background-color: #eee;
   color: #333;
   width: 100%;
@@ -110,21 +103,14 @@ hr {
   color: #666;
 }
 
-#about {
-  margin-left: 4em;
-}
-
-#about a {
-  color: black;
-}
-
 .align-left {
   text-align: left;
 }
 
-.button {
-  margin-right: 2em;
+.align-right {
+  text-align: right;
 }
+
 
 .height90 {
   line-height: 90%;
@@ -144,9 +130,4 @@ hr {
 
 .height110 {
   line-height: 110%;
-}
-
-header {
-  margin-top: 4em;
-  margin-bottom: 4em;
 }
