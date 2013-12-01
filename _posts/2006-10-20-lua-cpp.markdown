@@ -66,7 +66,7 @@ void report_errors(lua_State *L, int status)
 
 int main(int argc, char** argv)
 {
-  for ( int n=1; n&lt;argc; ++n ) {
+  for ( int n=1; n<argc; ++n ) {
     const char* file = argv[n];
 
     lua_State *L = lua_open();
@@ -146,7 +146,7 @@ int my_function(lua_State *L)
   std::cerr << "-- my_function() called with " << argc
     << " arguments:" << std::endl;
 
-  for ( int n=1; n&lt;=argc; ++n ) {
+  for ( int n=1; n<=argc; ++n ) {
     std::cerr << "-- argument " << n << ": "
       << lua_tostring(L, n) << std::endl;
   }
@@ -245,7 +245,7 @@ my_function() returned 123
 Omitting our host program's log-messages produces clean output:
 
 {% highlight bash %}
-$ ./main test.bytecode 2&gt;/dev/null
+$ ./main test.bytecode 2>/dev/null
 Running Lua 5.0.2
 my_function() returned 123
 {% endhighlight %}
