@@ -97,7 +97,7 @@ hr {
   margin-bottom: 0em;
   padding: 1em;
   padding-left: 5em;
-  background-color: white;
+  background-color: #eee;
   color: #333;
   width: 100%;
 }
@@ -115,7 +115,7 @@ hr {
   margin-bottom: 2em;
   padding: 1em;
   padding-left: 5em;
-  background-color: #eee;
+  background-color: #ddd;
   color: #333;
   width: 100%;
 }
