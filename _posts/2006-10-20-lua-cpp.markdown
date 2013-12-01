@@ -1,0 +1,346 @@
+---
+layout: post
+title:  "Using Lua with C++"
+subtitle: "A short tutorial"
+date:   2006-10-20 21:42:24 +02:00
+categories: lua
+description: "Tutorial on creating Lua host-programs in C++"
+keywords: Lua C++ Tutorial script programming language C
+---
+
+Using Lua is easy! In this short tutorial we'll show how to write a fully
+working host-program in C++ with Lua callbacks.
+
+Since the static Lua libraries are written in C, you must import them as
+such:
+
+{% highlight c++ %}
+extern "C" {
+#include "lua.h"
+}
+
+int main()
+{
+  lua_State *L = lua_open();
+  lua_close(L);
+  return 0;
+}
+{% endhighlight %}
+
+_Update 2007-05-14:_ It has been reported that on some systems you need to
+include the headers `lualib.h` and `lauxlib.h` to compile the above example:
+
+{% highlight c++ %}
+extern "C" {
+#include "lualib.h"
+#include "lauxlib.h"
+}
+{% endhighlight %}
+
+
+Compiling and linking with GNU g++:
+
+{% highlight bash %}
+$ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua
+{% endhighlight %}
+
+Including lualib.h and lauxlib.h makes it easy to write a fully working host:
+
+{% highlight c++ %}
+#include <iostream>
+
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+void report_errors(lua_State *L, int status)
+{
+  if ( status!=0 ) {
+    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+    lua_pop(L, 1); // remove error message
+  }
+}
+
+int main(int argc, char** argv)
+{
+  for ( int n=1; n&lt;argc; ++n ) {
+    const char* file = argv[n];
+
+    lua_State *L = lua_open();
+
+    luaopen_io(L); // provides io.*
+    luaopen_base(L);
+    luaopen_table(L);
+    luaopen_string(L);
+    luaopen_math(L);
+    luaopen_loadlib(L);
+
+    std::cerr << "-- Loading file: " << file << std::endl;
+
+    int s = luaL_loadfile(L, file);
+
+    if ( s==0 ) {
+      // execute Lua program
+      s = lua_pcall(L, 0, LUA_MULTRET, 0);
+    }
+
+    report_errors(L, s);
+    lua_close(L);
+    std::cerr << std::endl;
+  }
+
+  return 0;
+}
+{% endhighlight %}
+
+Compilation and linking:
+
+{% highlight bash %}
+$ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua -llualib
+{% endhighlight %}
+
+<h2>Running Lua programs</h2>
+
+Let's test this with some Lua programs.  The files here are from the
+distribution, hello.lua is simply:
+
+{% highlight lua %}
+-- the first program in every language
+io.write("Hello world, from ",_VERSION,"!\n")
+{% endhighlight %}
+
+Executing a couple of Lua programs with our host program produces:
+
+{% highlight bash %}
+$ ./host test/hello.lua test/printf.lua
+-- Loading file: test/hello.lua
+Hello world, from Lua 5.0.2!
+
+-- Loading file: test/printf.lua
+Hello csl from Lua 5.0.2 on Wed Mar  2 13:13:05 2005
+{% endhighlight %}
+
+<h2>Calling C functions from Lua</h2>
+
+It gets very interesting when Lua programs call your own functions.  In the
+following program, we define a function `my_function()` and register it with
+the Lua environment using `lua_register()`.  Our function prints its arguments
+as strings and returns the integer value of 123.
+
+{% highlight c++ %}
+#include <iostream>
+
+extern "C"{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+int my_function(lua_State *L)
+{
+  int argc = lua_gettop(L);
+
+  std::cerr << "-- my_function() called with " << argc
+    << " arguments:" << std::endl;
+
+  for ( int n=1; n&lt;=argc; ++n ) {
+    std::cerr << "-- argument " << n << ": "
+      << lua_tostring(L, n) << std::endl;
+  }
+
+  lua_pushnumber(L, 123); // return value
+  return 1; // number of return values
+}
+
+void report_errors(lua_State *L, int status)
+{
+  if ( status!=0 ) {
+    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+    lua_pop(L, 1); // remove error message
+  }
+}
+
+int main(int argc, char** argv)
+{
+  for ( int n=1; n<argc; ++n ) {
+    const char* file = argv[n];
+
+    lua_State *L = lua_open();
+
+    luaopen_io(L); // provides io.*
+    luaopen_base(L);
+    luaopen_table(L);
+    luaopen_string(L);
+    luaopen_math(L);
+    luaopen_loadlib(L);
+
+    // make my_function() available to Lua programs
+    lua_register(L, "my_function", my_function);
+
+    std::cerr << "-- Loading file: " << file << std::endl;
+
+    int s = luaL_loadfile(L, file);
+
+    if ( s==0 ) {
+      // execute Lua program
+      s = lua_pcall(L, 0, LUA_MULTRET, 0);
+    }
+
+    report_errors(L, s);
+    lua_close(L);
+    std::cerr << std::endl;
+  }
+
+  return 0;
+}
+{% endhighlight %}
+
+Let's write a small Lua program _test.lua_ to call `my_function()`:
+
+{% highlight lua %}
+io.write("Running ", _VERSION, "\n")
+a = my_function(1, 2, 3, "abc", "def")
+io.write("my_function() returned ", a, "\n")
+{% endhighlight %}
+
+With the new host program above, running test.lua produces:
+
+{% highlight bash %}
+$ ./host test.lua
+-- Loading file: test.lua
+Running Lua 5.0.2
+-- my_function() called with 5 arguments:
+-- argument 1: 1
+-- argument 2: 2
+-- argument 3: 3
+-- argument 4: abc
+-- argument 5: def
+my_function() returned 123
+{% endhighlight %}
+
+<h2>Loading and running bytecode</h2>
+
+The `luaL_loadfile()` function loads both source programs as well as compiled
+bytecode, so the following works as a charm:
+
+{% highlight bash %}
+$ ./bin/luac -s -o test.bytecode test.lua
+$ ls -lka test.bytecode
+-rw-r--r--    1 csl csl   307 mar  2 13:46 test.bytecode
+$ ./host test.bytecode
+-- Loading file: test.bytecode
+Running Lua 5.0.2
+-- my_function() called with 5 arguments:
+-- argument 1: 1
+-- argument 2: 2
+-- argument 3: 3
+-- argument 4: abc
+-- argument 5: def
+my_function() returned 123
+{% endhighlight %}
+
+Omitting our host program's log-messages produces clean output:
+
+{% highlight bash %}
+$ ./main test.bytecode 2&gt;/dev/null
+Running Lua 5.0.2
+my_function() returned 123
+{% endhighlight %}
+
+<h2>Next steps</h2>
+
+Suggestions for next steps would be to investigate how to have Lua's
+closures integrate neatly with your host program.
+
+If you're writing programs without consoles, then you'd probably want to
+trap `io.write()`.  I did that by copying the code from lualib.c and changing
+io_write to point to my own function.  This can be useful for game
+programming or plain X/Windows applications where you want to catch output.
+
+<h2>Using RAII</h2>
+
+Also I'd recommend using the resource-acquisition-is-initialization (RAII)
+technique in which resources are allocated in a constructor and freed in the
+destructor.  Using operator overloading, we can elegantly hide the details:
+
+{% highlight c++ %}
+#include <iostream>
+
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+class Lua_State
+{
+  lua_State *L;
+public:
+  Lua_State() : L(lua_open()) { }
+
+  ~Lua_State() {
+    lua_close(L);
+  }
+
+  // implicitly act as a lua_State pointer
+  inline operator lua_State*() {
+    return L;
+  }
+};
+
+static void open_libs(lua_State *L)
+{
+  luaopen_io(L);
+  luaopen_base(L);
+  luaopen_table(L);
+  luaopen_string(L);
+  luaopen_math(L);
+  luaopen_loadlib(L);
+}
+
+static int execute_program(lua_State *L)
+{
+  // make a short function to make program behaviour more clear
+  return lua_pcall(L, 0, LUA_MULTRET, 0);
+}
+
+static void report_errors(lua_State *L, const int status)
+{
+  if ( status!=0 ) {
+    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+    lua_pop(L, 1); // remove error message
+  }
+}
+
+int main(int argc, char** argv)
+{
+  for ( int n=1; n<argc; ++n ) {
+
+    Lua_State L;
+    open_libs(L);
+
+    int s = luaL_loadfile(L, argv[n]);
+
+    if ( s==0 )
+      s = execute_program(L);
+
+    report_errors(L, s);
+
+    // lua_close(L) automatically called here
+  }
+
+  return 0;
+}
+{% endhighlight %}
+
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><p><a href="http://christianstigenlarsen.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-831752-4";
+urchinTracker();
+</script>

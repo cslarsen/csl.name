@@ -30,14 +30,14 @@ article {
 
 h1 {
   letter-spacing: -1px;
-  font-size: 50pt;
+  font-size: 40pt;
   font-weight: bolder;
   color: #f4455d;
 }
 
 h2 {
   letter-spacing: -1px;
-  font-size: 30pt;
+  font-size: 25pt;
   font-weight: bold;
   color: #0e063e;
 }
@@ -72,9 +72,9 @@ hr {
 }
 
 #footer {
-  position: absolute;
+  margin-top: 2em;
+  margin-bottom: 1em;
   background-color: white;
-  bottom: 1em;
   font-size: 8pt;
   padding-left: 4em;
   color: #bbb;
