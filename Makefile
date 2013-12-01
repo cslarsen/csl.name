@@ -5,4 +5,4 @@ serve:
 	jekyll serve --watch
 
 dist: build
-	rsync -avz _site/. -e ssh csl_foobar@ssh.phx.nearlyfreespeech.net:/home/public
+	rsync -avz --delete _site/. -e ssh csl_foobar@ssh.phx.nearlyfreespeech.net:/home/public
