@@ -4,17 +4,21 @@ title: Christian Stigen Larsen
 ---
 
 <div id="about">
-  This is my personal site where I post stuff that matter to me.
+  <h1 class="darkblue mediumplus lighter">ABOUT</h1>
+  This is the homepage of <a href="http://csl.name">Christian Stigen
+    Larsen</a>. I've been developing software professionally for more
+  than 13 years. This is a page I keep to post stuff that interest me.
+  You're welcome to read it as well!
 </div>
 
 <article id="home">
-  <h1 class="mediumsize pink">Articles</h1>
-  <ul class="posts">
+  <h1 class="darkblue mediumplus lighter">POSTS</h1>
+  <table class="posts">
     {% for post in site.posts %}
-    <li>
-      <span>{{ post.date | date_to_string }}</span>
-      <a href="{{ post.url }}">{{ post.title }}</a>
-    </li>
+    <tr>
+      <td>{{ post.date | date_to_string }}</td>
+      <td style="padding-left:1em;"><a href="{{ post.url }}">{{ post.title }}</a></td>
+    </tr>
     {% endfor %}
-  </ul>
+  </table>
 </article>
