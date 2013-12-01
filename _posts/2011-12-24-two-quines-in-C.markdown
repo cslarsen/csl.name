@@ -2,7 +2,7 @@
 layout: post
 title:  "Two quines in C"
 subtitle: ""
-date:   2011-12-24 12:00:00 +01:00
+date:   2011-12-24 11:35:05 +00:00
 updated: 2013-12-01 23:41:00 +01:00
 categories: C
 ---
@@ -66,6 +66,6 @@ thread.</a></p></noscript><a href="http://disqus.com"
 class="dsq-brlink">blog comments powered by <span
 class="logo-disqus">Disqus</span></a>
 
-gist: https://gist.github.com/1517172
-trust: http://cm.bell-labs.com/who/ken/trust.html
-ken: http://en.wikipedia.org/wiki/Ken_Thompson
+[gist]: https://gist.github.com/1517172
+[trust]: http://cm.bell-labs.com/who/ken/trust.html
+[ken]: https://en.wikipedia.org/wiki/Ken_Thompson
