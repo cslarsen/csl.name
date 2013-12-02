@@ -146,3 +146,11 @@ a:hover {
 .height110 {
   line-height: 110%;
 }
+
+.valign-top {
+  vertical-align: top;
+}
+
+img {
+  border: none;
+}
