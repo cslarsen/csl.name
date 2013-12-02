@@ -13,32 +13,33 @@
 
   </head>
   <body>
-    <div id="header">
-      <span class="button"><a href="/"><img src="/gfx/icon-home.png" alt="Articles"/></a></span>
-      <span class="button"><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>"><img src="/gfx/icon-email.png" alt="Email"/></a></span>
-      <span class="button"><a href="{{ site.github }}"><img src="/gfx/icon-github.png" alt="GitHub"/></a></span>
-      <span class="button"><a href="{{ site.twitter }}"><img src="/gfx/icon-twitter.png" alt="Twitter" /></a></span>
-      <span class="button"><a href="{{ site.linkedin }}"><img src="/gfx/icon-linkedin.png" alt="LinkedIn"/></a></span>
-      <span class="button"><a href="{{ site.facebook }}"><img src="/gfx/icon-facebook.png" alt="Facebook"/></a></span>
-      <span class="button"><a href="{{ site.googleplus }}"><img src="/gfx/icon-google+.png" alt="Google+"/></a></span>
-    </div>
+    <nav id="header">
+      <ul>
+        <li><a href="/"><img src="/gfx/icon-home.png" alt="Articles"/></a></li>
+        <li><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>"><img src="/gfx/icon-email.png" alt="Email"/></a></li>
+        <li><a href="{{ site.github }}"><img src="/gfx/icon-github.png" alt="GitHub"/></a></li>
+        <li><a href="{{ site.twitter }}"><img src="/gfx/icon-twitter.png" alt="Twitter" /></a></li>
+        <li><a href="{{ site.linkedin }}"><img src="/gfx/icon-linkedin.png" alt="LinkedIn"/></a></li>
+        <li><a href="{{ site.facebook }}"><img src="/gfx/icon-facebook.png" alt="Facebook"/></a></li>
+        <li><a href="{{ site.googleplus }}"><img src="/gfx/icon-google+.png" alt="Google+"/></a></li>
+      </ul>
+    </nav>
 
     <div id="main-content">
       {{ content }}
     </div>
 
-    <div id="footer">
-      <hr/>
+    <footer>
       <p>
       Copyright &copy; 1997&mdash;2013 Christian Stigen Larsen.<br/>
       Verbatim copying and redistribution of content from this site is
       permitted provided this notice is preserved.<br/>
-      Program code examples is put in the public domain.
       </p>
       <p>
       Site generated using <a href="http://jekyllrb.com">Jekyll</a>.
       Icons from <a href="http://iconmonstr.com">iconmonstr</a>.
+      Fonts from <a href="http://www.google.com/fonts">Google Fonts</a>.
       </p>
-    </div>
+    </footer>
   </body>
 </html>
