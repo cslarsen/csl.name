@@ -1,0 +1,70 @@
+---
+layout: post
+title:  "Compiling Qt using g++ on the command line"
+subtitle: ""
+date:   2012-11-25
+categories: Cpp
+disqus: true
+tags: Qt C++ gcc UNIX
+---
+
+Here's a very quick guide on how you can write and build a Qt application on
+the command line.
+
+I'm using OS X, but it should be quite similar on other UNIX systems. Use
+[homebrew][homebrew] to install qt:
+
+    $ brew install qt
+
+We'll create an app called `foo`.
+
+    $ mkdir foo
+    $ cd foo
+
+Put the following into `foo.cpp`.
+
+{% highlight C++ %}
+#include <qapplication.h>
+#include <qpushbutton.h>
+
+int main(int argc, char** argv)
+{
+  QApplication app(argc, argv);
+
+  QPushButton hello("Hello world!", 0);
+  hello.resize(100, 30);
+  hello.show();
+
+  return app.exec();
+}
+{% endhighlight %}
+
+Set up a new Qt project using `qmake`.
+
+    $ qmake -project
+    $ ls
+    foo.cpp foo.pro
+
+Create a GNU makefile.
+
+    $ qmake -makefile
+    $ ls
+    Makefile  foo.cpp   foo.pro
+
+Now we can simply make the `foo` app. Note that on OS X, it creates
+`foo.app/`. This is what we want anyway, a native app. On Linux it would
+probably create a `foo` executable.
+
+    $ make
+
+It made `foo.app/` for us, or an OS X app bundle. Let's run it.
+
+    $ open foo.app
+
+The result looks like this.
+
+!["Hello, world" in Qt]({{ site.url }}/gfx/post-qt-gcc.png)
+
+Now go create something awesome.
+
+[homebrew]: http://mxcl.github.com/homebrew/

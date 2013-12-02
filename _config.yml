@@ -2,6 +2,7 @@ name: Christian Stigen Larsen
 author: Christian Stigen Larsen
 markdown: redcarpet
 pygments: true
+permalink: pretty
 
 # Various settings
 email: "csl@csl.name"
