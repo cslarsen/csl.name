@@ -159,3 +159,13 @@ img {
   border: none;
 }
 
+#disqus_thread {
+  margin-top: 6em;
+}
+
+.quote {
+  border-left: #ccc 4px solid;
+  padding:2em;
+  font-weight: bolder;
+  margin-left: 0.5em;
+}

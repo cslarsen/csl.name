@@ -164,7 +164,7 @@ sys 0m0.004s
 
 The longest palindromes appear in the lines:
 
-<p style="border-left: #ccc 4px solid; padding:2em;" class="bolder">
+<p class="quote">
 GLOUCESTER<br/>
 <br/>
 So w<span class="pink">ill it madam till I</span> lie with you.
@@ -193,7 +193,7 @@ illitmadamtilli
 The second last character-by-character palindrome comes from the tragedy
 <i>Troilus and Cressida</i>:
 
-<p style="border-left: #ccc 4px solid; padding:2em;" class="bolder">
+<p class="quote">
 PANDARUS<br/>
 <br/>
 Hark! they are coming from the field: shall we

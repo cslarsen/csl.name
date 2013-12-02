@@ -5,6 +5,7 @@ subtitle: ""
 date:   2011-12-24 11:35:05 +00:00
 updated: 2013-12-01 23:41:00 +01:00
 categories: C
+disqus: true
 ---
 
 This document is the HTML&dash;version of [a gist][gist] I made earlier.
@@ -58,13 +59,6 @@ writing out a bunch of numerical codes, with some boilerplate code to get it
 all started. In other words, we have some <i>driver code</i> and then a
 <i>payload</i> of specific data we print out. We can actually create a quine
 out of <i>any</i> program. That is the main point in Thompson's article.
-
-<div id="disqus_thread"></div><script type="text/javascript"
-src="http://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><p><a
-href="http://christianstigenlarsen.disqus.com/?url=ref">View the discussion
-thread.</a></p></noscript><a href="http://disqus.com"
-class="dsq-brlink">blog comments powered by <span
-class="logo-disqus">Disqus</span></a>
 
 [gist]: https://gist.github.com/1517172
 [trust]: http://cm.bell-labs.com/who/ken/trust.html
