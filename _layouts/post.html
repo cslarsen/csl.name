@@ -12,11 +12,12 @@ layout: default
       {% endif %}
     </div>
     <div class="grot big microbold darkblue uppercase">{{ page.subtitle }}</div>
+    <br/>
     <div class="meta grot mediumsize darkblue">
-      Posted {{ page.date | date_to_string }} by Christian Stigen Larsen
-      {% if page.updated %}
-        <p>Last updated on {{ page.updated | date_to_string }}</p>
-      {% endif %}
+      By Christian Stigen Larsen<br/>
+      <small>Posted {{ page.date | date_to_string }}{% if page.updated %}
+        <b>/</b> Updated
+        {{ page.updated | date_to_string }}{% endif %}</small>
     </div>
   </header>
 
