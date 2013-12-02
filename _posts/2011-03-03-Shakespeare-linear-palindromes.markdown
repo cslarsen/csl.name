@@ -160,7 +160,7 @@ madammadammadam
 
 real    0m0.026s
 user    0m0.022s
-sys 0m0.004s
+sys     0m0.004s
 {% endhighlight %}
 
 The longest palindromes appear in the lines:
@@ -171,7 +171,7 @@ GLOUCESTER<br/>
 So w<span class="pink">ill it madam till I</span> lie with you.
 </p>
 
-from the play <i>Richard III</i>. The preparsing of the collected works
+from the play [Richard III][rich3]. The preparsing of the collected works
 above includes the character's name. Without it, the output is a bit
 different:
 
@@ -192,7 +192,7 @@ illitmadamtilli
 {% endhighlight %}
 
 The second last character-by-character palindrome comes from the tragedy
-<i>Troilus and Cressida</i>:
+[Troilus and Cressida][cressida]:
 
 <p class="quote">
 PANDARUS<br/>
@@ -222,3 +222,5 @@ you're interested in <i>generating</i> palindromes, you should check out
 [palindrome]: https://en.wikipedia.org/wiki/Palindrome
 [gettysburg]: https://en.wikipedia.org/wiki/Gettysburg_Address
 [norvig]: http://norvig.com/palindrome.html
+[cressida]: https://en.wikipedia.org/wiki/Troilus_and_Cressida
+[rich3]: https://en.wikipedia.org/wiki/Richard_III_(play)
