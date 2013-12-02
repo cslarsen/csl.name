@@ -6,6 +6,7 @@ date:   2011-12-24 11:35:05 +00:00
 updated: 2013-12-01 23:41:00 +01:00
 categories: C
 disqus: true
+tags: C quine security
 ---
 
 This document is the HTML&dash;version of [a gist][gist] I made earlier.

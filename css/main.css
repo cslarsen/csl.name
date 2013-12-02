@@ -155,6 +155,10 @@ nav ul li {
   vertical-align: top;
 }
 
+.valign-middle {
+  vertical-align: middle;
+}
+
 img {
   border: none;
 }

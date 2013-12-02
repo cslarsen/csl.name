@@ -5,6 +5,7 @@ formatted_title:  "<span class='lighter'>Palindromes in <span class='bolder'>The
 subtitle: "A programming puzzle"
 date:   2011-03-03 09:10:27 -08:00
 categories: C
+tags: C palindrome puzzle
 ---
 
 Some years ago, I [solved some programming puzzles][gist] posted by Greplin (later

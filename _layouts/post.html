@@ -13,11 +13,13 @@ layout: default
     </div>
     <div class="grot big microbold darkblue uppercase">{{ page.subtitle }}</div>
     <br/>
-    <div class="meta grot mediumsize darkblue">
+    <div class="valign-middle meta grot mediumsize darkblue">
       By Christian Stigen Larsen<br/>
-      <small>Posted {{ page.date | date_to_string }}{% if page.updated %}
-        <b>/</b> Updated
-        {{ page.updated | date_to_string }}{% endif %}</small>
+      Posted {{ page.date | date_to_string }}
+      {% if page.updated %}
+        <img src="/gfx/icon-refresh.png" alt="Refreshed" />
+        {{ page.updated | date_to_string }}
+      {% endif %}
     </div>
   </header>
 
