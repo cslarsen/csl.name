@@ -14,7 +14,6 @@ import socket
 
 class Facility:
   "Syslog facilities"
-
   KERN, USER, MAIL, DAEMON, AUTH, SYSLOG, \
   LPR, NEWS, UUCP, CRON, AUTHPRIV, FTP = range(12)
 
@@ -23,7 +22,6 @@ class Facility:
 
 class Level:
   "Syslog levels"
-
   EMERG, ALERT, CRIT, ERR, \
   WARNING, NOTICE, INFO, DEBUG = range(8)
 
@@ -34,7 +32,6 @@ class Syslog:
   >>> log = Syslog()
   >>> log.send("hello", Level.WARNING)
   """
-
   def __init__(self, host="localhost", port=514):
     self.host = host
     self.port = port
