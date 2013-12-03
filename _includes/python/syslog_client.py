@@ -38,6 +38,7 @@ class Syslog:
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
   def send(self, message, level):
+    "Send a syslog message to remote host using UDP."
     data = "<%d>%s" % (level + facility*8, message)
     self.socket.sendto(data, (self.host, self.port))
 
