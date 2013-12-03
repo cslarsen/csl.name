@@ -1,47 +1,64 @@
-#!/usr/bin/python
-# -*- encoding: iso-8859-1 -*-
-
 """
-Python syslog client.
+Remote syslog client.
 
-This code is placed in the public domain by the author.
-Written by Christian Stigen Larsen.
+Works by sending UDP messages to a remote syslog server. The remote server
+must be configured to accept logs from the network.
 
-This is especially neat for Windows users, who (I think) don't
-get any syslog module in the default python installation.
+License: PUBLIC DOMAIN
+Author: Christian Stigen Larsen
 
-See RFC3164 for more info -- http://tools.ietf.org/html/rfc3164
-
-Note that if you intend to send messages to remote servers, their
-syslogd must be started with -r to allow to receive UDP from
-the network.
+For more information, see RFC 3164.
 """
 
 import socket
 
-# I'm a python novice, so I don't know of better ways to define enums
+# SYSLOG FACILITIES
 
-FACILITY = {
-	'kern': 0, 'user': 1, 'mail': 2, 'daemon': 3,
-	'auth': 4, 'syslog': 5, 'lpr': 6, 'news': 7,
-	'uucp': 8, 'cron': 9, 'authpriv': 10, 'ftp': 11,
-	'local0': 16, 'local1': 17, 'local2': 18, 'local3': 19,
-	'local4': 20, 'local5': 21, 'local6': 22, 'local7': 23,
-}
+KERN = 0
+USER = 1
+MAIL = 2
+DAEMON = 3
+AUTH = 4
+SYSLOG = 5
+LPR = 6
+NEWS = 7
+UUCP = 8
+CRON = 9
+AUTHPRIV = 10
+FTP = 11
+LOCAL0 = 16
+LOCAL1 = 17
+LOCAL2 = 18
+LOCAL3 = 19
+LOCAL4 = 20
+LOCAL5 = 21
+LOCAL6 = 22
+LOCAL7 = 23
 
-LEVEL = {
-	'emerg': 0, 'alert':1, 'crit': 2, 'err': 3,
-	'warning': 4, 'notice': 5, 'info': 6, 'debug': 7
-}
+# SYSLOG LEVELS
 
-def syslog(message, level=LEVEL['notice'], facility=FACILITY['daemon'],
-	host='localhost', port=514):
+EMERG = 0
+ALERT = 1
+CRIT = 2
+ERR = 3
+WARNING = 4
+NOTICE = 5
+INFO = 6
+DEBUG = 7
 
-	"""
-	Send syslog UDP packet to given host and port.
-	"""
+class Syslog:
+  """A syslog client that logs to a remote server.
 
-	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	data = '<%d>%s' % (level + facility*8, message)
-	sock.sendto(data, (host, port))
-	sock.close()
+  Example:
+  >>> log = Syslog()
+  >>> log.send("hello", WARNING)
+  """
+
+  def __init__(self, host="localhost", port=514):
+    self.host = host
+    self.port = port
+    self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+  def send(self, message, level=NOTICE, facility=DAEMON):
+    data = "<%d>%s" % (level + facility*8, message)
+    self.socket.sendto(data, (self.host, self.port))

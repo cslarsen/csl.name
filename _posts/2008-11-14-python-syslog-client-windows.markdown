@@ -30,7 +30,8 @@ If you put it in a file `syslog_client.py` you can use it as a module.
 
 {% highlight python %}
 >>> import syslog_client
->>> syslog_client.send("hello", syslog_client.LEVEL)
+>>> log = syslog_client.Syslog("remote-host-name")
+>>> log.send("howdy", syslog_client.WARNING)
 {% endhighlight %}
 
 [rfc3164]: http://www.ietf.org/rfc/rfc3164.txt
