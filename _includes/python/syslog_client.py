@@ -12,46 +12,27 @@ For more information, see RFC 3164.
 
 import socket
 
-# SYSLOG FACILITIES
+class Facility:
+  "Syslog facilities"
 
-KERN = 0
-USER = 1
-MAIL = 2
-DAEMON = 3
-AUTH = 4
-SYSLOG = 5
-LPR = 6
-NEWS = 7
-UUCP = 8
-CRON = 9
-AUTHPRIV = 10
-FTP = 11
-LOCAL0 = 16
-LOCAL1 = 17
-LOCAL2 = 18
-LOCAL3 = 19
-LOCAL4 = 20
-LOCAL5 = 21
-LOCAL6 = 22
-LOCAL7 = 23
+  KERN, USER, MAIL, DAEMON, AUTH, SYSLOG, \
+  LPR, NEWS, UUCP, CRON, AUTHPRIV, FTP = range(12)
 
-# SYSLOG LEVELS
+  LOCAL0, LOCAL1, LOCAL2, LOCAL3, \
+  LOCAL4, LOCAL5, LOCAL6, LOCAL7 = range(16, 24)
 
-EMERG = 0
-ALERT = 1
-CRIT = 2
-ERR = 3
-WARNING = 4
-NOTICE = 5
-INFO = 6
-DEBUG = 7
+class Level:
+  "Syslog levels"
+
+  EMERG, ALERT, CRIT, ERR, \
+  WARNING, NOTICE, INFO, DEBUG = range(8)
 
 class Syslog:
   """A syslog client that logs to a remote server.
 
   Example:
   >>> log = Syslog()
-  >>> log.send("hello", WARNING)
+  >>> log.send("hello", Level.WARNING)
   """
 
   def __init__(self, host="localhost", port=514):
@@ -59,6 +40,20 @@ class Syslog:
     self.port = port
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-  def send(self, message, level=NOTICE, facility=DAEMON):
+  def send(self, message, level):
     data = "<%d>%s" % (level + facility*8, message)
     self.socket.sendto(data, (self.host, self.port))
+
+  def warn(self, message, facility=Facility.DAEMON):
+    "Send a syslog warning message."
+    self.send(message, level=Level.WARNING, facility=facility)
+
+  def notice(self, message, facility=Facility.DAEMON):
+    "Send a syslog notice message."
+    self.send(message, level=Level.NOTICE, facility=facility)
+
+  def error(self, message, facility=Facility.DAEMON):
+    "Send a syslog error message."
+    self.send(message, level=Level.ERROR, facility=facility)
+
+  # ... add your own stuff here
