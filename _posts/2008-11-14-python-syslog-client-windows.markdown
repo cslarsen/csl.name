@@ -34,6 +34,9 @@ If you put it in a file `syslog_client.py` you can use it as a module.
 >>> log.send("howdy", syslog_client.WARNING)
 {% endhighlight %}
 
+You can easily extend the class in several ways. E.g., you may want to add
+some convenience functions like `warn()`, etc.
+
 [rfc3164]: http://www.ietf.org/rfc/rfc3164.txt
 [python.syslog]: http://docs.python.org/2/library/syslog.html
 [posix.syslog]: http://pubs.opengroup.org/onlinepubs/007904975/basedefs/syslog.h.html
