@@ -15,10 +15,8 @@ layout: default
     <br/>
     <div class="valign-middle meta grot mediumsize darkblue">
       By Christian Stigen Larsen<br/>
-      Posted {{ page.date | date_to_string }}
-      {% if page.updated %}
-        <img src="/gfx/icon-refresh.png" alt="Refreshed" />
-        {{ page.updated | date_to_string }}
+      Posted {{ page.date | date_to_string }}{% if page.updated %}.
+        Updated {{ page.updated | date_to_string }}
       {% endif %}
     </div>
   </header>

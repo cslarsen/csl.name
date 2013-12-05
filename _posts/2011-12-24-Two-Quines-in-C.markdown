@@ -22,18 +22,16 @@ Here are two quines I made wrote in C&mdash;without cheating! They are both
 based on the same idea. The first one is macro&dash;based, utilizing the
 ability for macros to quote parameters.
 
-{% highlight C %}
+{% highlight C++ %}
 #define Q(x) #x;x
 char *q=Q(main(){printf("#define Q(x) #x;x\nchar *q=Q(");printf(q);printf(")\n");})
 {% endhighlight %}
 
 Compiling and running it produces an exact copy of itself:
 
-{% highlight bash %}
-$ gcc --no-warnings shortq.c -o shortq && ./shortq
-#define Q(x) #x;x
-char *q=Q(main(){printf("#define Q(x) #x;x\nchar *q=Q(");printf(q);printf(")\n");})
-{% endhighlight %}
+    $ gcc --no-warnings shortq.c -o shortq && ./shortq
+    #define Q(x) #x;x
+    char *q=Q(main(){printf("#define Q(x) #x;x\nchar *q=Q(");printf(q);printf(")\n");})
 
 In the next quine I tried to do away with macros.  First I tried quoting
 program code, but then I had to quote quotation characters, and for each
@@ -41,7 +39,7 @@ compilation of the next quine, the quotation degraded quickly.  The trick I
 used was just to use `putchar` instead.  Not extremely elegant, but simple
 to understand.
 
-{% highlight C %}
+{% highlight C++ %}
 char*p="main(){putchar(99);putchar(104);putchar(97);putchar(114);putchar(42);putchar(112);putchar(61);putchar(34);printf(p);putchar(34);putchar(59);putchar(10);put
 s(p);}";
 main(){putchar(99);putchar(104);putchar(97);putchar(114);putchar(42);putchar(112);putchar(61);putchar(34);printf(p);putchar(34);putchar(59);putchar(10);puts(p);}

@@ -22,9 +22,8 @@ have any time and money to spend on getting me one.)
 
 Anyway, there are many algorithms for doing this. Mine is just based on a
 brute force scan of the text. I see I claim that the running time is linear
-on the average input, but quadratic in the worst case (such as a file with
-all `a`s). Since writing it, I haven't double&dash;checked the running time
-analysis.
+on the average input, but quadratic in the worst case (I haven't
+double-checked this).
 
 {% highlight C %}
 /*
