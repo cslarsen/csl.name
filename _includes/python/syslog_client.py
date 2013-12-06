@@ -29,29 +29,33 @@ class Syslog:
   """A syslog client that logs to a remote server.
 
   Example:
-  >>> log = Syslog()
+  >>> log = Syslog(host="foobar.example")
   >>> log.send("hello", Level.WARNING)
   """
-  def __init__(self, host="localhost", port=514):
+  def __init__(self,
+               host="localhost",
+               port=514,
+               facility=Facility.DAEMON):
     self.host = host
     self.port = port
+    self.facility = facility
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
   def send(self, message, level):
     "Send a syslog message to remote host using UDP."
-    data = "<%d>%s" % (level + facility*8, message)
+    data = "<%d>%s" % (level + self.facility*8, message)
     self.socket.sendto(data, (self.host, self.port))
 
-  def warn(self, message, facility=Facility.DAEMON):
+  def warn(self, message):
     "Send a syslog warning message."
-    self.send(message, level=Level.WARNING, facility=facility)
+    self.send(message, Level.WARNING)
 
-  def notice(self, message, facility=Facility.DAEMON):
+  def notice(self, message):
     "Send a syslog notice message."
-    self.send(message, level=Level.NOTICE, facility=facility)
+    self.send(message, Level.NOTICE)
 
-  def error(self, message, facility=Facility.DAEMON):
+  def error(self, message):
     "Send a syslog error message."
-    self.send(message, level=Level.ERROR, facility=facility)
+    self.send(message, Level.ERR)
 
   # ... add your own stuff here
