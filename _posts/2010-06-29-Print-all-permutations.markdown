@@ -2,7 +2,7 @@
 layout: post
 title:  "Print all permutations of a string"
 subtitle: "in C++"
-date:   2013-05-18 14:49:04 +00:00
+date:   2010-06-29 17:30:32 -07:00
 categories: Cpp
 disqus: true
 tags: C++ puzzle math

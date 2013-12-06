@@ -2,7 +2,7 @@
 layout: post
 title:  "An animal guessing game"
 subtitle: "in Python"
-date:   2013-05-18 14:49:04 +00:00
+date:   2010-05-17 12:54:00 +00:00
 categories: Python
 disqus: true
 tags: python game binary-tree data-structure
