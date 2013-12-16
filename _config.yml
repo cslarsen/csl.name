@@ -4,6 +4,10 @@ markdown: redcarpet
 pygments: true
 permalink: pretty
 
+# File lists
+include: [.htaccess]
+exclude: [TODO, Makefile, README.md]
+
 # additional settings for RSS
 copyright: "Copyright &copy; 1997&mdash;2013 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
 description: "Personal homepage with posts mainly on programming"
