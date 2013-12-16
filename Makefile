@@ -5,7 +5,6 @@ serve:
 	jekyll serve --watch --lsi
 
 compress-css: build
-	echo Compressing CSS files
 	yuicompressor css/main.css > _site/css/main.css
 	yuicompressor css/syntax.css > _site/css/syntax.css
 
