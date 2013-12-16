@@ -11,19 +11,35 @@
     <link href="/css/main.css" media="all" rel="stylesheet" type="text/css" />
     <link href="/css/syntax.css" media="all" rel="stylesheet" type="text/css" />
 
+    {% if site.adsense_tracking_id %}
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', '{{ site.adsense_tracking_id }}']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    {% endif %}
+
   </head>
   <body>
     <nav id="header">
       <ul>
-        <li><a href="/"><img src="/gfx/icon-home.png" alt="Articles"/></a></li>
-        <li><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>"><img src="/gfx/icon-email.png" alt="Email"/></a></li>
-        <li><a href="{{ site.github }}"><img src="/gfx/icon-github.png" alt="GitHub"/></a></li>
-        <li><a href="{{ site.twitter }}"><img src="/gfx/icon-twitter.png" alt="Twitter" /></a></li>
-        <li><a href="{{ site.linkedin }}"><img src="/gfx/icon-linkedin.png" alt="LinkedIn"/></a></li>
-        <li><a href="{{ site.facebook }}"><img src="/gfx/icon-facebook.png" alt="Facebook"/></a></li>
-        <li><a href="{{ site.googleplus }}"><img src="/gfx/icon-google+.png" alt="Google+"/></a></li>
-        <li><a href="{{ site.stackoverflow }}"><img src="/gfx/icon-stackoverflow.png" alt="Stack Overflow"/></a></li>
-        <li><a href="/sitemap.xml"><img src="/gfx/icon-rss.png" alt="RSS feed" /></a></li>
+        <li><a href="/"><img width="24" height="24" src="/gfx/icon-home.png" alt="Articles"/></a></li>
+        <li><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>"><img width="24" height="24" src="/gfx/icon-email.png" alt="Email"/></a></li>
+        <li><a href="{{ site.github }}"><img width="24" height="24" src="/gfx/icon-github.png" alt="GitHub"/></a></li>
+        <li><a href="{{ site.twitter }}"><img width="24" height="24" src="/gfx/icon-twitter.png" alt="Twitter" /></a></li>
+        <li><a href="{{ site.linkedin }}"><img width="24" height="24" src="/gfx/icon-linkedin.png" alt="LinkedIn"/></a></li>
+        <li><a href="{{ site.facebook }}"><img width="24" height="24" src="/gfx/icon-facebook.png" alt="Facebook"/></a></li>
+        <li><a href="{{ site.googleplus }}"><img width="24" height="24" src="/gfx/icon-google+.png" alt="Google+"/></a></li>
+        <li><a href="{{ site.stackoverflow }}"><img width="24" height="24" src="/gfx/icon-stackoverflow.png" alt="Stack Overflow"/></a></li>
+        <li><a href="/sitemap.xml"><img src="/gfx/icon-rss.png" width="24" height="24" alt="RSS feed" /></a></li>
       </ul>
     </nav>
 
@@ -83,7 +99,6 @@
         <noscript><p><a href="http://{{ site.disqus_user }}.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
       {% endif %}
-
     </div>
 
     <footer>
@@ -96,15 +111,5 @@
       Fonts from <a href="http://www.google.com/fonts">Google Fonts</a>.
       </p>
     </footer>
-
-    {% if site.adsense_tracking_id %}
-    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-    </script>
-
-    <script type="text/javascript">
-    _uacct = "{{ site.adsense_tracking_id }}";
-    urchinTracker();
-    </script>
-    {% endif %}
   </body>
 </html>
