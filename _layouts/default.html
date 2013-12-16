@@ -28,7 +28,7 @@
     <div id="main-content">
       {{ content }}
 
-      {% if site.related_posts %}
+      {% if site.related_posts.size > 1 %}
       <div class="otherPosts">
         <h2 class="darkblue">Related posts</h2>
         <table>
@@ -45,27 +45,31 @@
 
       <div class="otherPosts">
         {% for tag in page.tags %}
-        <h2 class="darkblue">Posts tagged &laquo;{{ tag }}&raquo;</h2>
-        <table>
-          {% for p in site.tags[tag] %}
-            {% if p.url != page.url %}
-            <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-            {% endif %}
-          {% endfor %}
-        </table>
+          {% if site.tags[tag].size > 1 %}
+          <h2 class="darkblue">Posts tagged &laquo;{{ tag }}&raquo;</h2>
+          <table>
+            {% for p in site.tags[tag] %}
+              {% if p.url != page.url %}
+              <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+              {% endif %}
+            {% endfor %}
+          </table>
+          {% endif %}
         {% endfor %}
       </div>
 
       <div class="otherPosts">
         {% for category in page.categories %}
-        <h2 class="darkblue">Other posts under the category &laquo;{{ category }}&raquo;</h2>
-        <table>
-          {% for p in site.categories[category] %}
-          {% if p.url != page.url %}
-          <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+          {% if site.categories[category].size > 1 %}
+          <h2 class="darkblue">Other posts under the category &laquo;{{ category }}&raquo;</h2>
+          <table>
+            {% for p in site.categories[category] %}
+              {% if p.url != page.url %}
+                <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+              {% endif %}
+            {% endfor %}
+          </table>
           {% endif %}
-          {% endfor %}
-        </table>
         {% endfor %}
       </div>
 
