@@ -8,6 +8,10 @@ Header set Cache-Control "max-age=604800, public"
 Header set Cache-Control "max-age=1800, public"
 </FilesMatch>
 
+# Serve all HTML files as UTF-8 (this speeds up processing; cf. Google
+# PageSpeed)
+AddType 'text/html; charset=UTF-8' html
+
 # Enable gzip compression for most files
 <ifModule mod_gzip.c>
 mod_gzip_on Yes
