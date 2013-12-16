@@ -25,7 +25,7 @@ brute force scan of the text. I see I claim that the running time is linear
 on the average input, but quadratic in the worst case (I haven't
 double-checked this).
 
-{% highlight C %}
+{% highlight C++ %}
 /*
  * Find the longest palindrome in the text.
  *
