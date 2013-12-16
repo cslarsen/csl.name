@@ -110,11 +110,14 @@ footer a {
 nav ul {
   margin:0em;
   padding:0em;
+  height: 30px;
 }
 
 nav ul li {
-  display: inline;
-  margin-right: 2em;
+  display: table-cell;
+  list-style-type: none;
+  padding-right: 2em;
+  vertical-align: middle;
 }
 
 #header a {
