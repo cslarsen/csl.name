@@ -34,3 +34,7 @@ DirectoryIndex index.html.gz index.html
     Header append Vary: Accept-Encoding
   </FilesMatch>
 </IfModule>
+
+# Redirects
+Redirect 301 /rss /rss.xml
+Redirect 301 /sitemap /sitemap.xml
