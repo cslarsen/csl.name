@@ -13,6 +13,8 @@
 #   rss_name       - (optional) the name of the rss file (if not specified "rss.xml" will be used)
 #   rss_post_limit - (optional) the number of posts in the feed
 #
+# Requires: 'sanitize' gem.
+#
 # Author: Assaf Gelber <assaf.gelber@gmail.com>
 # Site: http://agelber.com
 # Source: http://github.com/agelber/jekyll-rss
@@ -34,25 +36,26 @@ module Jekyll
     # Returns nothing
     def generate(site)
       require 'rss'
+      require 'sanitize'
 
       parser = get_markdown_parser(site.config)
 
       # Create the rss with the help of the RSS module
       rss = RSS::Maker.make("2.0") do |maker|
-        maker.channel.title = site.config['name']
+        maker.channel.title = Sanitize.clean(site.config['name'])
         maker.channel.link = site.config['url']
-        maker.channel.description = site.config['description'] || "RSS feed for #{site.config['name']}"
+        maker.channel.description = Sanitize.clean(site.config['description'] || "RSS feed for #{site.config['name']}")
         maker.channel.author = site.config["author"]
         maker.channel.updated = site.posts.map { |p| p.date  }.max
-        maker.channel.copyright = site.config['copyright']
+        maker.channel.copyright = Sanitize.clean(site.config['copyright'])
 
         post_limit = (site.config['rss_post_limit'] - 1 rescue site.posts.count)
 
         site.posts.reverse[0..post_limit].each do |post|
           maker.items.new_item do |item|
-            item.title = post.title
+            item.title = Sanitize.clean(post.title)
             item.link = "#{site.config['url']}#{post.url}"
-            item.description = parser.convert(post.excerpt)
+            item.description = Sanitize.clean(parser.convert(post.excerpt))
             item.updated = post.date
           end
         end
