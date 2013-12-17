@@ -57,6 +57,8 @@ module Jekyll
             item.link = "#{site.config['url']}#{post.url}"
             item.description = Sanitize.clean(parser.convert(post.excerpt))
             item.updated = post.date
+            item.guid.content = item.link
+            item.guid.isPermaLink = true
           end
         end
       end
