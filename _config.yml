@@ -29,5 +29,7 @@ adsense_tracking_id: UA-831752-4
 disqus_user: christianstigenlarsen
 
 # Fonts
-font_name: Raleway
-font_url: "http://fonts.googleapis.com/css?family=Raleway:200,400,600,800,900"
+google_font:
+  name: Raleway
+  weights: "200,400,600,800,900"
+  ligatures: normal

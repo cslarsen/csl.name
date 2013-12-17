@@ -1,12 +1,12 @@
 .grot {
-  font-family: '{{ site.font_name }}', sans-serif;
-  font-variant-ligatures: normal;
+  font-family: '{{ site.google_font.name }}', sans-serif;
+  font-variant-ligatures: {{ site.google_font.ligatures }};
 }
 
 body {
   background-color: white;
-  font-family: '{{ site.font_name }}', sans-serif;
-  font-variant-ligatures: normal;
+  font-family: '{{ site.google_font.name }}', sans-serif;
+  font-variant-ligatures: {{ site.google_font.ligatures }};
   color: black;
   margin: 0em;
   padding: 0em;
