@@ -11,7 +11,7 @@ exclude: [TODO, Makefile, README.md]
 # additional settings for RSS
 copyright: "Copyright &copy; 1997&mdash;2013 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
 description: "Personal homepage with posts mainly on programming"
-url: http://csl.name
+url: http://foobar.nfshost.com
 
 # Various settings
 email: "csl@csl.name"
