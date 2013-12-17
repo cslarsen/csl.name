@@ -1,4 +1,4 @@
 ---
-# Renders CSS Liquid template from _includes/css/main.css
+This file: Renders CSS liquid template from _includes/css/main.css
 ---
 {% include css/main.css %}
