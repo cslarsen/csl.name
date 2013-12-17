@@ -1,3 +1,5 @@
+---
+---
 # Cache for one week
 <FilesMatch "\.(jpg|jpeg|png|gif|swf|pdf|zip|py|cpp|ico)$">
 Header set Cache-Control "max-age=604800, public"
@@ -38,3 +40,7 @@ DirectoryIndex index.html.gz index.html
 # Redirects
 Redirect 301 /rss /rss.xml
 Redirect 301 /sitemap /sitemap.xml
+
+# Redirects from the old site
+Redirect 301 /lua/ {% post_url 2006-10-20-Using-Lua-with-Cpp %}
+Redirect 301 /py-syslog-win32/ {% post_url 2008-11-14-python-syslog-client-windows %}
