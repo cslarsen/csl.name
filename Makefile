@@ -1,3 +1,5 @@
+default: build
+
 doctor:
 	jekyll doctor
 
