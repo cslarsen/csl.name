@@ -10,8 +10,8 @@ serve:
 	jekyll serve --lsi --watch
 
 minify: build
-	yuicompressor css/main.css > _site/css/main.css
-	yuicompressor css/syntax.css > _site/css/syntax.css
+	yuicompressor _site/css/main.css -o _site/css/main.css
+	yuicompressor _site/css/syntax.css -o _site/css/syntax.css
 
 compress: build
 	find _site -name '*.html' -exec perl -pi -e 's/\.html/\.html\.gz/gi' {} \;
