@@ -2,7 +2,7 @@ name: Christian Stigen Larsen
 author: Christian Stigen Larsen
 markdown: redcarpet
 pygments: true
-permalink: pretty
+permalink: /:categories/:title/
 
 # File lists
 include: [.htaccess]
