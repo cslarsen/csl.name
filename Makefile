@@ -1,4 +1,4 @@
-jekyll=/opt-local/bin/jekyll
+jekyll=jekyll
 
 default: build
 
