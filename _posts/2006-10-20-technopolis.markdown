@@ -33,23 +33,13 @@ The version that you can see below is not the final one that was actually
 used at the festival. The final one was a bit longer and had some clips from
 the original [Tron movie][tron].
 
-<object
-  width="425"
-  height="350"
-  style="width:425px; height:350px;">
-
-  <param
-    name="movie"
-    value="http://www.youtube.com/v/ZXLA52CsPl4">
-  </param>
-
-  <embed
-    src="http://www.youtube.com/v/ZXLA52CsPl4"
-    type="application/x-shockwave-flash"
-    width="425"
-    height="350">
-  </embed>
-</object>
+<iframe
+  width="640"
+  height="360"
+  src="//www.youtube-nocookie.com/embed/6XCsUHr6jj4?rel=0"
+  frameborder="0"
+  allowfullscreen>
+</iframe>
 
 The text scans in the beginning of the video was scanned from an issue of [Ray Gun
 Magazine][raygun].  This was the time when the magazine had amazing
