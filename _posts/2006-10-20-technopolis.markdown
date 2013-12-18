@@ -8,21 +8,29 @@ disqus: true
 tags: graphics 3d
 ---
 
-Here is a video I made for the 2001 Technopolis electronic music festival
-at <a href="http://www.samfundet.no">Studentersamfundet</a> in Trondheim.
+This is a video I made for the 2001 _Technopolis_ electronic music festival
+in the student's society in Trondheim ([Studentersamfundet][samfundet]).
 
-It was used to present the evening's programme on several big screens
-around Samfundet.  
+Since I had worked there as a graphic designer, they asked if I could make
+them a video loop that would show the evening's programme.  They would put
+up several TVs around Samfundet (a really big and really awesome place for
+concerts and beer) and loop this video.
 
-I designed and rendered the scenes in 3D Studio Max on a laptop during a
-road trip around Europe. I also used Macromedia Flash with some Action
-Script to print out the text. Aftet that I added some effects with Adobe
-AfterEffects and finally edited everything and rendered the final product in
-Adobe Premiere.
+I had some clips that I had made in 3D Studio Max during a road-trip in
+Europe. I remember I let the Toshiba laptop render all night during a ferry
+ride. Good times.
 
-The video below is not the final version that was shown at the festival.
-The final version was a bit longer and also included some clips from the
-movie [Tron][tron]
+Anyway, I tried to create something that looked electronic but organic,
+bathed in ultraviolet light.
+
+I made some animated program text in Macromedia Flash, added some
+miscellaneous affects in Adobe AfterEffects and edited everything in Adobe
+Premiere. That was done on a desktop. I remember that the final rendering
+was also an all-nighter.
+
+The version that you can see below is not the final one that was actually
+used at the festival. The final one was a bit longer and had some clips from
+the original [Tron movie][tron].
 
 <object
   width="425"
@@ -31,7 +39,8 @@ movie [Tron][tron]
 
   <param
     name="movie"
-    value="http://www.youtube.com/v/ZXLA52CsPl4"></param>
+    value="http://www.youtube.com/v/ZXLA52CsPl4">
+  </param>
 
   <embed
     src="http://www.youtube.com/v/ZXLA52CsPl4"
@@ -41,11 +50,11 @@ movie [Tron][tron]
   </embed>
 </object>
 
-The text scans in the beginning of the video was scanned from [Ray Gun Magazine][raygun].
-This was the time when the magazine had amazing publication design, by
-[Chris Ashworth][ashworth], among others.
+The text scans in the beginning of the video was scanned from an issue of [Ray Gun
+Magazine][raygun].  This was the time when the magazine had amazing
+publication design by creative director and graphic genius [Chris Ashworth][ashworth].
 
-The person in the video is Andy Warhol, scanned from the same magazine.
+You can also see Andy Warhol in the video, scanned from the same magazine.
 
 !["Andy Warhol on the cover of Ray Gun Magazine"](/gfx/post/technopolis-warhol.png)
 
