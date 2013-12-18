@@ -1,13 +1,15 @@
+jekyll=/opt-local/bin/jekyll
+
 default: build
 
 doctor:
-	jekyll doctor
+	$(jekyll) doctor
 
 build:
-	jekyll build --lsi --trace
+	$(jekyll) build --lsi --trace
 
 serve:
-	jekyll serve --lsi --watch
+	$(jekyll) serve --lsi --watch
 
 minify: build
 	yuicompressor _site/css/main.css -o _site/css/main.css
