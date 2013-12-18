@@ -63,7 +63,7 @@ It made `foo.app/` for us, or an OS X app bundle. Let's run it.
 
 The result looks like this.
 
-!["Hello, world" in Qt](/gfx/post-qt-gcc.png)
+!["Hello, world" in Qt](/gfx/post/qt-gcc.png)
 
 Now go create something awesome.
 

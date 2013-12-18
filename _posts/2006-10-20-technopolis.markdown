@@ -41,13 +41,17 @@ movie [Tron][tron]
   </embed>
 </object>
 
-The text clips in the beginning was scanned from <a href="">Ray Gun
-Magazine</a> in the days that xxx was a visual editor. The magazine had just
-mindblowing design.
+The text scans in the beginning of the video was scanned from [Ray Gun Magazine][raygun].
+This was the time when the magazine had amazing publication design, by
+[Chris Ashworth][ashworth], among others.
 
-THe person in the video is Andy Warhol.
+The person in the video is Andy Warhol, scanned from the same magazine.
 
-You can also download the entire file in higher resolution (79 megs):
-<a href="http://music.sublevel3.org/video/files/technopolis_2001_final.avi">technopolis_2001_final.avi</a>
+!["Andy Warhol on the cover of Ray Gun Magazine"](/gfx/post/technopolis-warhol.png)
+
+You can also download the [entire file][avi] in higher resolution.
 
 [tron]: http://www.imdb.com/title/tt0084827/
+[raygun]: https://en.wikipedia.org/wiki/Ray_Gun_(magazine)
+[ashworth]: http://www.chris-ashworth.com/ray-gun-publish/ray-gun-magazine-covers/
+[avi]: http://music.sublevel3.org/video/files/technopolis_2001_final.avi
