@@ -34,8 +34,8 @@ used at the festival. The final one was a bit longer and had some clips from
 the original [Tron movie][tron].
 
 <iframe
-  width="640"
-  height="360"
+  width="853"
+  height="480"
   src="//www.youtube-nocookie.com/embed/6XCsUHr6jj4?rel=0"
   frameborder="0"
   allowfullscreen>
