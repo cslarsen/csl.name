@@ -1,6 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'jekyll'
-gem 'rexml/document'
-gem 'rss'
 gem 'sanitize'
