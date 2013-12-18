@@ -6,7 +6,7 @@ Header set Cache-Control "max-age=604800, public"
 </FilesMatch>
 
 # Cache for 30 minutes
-<FilesMatch "\.(html|txt|css|js|gz)$">
+<FilesMatch "\.(html|txt|css|js|gz|html.gz|css.gz)$">
 Header set Cache-Control "max-age=1800, public"
 </FilesMatch>
 
