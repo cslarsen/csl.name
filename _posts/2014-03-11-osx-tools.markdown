@@ -1,0 +1,37 @@
+---
+layout: post
+title:  "Some random OS X tools"
+subtitle: ""
+date:   2014-03-11
+categories: Mac
+disqus: true
+tags: Unix OSX Mac
+---
+
+This is my personal collection of useful tools for Mac OS X that I regularly
+seem to forget exist.
+
+    sudo opensnoop -n <process name>
+
+Uses dtrace to show which files a process is opening.
+
+    otool -L <file>
+
+The ldd tool for mac, shows shared libraries used. See also `nm`.
+
+    diskutil ...
+
+Can be used for a variety of purposes.
+
+    lsof
+
+List open files.  Can also work as a better `netstat` to show you TCP or UDP
+ports that is used, e.g.
+
+    lsof -iTCP
+
+Very neat.
+
+    strace
+
+You know this, but there is also `ltrace` and `dtrace`.
