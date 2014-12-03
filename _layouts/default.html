@@ -13,11 +13,6 @@
           rel="stylesheet"
           type="text/css" />
 
-    <link href="/css/syntax.css"
-          media="all"
-          rel="stylesheet"
-          type="text/css" />
-
     <link rel="alternate"
           type="application/rss+xml"
           title="RSS"
@@ -123,5 +118,24 @@
       Fonts from <a href="http://www.google.com/fonts">Google Fonts</a>.
       </p>
     </footer>
+
+    <script type="text/javascript">
+      var cb = function() {
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = '/css/syntax.css';
+
+        h.parentNode.insertBefore(l, document.getElementsByTagName('head')[0]);
+      };
+
+      var raf = requestAnimationFrame || mozRequestAnimationFrame ||
+          webkitRequestAnimationFrame || msRequestAnimationFrame;
+
+      if ( raf )
+        raf(cb);
+      else
+        window.addEventListener('load', cb);
+    </script>
+
   </body>
 </html>
