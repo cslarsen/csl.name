@@ -1,7 +1,7 @@
 name: Christian Stigen Larsen
 author: Christian Stigen Larsen
 markdown: redcarpet
-pygments: true
+highlighter: true
 permalink: /post/:title/
 
 # File lists
