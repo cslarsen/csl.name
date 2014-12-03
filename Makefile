@@ -6,6 +6,7 @@ doctor:
 	$(jekyll) doctor
 
 build:
+	$(jekyll) --version &
 	$(jekyll) build --lsi --trace
 
 serve:
