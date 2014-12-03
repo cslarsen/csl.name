@@ -3,6 +3,8 @@ author: Christian Stigen Larsen
 markdown: redcarpet
 highlighter: true
 permalink: /post/:title/
+encoding: utf-8
+timezone: Norway/Oslo
 
 # File lists
 include: [.htaccess]
