@@ -6,6 +6,7 @@ date:   2006-03-28
 categories: Python
 disqus: true
 tags: Python C UNIX
+description: How to call C code from Python
 ---
 
 Here's a small tutorial on how to call your C functions from Python.

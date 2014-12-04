@@ -6,8 +6,8 @@ disqus: false
 
 <div id="about">
   <h1 class="darkblue big lighter">Christian Stigen Larsen</h1>
-  I've been developing software professionally for over 13 years. On this
-  page I post various stuff that interest me.
+  I'm a software developer from Norway, interested in all things
+  programming.
 </div>
 
 <article id="home">
@@ -15,7 +15,7 @@ disqus: false
   <table class="posts">
     {% for post in site.posts %}
     <tr>
-      <td class="valign-top" style="width:6em;">{{ post.date | date_to_string }}</td>
+      <td class="valign-top" style="width:6em; text-align:right;">{{ post.date | date_to_string }}</td>
       <td class="valign-top" style="padding-left:1em; width:22em; text-align:left;"><a href="{{ post.url }}">{{ post.title }}</a></td>
     </tr>
     {% endfor %}

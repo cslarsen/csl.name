@@ -14,6 +14,7 @@ serve:
 
 minify: build
 	yuicompressor _site/css/main.css -o _site/css/main.css
+	yuicompressor _site/css/bootstrap.css -o _site/css/bootstrap.css
 	yuicompressor _site/css/syntax.css -o _site/css/syntax.css
 
 compress: build

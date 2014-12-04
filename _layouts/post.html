@@ -4,17 +4,17 @@ layout: default
 
 <article>
   <header class="post-header">
-    <div class="grot height95 huge bolder pink">
+    <h1>
       {% if page.formatted_title %}
         {{ page.formatted_title }}
       {% else %}
         {{ page.title }}
       {% endif %}
-    </div>
-    <div class="grot big microbold darkblue uppercase">{{ page.subtitle }}</div>
+    </h1>
+    <div class="subtitle">{{ page.subtitle }}</div>
     <br/>
-    <div class="valign-middle meta grot mediumsize darkblue">
-      By Christian Stigen Larsen<br/>
+    <div class="byline">
+      By Christian Stigen Larsen <br/>
       Posted {{ page.date | date_to_string }}
       {% if page.updated %} &mdash;
         Last updated {{ page.updated | date_to_string }}

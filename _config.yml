@@ -11,7 +11,7 @@ include: [.htaccess]
 exclude: [TODO, Makefile, README.md, Gemfile]
 
 # additional settings for RSS
-copyright: "Copyright &copy; 1997&mdash;2013 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
+copyright: "Copyright &copy; 1997&mdash;2014 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
 description: "Personal homepage with posts mainly on programming"
 url: http://foobar.nfshost.com
 
