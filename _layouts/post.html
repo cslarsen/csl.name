@@ -2,29 +2,30 @@
 layout: default
 ---
 
-<article>
-  <header class="post-header">
-    <div class="page-header">
-      <h1>
-        {% if page.formatted_title %}
-          {{ page.formatted_title }}
-        {% else %}
-          {{ page.title }}
+    <div class="post-header">
+      <div class="page-header">
+        <h1>
+          {% if page.formatted_title %}
+            {{ page.formatted_title }}
+          {% else %}
+            {{ page.title }}
+          {% endif %}
+          <br/><small>{{ page.subtitle }}</small>
+        </h1>
+      </div>
+      <div class="byline">
+        <b><a href="/" style="color:black;">By Christian Stigen Larsen</a></b> on
+        {{ page.date | date_to_string }}
+        {% if page.updated %} and updated
+          {{ page.updated | date_to_string }}
         {% endif %}
-        <br/><small>{{ page.subtitle }}</small>
-      </h1>
+      </div>
     </div>
-    <div class="byline">
-      <b><a href="/" style="color:black;">By Christian Stigen Larsen</a></b> on
-      {{ page.date | date_to_string }}
-      {% if page.updated %} and updated
-        {{ page.updated | date_to_string }}
-      {% endif %}
-    </div>
-  </header>
-
-  <div class="post-body">
-    {{ content }}
   </div>
+</div>
 
-</article>
+<div class="row">
+  <div class="col-md-8">
+    <div class="post-body">
+      {{ content }}
+    </div>
