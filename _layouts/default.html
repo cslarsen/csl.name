@@ -97,6 +97,7 @@
 
   </head>
   <body>
+    <!--
     <nav id="header">
       <ul>
         <li><a href="/"><img width="24" height="24" src="/gfx/icon-home.png" alt="Articles"/></a></li>
@@ -110,6 +111,7 @@
         <li><a href="/rss.xml"><img src="/gfx/icon-rss.png" width="24" height="24" alt="RSS feed" /></a></li>
       </ul>
     </nav>
+    -->
 
     <div class="container">
       <div class="row">
@@ -118,46 +120,56 @@
             {{ content }}
 
             {% if site.related_posts.size > 1 %}
-            <div class="otherPosts">
-              <h2 class="darkblue">Related posts</h2>
-              <table>
-                {% for p in site.related_posts %}
-                  {% if p.url != page.url %}
-                  <tr>
-                    <td><a href="{{ p.url }}">{{ p.title }}</a></td>
-                  </tr>
-                  {% endif %}
-                {% endfor %}
-              </table>
-            </div>
-            {% endif %}
-
-            <div class="otherPosts">
-              {% for tag in page.tags %}
-                {% if site.tags[tag].size > 1 %}
-                <h2 class="darkblue">Posts tagged &laquo;{{ tag }}&raquo;</h2>
+            <div class="panel panel-default">
+              <div class="panel-heading">Related posts</div>
+              <div class="panel-body">
                 <table>
-                  {% for p in site.tags[tag] %}
+                  {% for p in site.related_posts %}
                     {% if p.url != page.url %}
-                    <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+                    <tr>
+                      <td><a href="{{ p.url }}">{{ p.title }}</a></td>
+                    </tr>
                     {% endif %}
                   {% endfor %}
                 </table>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="panel panel-default">
+              {% for tag in page.tags %}
+                {% if site.tags[tag].size > 1 %}
+                <div class="panel-heading">Posts tagged 
+                  &laquo;<b>{{ tag }}</b>&raquo;
+                </div>
+                <div class="panel-body">
+                  <table>
+                    {% for p in site.tags[tag] %}
+                      {% if p.url != page.url %}
+                      <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
                 {% endif %}
               {% endfor %}
             </div>
 
-            <div class="otherPosts">
+            <div class="panel panel-default">
               {% for category in page.categories %}
                 {% if site.categories[category].size > 1 %}
-                <h2 class="darkblue">Other posts under the category &laquo;{{ category }}&raquo;</h2>
-                <table>
-                  {% for p in site.categories[category] %}
-                    {% if p.url != page.url %}
-                      <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-                    {% endif %}
-                  {% endfor %}
-                </table>
+                <div class="panel-heading">Other posts under the category
+                  &laquo;<b>{{ category }}</b>&raquo;
+                </div>
+                <div class="panel-body">
+                  <table>
+                    {% for p in site.categories[category] %}
+                      {% if p.url != page.url %}
+                        <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
                 {% endif %}
               {% endfor %}
             </div>
