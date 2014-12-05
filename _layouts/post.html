@@ -15,9 +15,7 @@ layout: default
     </h1>
     </div>
     <div class="byline">
-      By Christian Stigen Larsen &mdash; Posted {{ page.date | date_to_string }}
-      {% if page.updated %} &mdash;
-        Last updated {{ page.updated | date_to_string }}
+      By <a href="/" style="color:#111;">Christian Stigen Larsen</a> &mdash; Posted {{ page.date | date_to_string }}{% if page.updated %}, updated {{ page.updated | date_to_string }}
       {% endif %}
     </div>
   </header>
