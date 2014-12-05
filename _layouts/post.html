@@ -4,18 +4,18 @@ layout: default
 
 <article>
   <header class="post-header">
+    <div class="page-header">
     <h1>
       {% if page.formatted_title %}
         {{ page.formatted_title }}
       {% else %}
         {{ page.title }}
       {% endif %}
+      <br/><small>{{ page.subtitle }}</small>
     </h1>
-    <div class="subtitle">{{ page.subtitle }}</div>
-    <br/>
+    </div>
     <div class="byline">
-      By Christian Stigen Larsen <br/>
-      Posted {{ page.date | date_to_string }}
+      By Christian Stigen Larsen &mdash; Posted {{ page.date | date_to_string }}
       {% if page.updated %} &mdash;
         Last updated {{ page.updated | date_to_string }}
       {% endif %}
