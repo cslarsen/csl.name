@@ -37,6 +37,11 @@
       text-decoration: none;
     }
 
+    #disqus_thread {
+      margin-top: 6em;
+      margin-bottom: 6em;
+    }
+
     .post-body {
       margin-top: 2em;
     }
@@ -89,7 +94,7 @@
             <noscript><p><a href="http://{{ site.disqus_user }}.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
           </div>
           {% endif %}
-        <div>
+        </div>
 
         <div class="col-md-4">
           {% if site.related_posts.size > 1 %}
@@ -147,7 +152,7 @@
             {% endfor %}
           </div>
         </div>
-      <div>
+      </div>
 
       <div class="row">
         <div class="col-md-8">
