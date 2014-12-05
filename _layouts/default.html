@@ -19,19 +19,6 @@
           href="/rss.xml" />
 
     <style type="text/css">
-    #about {
-      font-size: 14pt;
-      text-align: justify;
-    }
-
-    .valign-top {
-      vertical-align: top;
-    }
-
-    .valign-middle {
-      vertical-align: middle;
-    }
-
     footer {
       margin-top: 2em;
       color: #bbb;
@@ -42,40 +29,16 @@
       color: #888;
     }
 
-    nav ul {
-      margin:0em;
-      padding:0em;
-      height: 30px;
-    }
-
-    nav ul li {
-      display: table-cell;
-      list-style-type: none;
-      padding-right: 2em;
-      vertical-align: middle;
-    }
-
-    #header {
-      padding: 1em;
-      padding-left: 6em;
-      background-color: #eee;
-      color: #333;
-      width: 100%;
-    }
-
-    #byline {
-    }
-
-    .post-header {
-      padding-bottom: 2em;
-    }
-
     h1 {
       font-weight: bolder;
     }
 
     a:hover {
       text-decoration: none;
+    }
+
+    .post-body {
+      margin-top: 2em;
     }
     </style>
 
@@ -115,75 +78,79 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-12 col-md-8">
-          <div id="main-content">
-            {{ content }}
+        <div class="col-md-8">
+          {{ content }}
 
-            {% if site.related_posts.size > 1 %}
-            <div class="panel panel-default">
-              <div class="panel-heading">Related posts</div>
+          {% if page.disqus != false %}
+          <div id="disqus_thread">
+            <script type="text/javascript"
+              src="http://disqus.com/forums/{{ site.disqus_user }}/embed.js">
+            </script>
+            <noscript><p><a href="http://{{ site.disqus_user }}.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+          {% endif %}
+        <div>
+
+        <div class="col-md-4">
+          {% if site.related_posts.size > 1 %}
+          <div class="panel panel-default">
+            <div class="panel-heading">Related posts</div>
+            <div class="panel-body">
+              <table>
+                {% for p in site.related_posts %}
+                  {% if p.url != page.url %}
+                  <tr>
+                    <td><a href="{{ p.url }}">{{ p.title }}</a></td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="panel panel-default">
+            {% for tag in page.tags %}
+              {% if site.tags[tag].size > 1 %}
+              <div class="panel-heading">Posts tagged 
+                &laquo;<b>{{ tag }}</b>&raquo;
+              </div>
               <div class="panel-body">
                 <table>
-                  {% for p in site.related_posts %}
+                  {% for p in site.tags[tag] %}
                     {% if p.url != page.url %}
-                    <tr>
-                      <td><a href="{{ p.url }}">{{ p.title }}</a></td>
-                    </tr>
+                    <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
                     {% endif %}
                   {% endfor %}
                 </table>
               </div>
-            </div>
-            {% endif %}
-
-            <div class="panel panel-default">
-              {% for tag in page.tags %}
-                {% if site.tags[tag].size > 1 %}
-                <div class="panel-heading">Posts tagged 
-                  &laquo;<b>{{ tag }}</b>&raquo;
-                </div>
-                <div class="panel-body">
-                  <table>
-                    {% for p in site.tags[tag] %}
-                      {% if p.url != page.url %}
-                      <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-                      {% endif %}
-                    {% endfor %}
-                  </table>
-                </div>
-                {% endif %}
-              {% endfor %}
-            </div>
-
-            <div class="panel panel-default">
-              {% for category in page.categories %}
-                {% if site.categories[category].size > 1 %}
-                <div class="panel-heading">Other posts under the category
-                  &laquo;<b>{{ category }}</b>&raquo;
-                </div>
-                <div class="panel-body">
-                  <table>
-                    {% for p in site.categories[category] %}
-                      {% if p.url != page.url %}
-                        <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-                      {% endif %}
-                    {% endfor %}
-                  </table>
-                </div>
-                {% endif %}
-              {% endfor %}
-            </div>
-
-            {% if page.disqus != false %}
-            <div id="disqus_thread">
-              <script type="text/javascript"
-                src="http://disqus.com/forums/{{ site.disqus_user }}/embed.js">
-              </script>
-              <noscript><p><a href="http://{{ site.disqus_user }}.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-            </div>
-            {% endif %}
+              {% endif %}
+            {% endfor %}
           </div>
 
+          <div class="panel panel-default">
+            {% for category in page.categories %}
+              {% if site.categories[category].size > 1 %}
+              <div class="panel-heading">Other posts under the category
+                &laquo;<b>{{ category }}</b>&raquo;
+              </div>
+              <div class="panel-body">
+                <table>
+                  {% for p in site.categories[category] %}
+                    {% if p.url != page.url %}
+                      <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
+                    {% endif %}
+                  {% endfor %}
+                </table>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      <div>
+
+      <div class="row">
+        <div class="col-md-8">
           <footer>
             <p>
             {{ site.copyright }}

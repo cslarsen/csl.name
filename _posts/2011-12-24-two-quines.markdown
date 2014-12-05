@@ -9,8 +9,6 @@ disqus: true
 tags: C quine security
 ---
 
-This document is the HTML&dash;version of [a gist][gist] I made earlier.
-
 A quine is a program that, when run, produces an exact copy of its original
 source code.
 
@@ -58,6 +56,8 @@ writing out a bunch of numerical codes, with some boilerplate code to get it
 all started. In other words, we have some <i>driver code</i> and then a
 <i>payload</i> of specific data we print out. We can actually create a quine
 out of <i>any</i> program. That is the main point in Thompson's article.
+
+This document is the HTML&dash;version of [a gist][gist] I made earlier.
 
 [gist]: https://gist.github.com/1517172
 [trust]: http://cm.bell-labs.com/who/ken/trust.html
