@@ -65,22 +65,6 @@
 
   </head>
   <body>
-    <!--
-    <nav id="header">
-      <ul>
-        <li><a href="/"><img width="24" height="24" src="/gfx/icon-home.png" alt="Articles"/></a></li>
-        <li><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>"><img width="24" height="24" src="/gfx/icon-email.png" alt="Email"/></a></li>
-        <li><a href="{{ site.github }}"><img width="24" height="24" src="/gfx/icon-github.png" alt="GitHub"/></a></li>
-        <li><a href="{{ site.twitter }}"><img width="24" height="24" src="/gfx/icon-twitter.png" alt="Twitter" /></a></li>
-        <li><a href="{{ site.linkedin }}"><img width="24" height="24" src="/gfx/icon-linkedin.png" alt="LinkedIn"/></a></li>
-        <li><a href="{{ site.facebook }}"><img width="24" height="24" src="/gfx/icon-facebook.png" alt="Facebook"/></a></li>
-        <li><a href="{{ site.googleplus }}"><img width="24" height="24" src="/gfx/icon-google+.png" alt="Google+"/></a></li>
-        <li><a href="{{ site.stackoverflow }}"><img width="24" height="24" src="/gfx/icon-stackoverflow.png" alt="Stack Overflow"/></a></li>
-        <li><a href="/rss.xml"><img src="/gfx/icon-rss.png" width="24" height="24" alt="RSS feed" /></a></li>
-      </ul>
-    </nav>
-    -->
-
     <div class="container">
       <div class="row">
         <div class="col-md-8">
@@ -97,23 +81,23 @@
         </div>
 
         <div class="col-md-4">
-          {% if site.related_posts.size > 1 %}
           <div class="panel panel-default">
-            <div class="panel-heading">Related posts</div>
+            <div class="panel-heading">Links</div>
             <div class="panel-body">
               <table>
-                {% for p in site.related_posts %}
-                  {% if p.url != page.url %}
-                  <tr>
-                    <td><a href="{{ p.url }}">{{ p.title }}</a></td>
-                  </tr>
-                  {% endif %}
-                {% endfor %}
+                <tr><td><a href="/">About me</a></td></tr>
+                <tr><td><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>">Email</a></td></tr>
+                <tr><td><a href="{{ site.github }}">GitHub</a></td></tr>
+                <tr><td><a href="{{ site.twitter }}">Twitter</a></td></tr>
+                <tr><td><a href="{{ site.linkedin }}">LinkedIn</a></td></tr>
+                <tr><td><a href="{{ site.stackoverflow }}">Stack Overflow</a></td></tr>
+                <tr><td><a href="/rss.xml">RSS feed</a></td></tr>
               </table>
             </div>
           </div>
-          {% endif %}
+        </div>
 
+        <div class="col-md-4">
           <div class="panel panel-default">
             {% for tag in page.tags %}
               {% if site.tags[tag].size > 1 %}
@@ -151,6 +135,24 @@
               {% endif %}
             {% endfor %}
           </div>
+
+          {% if site.related_posts.size > 1 %}
+          <div class="panel panel-default">
+            <div class="panel-heading">Related posts</div>
+            <div class="panel-body">
+              <table>
+                {% for p in site.related_posts %}
+                  {% if p.url != page.url %}
+                  <tr>
+                    <td><a href="{{ p.url }}">{{ p.title }}</a></td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+          {% endif %}
+
         </div>
       </div>
 
