@@ -164,11 +164,9 @@ sys     0m0.004s
 
 The longest palindromes appear in the lines:
 
-<p class="quote">
-GLOUCESTER<br/>
-<br/>
-So w<span class="pink">ill it madam till I</span> lie with you.
-</p>
+> GLOUCESTER
+>
+> So w<mark>ill it madam till I</mark> lie with you.
 
 from the play [Richard III][rich3]. The preparsing of the collected works
 above includes the character's name. Without it, the output is a bit
@@ -193,28 +191,26 @@ illitmadamtilli
 The second last character-by-character palindrome comes from the tragedy
 [Troilus and Cressida][cressida]:
 
-<p class="quote">
-PANDARUS<br/>
-<br/>
-Hark! they are coming from the field: shall we
-stand up here, and see them as they pass toward
-Ilium? good niece, do, sweet niece Cressida.<br/>
-<br/>
-CRESSIDA<br/>
-<br/>
-At your pleasu<span class="pink">re</span>.<br/>
-<br/>
-PANDARUS<br/>
-<br/>
-<span class="pink">Here, here, her</span>e's an excellent place; here we may
-see most bravely: I'll tell you them all by their
-names as they pass by; but mark Troilus above the rest.
-</p>
+> PANDARUS
+>
+> Hark! they are coming from the field: shall we
+> stand up here, and see them as they pass toward
+> Ilium? good niece, do, sweet niece Cressida.
+>
+> CRESSIDA
+>
+> At your pleasu<mark>re</mark>.
+>
+> PANDARUS
+>
+> <mark>Here, here, her</mark>e's an excellent place; here we may
+> see most bravely: I'll tell you them all by their
+> names as they pass by; but mark Troilus above the rest.
 
 You can see it ignores a punctuation mark, which I think is fine.
 
 There are probably other, much better algorithms for finding palindromes. If
-you're interested in <i>generating</i> palindromes, you should check out
+you're interested in <em>generating</em> palindromes, you should check out
 [Peter Norvig's supposed world record palindrome][norvig].
 
 [gist]: https://gist.github.com/cslarsen/851611
