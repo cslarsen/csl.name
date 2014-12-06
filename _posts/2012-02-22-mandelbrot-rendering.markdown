@@ -3,7 +3,7 @@ layout: post
 title:  "Rendering the Mandelbrot Set"
 subtitle: "with an example implementation in javascript"
 date:   2012-02-22
-updated: 2014-12-06
+updated: 2014-12-06 13:52:00 +01:00
 categories: Programming JavaScript
 disqus: true
 tags: JavaScript Mandelbrot Math
