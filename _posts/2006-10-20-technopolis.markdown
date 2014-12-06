@@ -10,7 +10,7 @@ tags: graphics 3d
 ---
 
 This is a video I made for the 2001 _Technopolis_ electronic music festival
-in the student's society in Trondheim ([Studentersamfundet][samfundet]).
+in the student's society in Trondheim &mdash; [&laquo;Studentersamfundet&raquo;][samfundet].
 
 Since I had worked there as a graphic designer, they asked if I could make
 them a video loop that would show the evening's programme.  They would put
@@ -33,13 +33,13 @@ The version that you can see below is not the final one that was actually
 used at the festival. The final one was a bit longer and had some clips from
 the original [Tron movie][tron].
 
-<iframe
-  width="676"
-  height="380"
-  src="//www.youtube-nocookie.com/embed/6XCsUHr6jj4?rel=0"
-  frameborder="0"
-  allowfullscreen>
-</iframe>
+  <iframe
+    width="676"
+    height="380"
+    src="//www.youtube-nocookie.com/embed/6XCsUHr6jj4?rel=0"
+    frameborder="0"
+    allowfullscreen>
+  </iframe>
 
 The text scans in the beginning of the video was scanned from an issue of [Ray Gun
 Magazine][raygun].  This was the time when the magazine had amazing
@@ -55,3 +55,4 @@ You can also download the [entire file][avi] in higher resolution.
 [raygun]: https://en.wikipedia.org/wiki/Ray_Gun_(magazine)
 [ashworth]: http://www.chris-ashworth.com/ray-gun-publish/ray-gun-magazine-covers/
 [avi]: http://music.sublevel3.org/video/files/technopolis_2001_final.avi
+[samfundet]: http://www.samfundet.no
