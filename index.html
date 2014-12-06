@@ -2,22 +2,40 @@
 layout: default
 title: Christian Stigen Larsen
 disqus: false
+nolinks: true
 ---
 
-<div id="about">
-  <h1 class="darkblue big lighter">Christian Stigen Larsen</h1>
-  I'm a software developer from Norway, interested in all things
-  programming.
+    <div class="post-header">
+      <div class="page-header">
+        <h1>Christian Stigen Larsen</h1>
+        <p class="lead">
+          I'm a software developer from Norway, interested in all things
+          programming.
+        </p>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<article id="home">
-  <h1 class="darkblue lighter">Posts</h1>
-  <table class="posts">
-    {% for post in site.posts %}
-    <tr>
-      <td class="valign-top" style="width:6em; text-align:right;">{{ post.date | date_to_string }}</td>
-      <td class="valign-top" style="padding-left:1em; width:22em; text-align:left;"><a href="{{ post.url }}">{{ post.title }}</a></td>
-    </tr>
-    {% endfor %}
-  </table>
-</article>
+<div class="row">
+  <div class="col-md-8">
+    <div class="post-body">
+      <h1>Posts</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in site.posts %}
+          <tr>
+            <td class="text-left">{{ post.date | date_to_string }}</td>
+            <td><a href="{{ post.url }}">{{ post.title }}</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>

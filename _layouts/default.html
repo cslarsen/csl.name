@@ -42,7 +42,7 @@
       margin-bottom: 6em;
     }
 
-    .post-body {
+    .margin-top {
       margin-top: 2em;
     }
     </style>
@@ -80,13 +80,14 @@
           {% endif %}
         </div>
 
+        {% if page.nolinks == null %}
         <div class="col-md-4">
           <div class="panel panel-default">
             <div class="panel-heading">Links</div>
             <div class="panel-body">
               <table>
-                <tr><td><a href="/">About me</a></td></tr>
-                <tr><td><a href="mailto:Christian%20Stigen%20Larsen%20<{{ site.email }}>">Email</a></td></tr>
+                <tr><td><a href="/">Start page</a></td></tr>
+                <tr><td><a href="mailto:{{ site.email }}">Email</a></td></tr>
                 <tr><td><a href="{{ site.github }}">GitHub</a></td></tr>
                 <tr><td><a href="{{ site.twitter }}">Twitter</a></td></tr>
                 <tr><td><a href="{{ site.linkedin }}">LinkedIn</a></td></tr>
@@ -96,8 +97,10 @@
             </div>
           </div>
         </div>
+        {% endif %}
 
         <div class="col-md-4">
+          {% if page.tags %}
           <div class="panel panel-default">
             {% for tag in page.tags %}
               {% if site.tags[tag].size > 1 %}
@@ -116,7 +119,9 @@
               {% endif %}
             {% endfor %}
           </div>
+          {% endif %}
 
+          {% if page.categories %}
           <div class="panel panel-default">
             {% for category in page.categories %}
               {% if site.categories[category].size > 1 %}
@@ -135,6 +140,7 @@
               {% endif %}
             {% endfor %}
           </div>
+          {% endif %}
 
           {% if site.related_posts.size > 1 %}
           <div class="panel panel-default">
