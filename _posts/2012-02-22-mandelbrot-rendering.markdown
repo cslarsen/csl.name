@@ -20,6 +20,8 @@ and the code is available on
 Here I will explain how you can implement one yourself.
 </p>
 
+!["The Mandelbrot Set"](/gfx/post/mandelbrot.png)
+
 Theory
 ------
 
