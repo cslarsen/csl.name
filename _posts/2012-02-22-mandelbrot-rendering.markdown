@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Rendering the Mandelbrot Set"
-subtitle: "in your browser using JavaScript"
+subtitle: "with an example implementation in javascript"
 date:   2012-02-22
 updated: 2014-k
 categories: Programming JavaScript
@@ -21,6 +21,7 @@ Here I will explain how you can implement one yourself.
 </p>
 
 <img class="img-rounded img-responsive"
+     style="width:640px; height:388px;"
      src="/gfx/post/mandelbrot.png"
      alt="The Mandelbrot Set" />
 
@@ -32,44 +33,103 @@ a set of points in the complex plane.  In essence, what we want to find out
 is if the iterative function C below will _converge_ to some constant or _diverge_
 to infinity.
 
-The function is
+The definition is simply
 
-  `C_{n+1} = C_{n}^2 + C_{0}`
+>  z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c
 
 with the initial condition simply formed by taking the coordinates in the
 complex plane,
 
-  `C_{0} = x + iy`
+>  z<sub>0</sub> = c = x + iy
 
-Looking at the function, one can easily see that for big initial values, the
-function should diverge.  But for values close to origo (i.e., for |x| and
-|y| less than 1), we would expect the function to converge to zero, since
-the product of two numbers less than one will always be less than either of
-the factors (e.g., 0.5 x 0.4 = 0.2, which is less than both factors).
+Pretend for a moment that you've never seen the Mandelbrot plot before.
+By only looking at the definition above, can you guess how it would look like when
+rendered? First we need to look at a few expansions of z expressed with 
+<span>x</span> and <span>y</span>.
 
-But if we actually plot it, what we get out isn't any nice plot.  Instead,
-we get an amazingly complex and fractured plot.  This is the Mandelbrot set.
+> z<sub>0</sub> = x + iy
 
-You can zoom forever into the plot, and it will present you with an unending
-complex shape.  One can also calculate it's
-so-called [Hausdorff dimension](http://en.wikipedia.org/wiki/Hausdorff_dimension),
-which yields a noninteger number.  Thus, it's a fractal.
+> z<sub>1</sub> = (x + iy)<sup>2</sup> + (x + iy) =
+>  (x<sup>2</sup> - y<sup>2</sup> + x) + i(2xy + y)
+
+> z<sub>2</sub> = z<sub>1</sub><sup>2</sup> + (x + iy) = ...
+
+So, as <span>n &rarr; &infin;</span>, for which values of <span>x</span> and
+<span>y</span> will <span>z<sub>n</sub></span> converge, and for which will it
+diverge?
+
+Well, for large values of <span>|x|</span> and small for <span>|y|</span>
+(points close to origo), the sequence might diverge, because
+<span>x<sup>2</sup></span> would be dominating over <span>y<sup>2</sup></span>.
+Diverged points are painted black, so we can guess that the plot will be black
+in all directions some distance from origo.
+
+<div class="bs-callout bs-callout-warning">
+<h4>Divergence and convergence for complex numbers</h4>
+<p>
+The mathematical description here is very imprecise.
+</p>
+
+<p>
+Starting with <span>x</span> and <span>y</span>, for each iteration you'll get
+a new expression <span>a + ib</span>, i.e. a new point at <span>(a,b)</span>.
+As you iterate, you jump to new points in the complex plane.  For
+convergent sequences, we will jump closer and closer to an attractor point
+&mdash; usually curving towards it instead of a straight line.
+</p>
+
+<p>
+For the Mandelbrot set, it means that if
+any point lands outside a circle with radius two around origo, the sequence
+will diverge.
+</p>
+
+<p>
+<a href="https://en.wikipedia.org/wiki/Complex_quadratic_polynomial#Critical_orbit">Read more on Wikipedia</a>.
+</p>
+</div>
+
+But for points close to origo &mdash; say, <span>|x|</span> and
+<span>|y|</span> less than 1 &mdash; we would expect it to converge, because
+the product of two numbers less than one will always be smaller than each of
+its parts, giving small values for <span>x<sup>2</sup> - y<sup>2</sup></span>.  So in a
+circle around origo with a radius of one, we'd expect to see colored pixels.
+
+But what if the signs of x and y differ? Then things quickly get more
+complicated.  In fact, if we plot using a computer, we won't get a
+nice colored disc centered at origo.  What we get is an infinitely complex and
+fractured plot.
+
+We can even zoom endlessly into the plot and it will <em>still</em> be as
+non-uniform and complex as before.  While a disc would have a dimension of two,
+a fractal has a so-called so-called [Hausdorff dimension](http://en.wikipedia.org/wiki/Hausdorff_dimension)
+which is something in between a line and a plane.  We'd get a non-integer
+dimension; a <em>fractal</em>.
 
 Calculating the Mandelbrot Set
 ------------------------------
 
-Calculating the Mandelbrot set is easy if you do it numerically.
+Calculating the Mandelbrot set numerically is easy.
 
-Take any point `C_0 = (x, y)` and then calculate `C_1 = (x+iy)^2 + (x+iy)`
-and continue doing this.  For practical purposes, let's predetermine a
-_threshold_ value.  If the magnitude of `C` (defined for complex numbers
-as being the distance to origo, or `sqrt(x^2+y^2)`) ever becomes larger than
-this threshold value we will assume that it will diverge into infinity.  
-If so, stop the calculation and plot a _black dot_ at the current location.
+Given the equations above, take any point <span>z<sub>0</sub> = (x, y)</span>
+and then calculate <span>z<sub>1</sub> = (x+iy)<sup>2</sup> + (x+iy)</span> and
+continue doing this.  For practical purposes, let's decide on a _threshold_
+value.  If the magnitude of <span>z</span> &mdash; the distance to origo, or
+<span>&sqrt;(x^2+y^2)</span>&mdash; ever becomes larger than this threshold
+value we will assume that it will diverge into infinity.  If so, stop the
+calculation and plot a _black dot_ at the current location.
 
-If `C` has not exceeded the threshold value after a predetermined number of
-iterations, we will assume that the current parameters makes the function
-converge.  In this case, plot a non-black dot at the current location.
+<div class="bs-callout bs-callout-info">
+For the Mandelbrot set, it can be shown that the threshold value is exactly two, i.e.
+any sequence with a <span>|z<sub>n</sub>| > 2</span> will diverge.
+
+<a href="http://www.mi.sanu.ac.rs/vismath/javier/b2.htm">Read more about this</a>.
+</div>
+
+If <span>|z|</span> has not exceeded the threshold value after a predecided
+number of iterations (which we choose at will), we will assume that the current
+parameters makes the function converge.  In this case, plot a non-black dot at
+the current location.
 
 Colorizing the plot
 -------------------
@@ -90,7 +150,7 @@ If you use the number of iterations to pick a color, you'll get ugly color
 bands in the plot.  There is a really cool trick to get smooth, gradual
 color changes.
 
-So, you basically calculate `Z = Z^2` until it diverges and make a note of
+So, you <em>basically</em> calculate `Z = Z^2` until it diverges and make a note of
 the iteration count.  What we really want, though, is a _fractional_
 iteration count, so we can multiply that with a color value to get smooth
 colors.
@@ -177,16 +237,18 @@ Taking advantage of symmetry
 ----------------------------
 
 You've probably noticed that the plot is reflected vertically over the line
-`y=0`.  One can take advantage of this.
+<span>y = 0</span>.  You can take advantage of this mirroring to halve the
+computation time. I don't, because you'll mostly render plots that are
+massively zoomed in.
 
 Splitting up the main equation
 ------------------------------
 
 The main equation is
 
-    C_{n+1} = C_{n}^2 + C_{0}
+> <span>z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c
 
-Setting `Cr = Re(C)` and `Ci = Im(C)`, we get
+Setting `C = z` and `Cr = Re(z)` and `Ci = Im(z)`, we get
 
     C_{n+1} = Cr^2 + 2Cr*Ci*i - Ci*Ci + C_{0}
     C_{n+1} = (Cr^2 - Ci^2) + i(2Cr*Ci) + C_{0}
