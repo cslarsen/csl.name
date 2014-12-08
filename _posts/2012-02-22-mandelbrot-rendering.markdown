@@ -162,7 +162,7 @@ values 1, 2, 4, 8 etc.  If you take the logarithm one more time, you'll get
 
     log(log |Z|) / log 2
 
-This is all explained over at http://linas.org/art-gallery/escape/smooth.html
+This is all explained over at [linas.org](http://linas.org/art-gallery/escape/smooth.html).
 
 In my code, I originally used the following smoothing equation:
 
