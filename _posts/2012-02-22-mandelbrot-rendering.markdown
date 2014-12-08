@@ -21,7 +21,7 @@ Here I will explain how you can implement one yourself.
 </p>
 
 <img class="img-rounded img-responsive"
-     src="/gfx/post/mandelbrot.jpg"
+     src="/gfx/post/mandelbrot-2.bpg"
      alt="The Mandelbrot Set" />
 
 Theory
@@ -405,3 +405,7 @@ Future Work
 -----------
 
 Use asm.js, real threads and SIMD computations.
+
+
+<script type="text/javascript" src="/js/bpgdec.js">
+</script>
