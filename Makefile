@@ -5,10 +5,8 @@ default: build
 doctor:
 	$(jekyll) doctor
 
-_site:
+build:
 	$(jekyll) build --lsi --trace
-
-build: _site
 
 serve:
 	$(jekyll) serve --lsi --watch
