@@ -12,7 +12,7 @@ Here's a very quick guide on how you can write and build a Qt application on
 the command line.
 
 I'm using OS X, but it should be quite similar on other UNIX systems. Use
-[homebrew][homebrew] to install qt:
+[Homebrew][homebrew] to install qt:
 
     $ brew install qt
 
