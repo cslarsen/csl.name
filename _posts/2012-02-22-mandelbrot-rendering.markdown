@@ -21,8 +21,7 @@ Here I will explain how you can implement one yourself.
 </p>
 
 <img class="img-rounded img-responsive"
-     style="width:640px; height:388px;"
-     src="/gfx/post/mandelbrot.png"
+     src="/gfx/post/mandelbrot.jpg"
      alt="The Mandelbrot Set" />
 
 Theory
