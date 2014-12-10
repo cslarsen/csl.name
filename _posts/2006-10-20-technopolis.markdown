@@ -2,8 +2,8 @@
 layout: post
 title:  "Technopolis 2001 video"
 subtitle: "at Studentersamfundet in Trondheim"
-date: 2006-10-20 19:42:24 +00:00
-updated: 2013-12-18 22:37 +01:00
+date:    2006-10-20 19:42:24 +00:00
+updated: 2013-12-18 22:37:00 +01:00
 categories: Graphics
 disqus: true
 tags: graphics 3d

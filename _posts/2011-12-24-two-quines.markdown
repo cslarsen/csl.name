@@ -2,7 +2,7 @@
 layout: post
 title:  "Two quines in C"
 subtitle: ""
-date:   2011-12-24 11:35:05 +00:00
+date:    2011-12-24 11:35:05 +00:00
 updated: 2013-12-01 23:41:00 +01:00
 categories: C
 disqus: true

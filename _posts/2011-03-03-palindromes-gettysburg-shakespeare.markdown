@@ -2,7 +2,8 @@
 layout: post
 title:  "Palindromes in The Gettysburg Address and Shakespeare&apos;s collected works"
 subtitle: "A programming puzzle"
-date:   2011-03-03 09:10:27 -08:00
+date:      2011-03-03 09:10:27 -08:00
+updated:   2011-03-03 09:10:27 -08:00
 categories: C
 tags: C palindrome puzzle
 ---

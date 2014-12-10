@@ -2,7 +2,7 @@
 layout: post
 title:  "A UDP based Python syslog client"
 subtitle: "for Windows and UNIX"
-date:   2008-11-14 10:53:22 +01:00
+date:    2008-11-14 10:53:22 +01:00
 updated: 2013-12-03 17:52:00 +01:00
 categories: Python
 disqus: true

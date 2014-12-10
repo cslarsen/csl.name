@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "Einstein's problem and a solution by elimination"
-date:   2008-01-01 00:00:00 +00:00
+date:      2008-01-01 00:00:00 +00:00
+updated:   2008-01-01 00:00:00 +00:00
 categories: Puzzles
 disqus: true
 tags: puzzle logic

@@ -17,7 +17,11 @@ layout: default
       <div class="byline">
         <b><a href="/" style="color:black;">By Christian Stigen Larsen</a></b>
         <br/>
-        {{ page.date | date_to_string }}{% if page.updated %}, Updated {{ page.updated | date_to_string }} {% endif %}
+        {% if page.date < page.updated %}
+          {{ page.date | date_to_string }}, Updated {{ page.updated | date_to_string }}
+        {% else %}
+          {{ page.date | date_to_string }}
+        {% endif %}
       </div>
     </div>
 

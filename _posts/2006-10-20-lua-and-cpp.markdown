@@ -2,7 +2,7 @@
 layout: post
 title:  "Using Lua with C++"
 subtitle: "A short tutorial"
-date:   2006-10-20 21:42:24 +02:00
+date:     2006-10-20 21:42:24 +02:00
 updated:  2013-12-01 01:26:00 +01:00
 categories: Lua
 tags: Lua C++
