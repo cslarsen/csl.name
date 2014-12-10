@@ -1,17 +1,16 @@
 ---
 ---
 # Cache for one week
-<FilesMatch "\.(jpg|jpeg|png|gif|swf|pdf|zip|py|cpp|ico|bpg)$">
+<FilesMatch "\.(jpg|jpeg|png|gif|gz|swf|pdf|zip|py|cpp|ico|bpg)$">
 ExpiresActive On
-ExpiresDefault "access plus 1 week"
-Header set Cache-Control "max-age=604800"
+ExpiresDefault "access plus 1 day"
+Header append Cache-Control "public"
 </FilesMatch>
 
-# Cache for 30 minutes
-<FilesMatch "index.html.gz|\.(html|txt|css|js|gz|html.gz|css.gz)$">
+<FilesMatch "\.(html|gz|txt|css|js|gz|html.gz|css.gz)$">
 ExpiresActive On
-ExpiresDefault "access plus 1 week"
-Header set Cache-Control "max-age=604800"
+ExpiresDefault "access plus 1 day"
+Header append Cache-Control "public"
 </FilesMatch>
 
 # Serve all HTML files as UTF-8 (this speeds up processing; cf. Google
