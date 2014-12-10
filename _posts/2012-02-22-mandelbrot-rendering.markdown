@@ -9,20 +9,15 @@ disqus: true
 tags: JavaScript Mandelbrot Math
 ---
 
-<p class="lead">
-In 2012 I made a
-<a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set
-renderer</a>. The result can be seen on
-<a href="http://mandelbrot-set.com">mandelbrot-set.com</a>
-and the code is available on 
-<a href="https://github.com/cslarsen/mandelbrot-js">my GitHub page</a>.
-
-Here I will explain how you can implement one yourself.
-</p>
-
 <img class="img-rounded img-responsive"
-     src="/gfx/post/mandelbrot-2.bpg"
+     src="/gfx/post/mandelbrot-2.jpg"
      alt="The Mandelbrot Set" />
+
+<p class="lead">
+In 2012, I made a <a href="http://mandelbrot-set.com">Mandelbrot renderer i
+JavaScript</a>. Here I will explain how you can do it yourself, including how
+to implement smooth coloring and making it fast.
+</p>
 
 Theory
 ------
@@ -388,8 +383,8 @@ plotting into several threads (preferrably one per logical core).
 Using vectorized procedures
 ---------------------------
 
-The algorithm is very well suited for vector operations.  Most modern
-computers come with hardware optimizations for such operations (SSE, etc).
+The algorithm is very well suited for vector operations.  Most modern computers
+come with hardware optimizations for such operations (SSE or the GPU, etc.)
 However, we are again limited to what the javascript engines will do for us.
 
 Even more optimizations
@@ -400,12 +395,3 @@ Take a look at the optimizations done to the Mandelbrot set in
 
 There are a lot of cool tricks going on there.  Most of _those_ use SSE
 parallelism for hardware speedup or offloads to the GPU.
-
-Future Work
------------
-
-Use asm.js, real threads and SIMD computations.
-
-
-<script type="text/javascript" src="/js/bpgdec.js">
-</script>
