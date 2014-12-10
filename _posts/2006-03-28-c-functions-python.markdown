@@ -2,7 +2,7 @@
 layout: post
 title:  "Calling C functions from Python"
 subtitle: ""
-date:   2006-03-28
+date:   2006-03-28 00:00:00 +00:00
 categories: Python
 disqus: true
 tags: Python C UNIX

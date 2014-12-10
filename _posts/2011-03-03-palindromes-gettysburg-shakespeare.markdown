@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Palindromes in The Gettysburg Address and Shakespeare&apos;s collected works"
-formatted_title:  "<span class='lighter'>Palindromes in <span class='bolder'>The Gettysburg Address</span> and <span class='bolder'>Shakespeare&apos;s</span> collected works</span>"
 subtitle: "A programming puzzle"
 date:   2011-03-03 09:10:27 -08:00
 categories: C
