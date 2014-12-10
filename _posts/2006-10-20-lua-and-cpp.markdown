@@ -5,7 +5,7 @@ subtitle: "A short tutorial"
 date:   2006-10-20 21:42:24 +02:00
 last-updated:  2013-12-01 01:26:00 +01:00
 categories: Lua
-tags: [Lua, C++, C, scripting]
+tags: Lua C++
 description: "Tutorial on creating Lua host programs in C++"
 keywords: "Lua C++ Tutorial script programming language C"
 disqus: true

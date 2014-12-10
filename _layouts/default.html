@@ -114,7 +114,16 @@
         {% endif %}
 
         <div class="col-md-4">
+          {% assign showTags = false %}
           {% if page.tags %}
+            {% for tag in page.tags %}
+              {% if site.tags[tag].size > 1 %}
+                {% assign showTags = true %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if showTags %}
           <div class="panel panel-default">
             {% for tag in page.tags %}
               {% if site.tags[tag].size > 1 %}
@@ -135,7 +144,16 @@
           </div>
           {% endif %}
 
+          {% assign showCategories = false %}
           {% if page.categories %}
+            {% for category in page.categories %}
+              {% if site.categories[category].size > 1 %}
+                {% assign showCategories = true %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if showCategories %}
           <div class="panel panel-default">
             {% for category in page.categories %}
               {% if site.categories[category].size > 1 %}
@@ -156,7 +174,16 @@
           </div>
           {% endif %}
 
+          {% assign showRelated = false %}
           {% if site.related_posts.size > 1 %}
+            {% for p in site.related_posts %}
+              {% if p.url != page.url %}
+                {% assign showRelated = true %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if showRelated %}
           <div class="panel panel-default">
             <div class="panel-heading">Related posts</div>
             <div class="panel-body">

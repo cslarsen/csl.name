@@ -3,7 +3,7 @@ layout: post
 title:  "Compiling Qt using g++ on the command line"
 subtitle: ""
 date:   2012-11-25
-categories: Cpp
+categories: C++
 disqus: true
 tags: Qt C++ gcc UNIX
 ---
