@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Compiling Qt using g++ on the command line"
+title:  "Compiling Qt on the command line"
 subtitle: ""
 date:   2012-11-25
 categories: C++
@@ -9,7 +9,7 @@ tags: Qt C++ gcc UNIX
 ---
 
 Here's a very quick guide on how you can write and build a Qt application on
-the command line.
+the UNIX command line.
 
 I'm using OS X, but it should be quite similar on other UNIX systems. Use
 [Homebrew][homebrew] to install qt:
