@@ -111,7 +111,7 @@ Given the equations above, take any point <span>z<sub>0</sub> = (x, y)</span>
 and then calculate <span>z<sub>1</sub> = (x+iy)<sup>2</sup> + (x+iy)</span> and
 continue doing this.  For practical purposes, let's decide on a _threshold_
 value.  If the magnitude of <span>z</span> &mdash; the distance to origo, or
-<span>&sqrt;(x^2+y^2)</span>&mdash; ever becomes larger than this threshold
+<span>&radi;(x^2+y^2)</span>&mdash; ever becomes larger than this threshold
 value we will assume that it will diverge into infinity.  If so, stop the
 calculation and plot a _black dot_ at the current location.
 
@@ -242,7 +242,7 @@ Splitting up the main equation
 
 The main equation is
 
-> <span>z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c
+> <span>z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c</span>
 
 Setting `C = z` and `Cr = Re(z)` and `Ci = Im(z)`, we get
 
