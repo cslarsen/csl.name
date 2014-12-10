@@ -21,8 +21,8 @@ nolinks: true
 <div class="row">
   <div class="col-md-8">
     <div class="post-body">
-      <h1>Posts</h1>
-      <table class="table">
+      <h2>All posts by date</h2>
+      <table class="table table-condensed">
         <thead>
           <tr>
             <th>Date</th>
@@ -32,7 +32,7 @@ nolinks: true
         <tbody>
           {% for post in site.posts %}
           <tr>
-            <td class="text-left">{{ post.date | date_to_string }}</td>
+            <td class="text-right" style="white-space: nowrap;">{{ post.date | date_to_string }}</td>
             <td><a href="{{ post.url }}">{{ post.title }}</a></td>
           </tr>
           {% endfor %}
