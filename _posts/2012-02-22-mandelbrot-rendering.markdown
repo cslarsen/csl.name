@@ -9,14 +9,16 @@ disqus: true
 tags: JavaScript Mandelbrot Math
 ---
 
-<img class="img-rounded img-responsive"
-     src="/gfx/post/mandelbrot-2.jpg"
-     alt="The Mandelbrot Set" />
-
 <p class="lead">
 In 2012, I made a <a href="http://mandelbrot-set.com">Mandelbrot renderer i
 JavaScript</a>. Here I will explain how you can do it yourself, including how
 to implement smooth coloring and making it fast.
+</p>
+
+<p>
+  <img class="img-rounded img-responsive"
+       src="/gfx/post/mandelbrot-2.jpg"
+       alt="The Mandelbrot Set" />
 </p>
 
 Theory
