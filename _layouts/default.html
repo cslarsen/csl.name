@@ -212,25 +212,25 @@
               </table>
             </div>
           {% endif %}
-
+          </div>
         </div>
-      </div>
+      </div><!-- row -->
 
+      {% if page.disqus != false %}
       <div class="row">
         <div class="col-md-8">
-          {% if page.disqus != false %}
           <div id="disqus_thread">
             <script type="text/javascript"
               src="http://disqus.com/forums/{{ site.disqus_user }}/embed.js">
             </script>
             <noscript><p><a href="http://{{ site.disqus_user }}.disqus.com/?url=ref">View the discussion thread.</a></p></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
           </div>
-          {% endif %}
         </div>
       </div>
+      {% endif %}
 
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <footer>
             <p>
             {{ site.copyright }}
