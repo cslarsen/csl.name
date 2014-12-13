@@ -4,21 +4,24 @@ title: Christian Stigen Larsen
 disqus: false
 ---
 
-    <div class="post-header">
-      <div class="page-header">
-        <h1>Christian Stigen Larsen</h1>
-        <p class="lead">
-          This is my personal site for posting stuff about programming.
-        </p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="post-body margin-top">
+        <div class="post-header">
+          <div class="page-header">
+            <h1>Christian Stigen Larsen</h1>
+            <p class="lead">
+              This is my personal site for posting stuff about programming.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="post-body">
+  <div class="row">
+    <div class="col-md-8">
       <h2>Posts</h2>
       <table class="table table-condensed">
         <thead>
@@ -38,3 +41,50 @@ disqus: false
         </tbody>
       </table>
     </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">About me</div>
+        <div class="panel-body">
+          <p>
+          I'm a software developer with well over a decade of work
+          experience. Currently I'm writing reservoir analysis software at
+          <a href="http://www.roxar.com">Roxar</a>.
+          </p>
+          While I've worked professionally in a dozen languages, I prefer
+          C++, Python and Scheme.
+          In fact, I'm acknowledged in the <a
+             href="http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf">Scheme
+             R<sup>7</sup>RS standard</a> for contributing bug reports.
+           I did this while writing <a
+             href="https://github.com/cslarsen/mickey-scheme">my own interpreter</a>.
+        </div>
+        <div class="panel-heading">Me on the net</div>
+        <div class="panel-body">
+           <table>
+            <tr><td><a href="/">Front page</a></td></tr>
+            <tr><td><a href="{{ site.github }}">GitHub</a></td></tr>
+            <tr><td><a href="{{ site.twitter }}">Twitter</a></td></tr>
+            <tr><td><a href="{{ site.linkedin }}">LinkedIn</a></td></tr>
+            <tr><td><a href="{{ site.stackoverflow }}">Stack Overflow</a></td></tr>
+            <tr><td><a href="/rss.xml">RSS feed for this site</a></td></tr>
+            <tr><td><a href="mailto:{{ site.email }}">Email me at {{ site.email }}</a></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <footer>
+        <p>
+        {{ site.copyright }}
+        </p>
+        <p>
+        Site generated using <a href="http://jekyllrb.com">Jekyll</a>.
+        Style by <a href="http://getbootstrap.com">Bootstrap</a>.
+        </p>
+      </footer>
+    </div>
+  </div>
+</div>
