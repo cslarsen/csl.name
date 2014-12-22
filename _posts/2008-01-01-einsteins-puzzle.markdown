@@ -8,17 +8,10 @@ disqus: true
 tags: puzzle logic
 ---
 
-It is said that the following problem was invented by Einstein. Supposedly,
-he also said that only 98% of the people in the world could solve it.
-
-I have my doubts about both those statements. In any way, it is a fun
-puzzle, and I welcome you all to solve it.
-
-This puzzle is also called the [Zebra Puzzle][zebra] (beware, there are
-solutions on that page). Be sure to try to solve it yourself before looking
-at any solutions!
-
-
+The [Zebra Puzzle][zebra] is a famous puzzle that has been said to have been
+invented by Einstein. It is not. Neither is it true that only 2% of people can
+solve it. But it <em>is</em> a very fun puzzle and I invite everyone to try to
+solve it on their own.  Below I sketch out how I did it.
 
 The Puzzle
 ----------
