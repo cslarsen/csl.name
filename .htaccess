@@ -52,3 +52,6 @@ redirect 301 /lua/index.html {% post_url 2006-10-20-lua-and-cpp %}
 Redirect 301 /py-syslog-win32 {% post_url 2008-11-14-python-syslog-client %}
 Redirect 301 /py-syslog-win32/ {% post_url 2008-11-14-python-syslog-client %}
 Redirect 301 /py-syslog-win32/index.html {% post_url 2008-11-14-python-syslog-client %}
+
+# Non-existant pages
+ErrorDocument 404 /404/index.html.gz
