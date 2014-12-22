@@ -9,10 +9,10 @@ disqus: true
 tags: Qt C++ gcc UNIX
 ---
 
-Most Qt tutorial sseem to assume you want to code everything in Qt Creator.
-Here's how you can do it on the command line.
+Most Qt tutorial seem to assume you want to code everything in Qt Creator.
+Here's how it's done purely on the command line.
 
-Create a directory `foo` and then put the following into `foo.cpp`:
+Create a directory `foo` and then put the code below into `foo.cpp`.
 
 {% highlight C++ %}
 #include <qapplication.h>
@@ -30,10 +30,10 @@ int main(int argc, char** argv)
 }
 {% endhighlight %}
 
-Using `qmake`, first set up a new Qt project, then create a GNU makefile.
+Using `qmake`, set up a new Qt project and create a GNU makefile.
 
-    $ qmake -project # creates foo.pro
-    $ qmake -makefile # creates Makefile
+    $ qmake -project
+    $ qmake -makefile
     $ ls
     Makefile foo.cpp foo.pro
 
@@ -41,7 +41,7 @@ Now you can simple `make` the app.  It depends on the system what the final
 binary will be called.  For instance, on OS X, it will be `foo.app/`, an app
 bundle.
 
-Building and running the app,
+Building and running it,
 
     $ make
     $ open foo.app
