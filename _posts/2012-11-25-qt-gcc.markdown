@@ -9,20 +9,10 @@ disqus: true
 tags: Qt C++ gcc UNIX
 ---
 
-Here's a very quick guide on how you can write and build a Qt application on
-the UNIX command line.
+Most Qt tutorial sseem to assume you want to code everything in Qt Creator.
+Here's how you can do it on the command line.
 
-I'm using OS X, but it should be quite similar on other UNIX systems. Use
-[Homebrew][homebrew] to install qt:
-
-    $ brew install qt
-
-We'll create an app called `foo`.
-
-    $ mkdir foo
-    $ cd foo
-
-Put the following into `foo.cpp`.
+Create a directory `foo` and then put the following into `foo.cpp`:
 
 {% highlight C++ %}
 #include <qapplication.h>
@@ -40,32 +30,22 @@ int main(int argc, char** argv)
 }
 {% endhighlight %}
 
-Set up a new Qt project using `qmake`.
+Using `qmake`, first set up a new Qt project, then create a GNU makefile.
 
-    $ qmake -project
+    $ qmake -project # creates foo.pro
+    $ qmake -makefile # creates Makefile
     $ ls
-    foo.cpp foo.pro
+    Makefile foo.cpp foo.pro
 
-Create a GNU makefile.
+Now you can simple `make` the app.  It depends on the system what the final
+binary will be called.  For instance, on OS X, it will be `foo.app/`, an app
+bundle.
 
-    $ qmake -makefile
-    $ ls
-    Makefile  foo.cpp   foo.pro
-
-Now we can simply make the `foo` app. Note that on OS X, it creates
-`foo.app/`. This is what we want anyway, a native app. On Linux it would
-probably create a `foo` executable.
+Building and running the app,
 
     $ make
-
-It made `foo.app/` for us, or an OS X app bundle. Let's run it.
-
     $ open foo.app
 
-The result looks like this.
+the result should look similar to the image below.
 
 !["Hello, world" in Qt](/gfx/post/qt-gcc.png)
-
-Now go create something awesome.
-
-[homebrew]: http://mxcl.github.com/homebrew/
