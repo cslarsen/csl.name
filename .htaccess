@@ -47,11 +47,10 @@ Redirect 301 /sitemap /sitemap.xml
 
 # Redirects from the old site
 redirect 301 /lua {% post_url 2006-10-20-lua-and-cpp %}
-redirect 301 /lua/ {% post_url 2006-10-20-lua-and-cpp %}
 redirect 301 /lua/index.html {% post_url 2006-10-20-lua-and-cpp %}
 Redirect 301 /py-syslog-win32 {% post_url 2008-11-14-python-syslog-client %}
-Redirect 301 /py-syslog-win32/ {% post_url 2008-11-14-python-syslog-client %}
 Redirect 301 /py-syslog-win32/index.html {% post_url 2008-11-14-python-syslog-client %}
+Redirect 301 /C-functions-from-Python/ {% post_url 2006-03-28-c-functions-python %}
 
 # Non-existant pages
 ErrorDocument 404 /404/index.html.gz
