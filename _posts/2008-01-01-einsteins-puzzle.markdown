@@ -11,7 +11,9 @@ tags: puzzle logic
 The [Zebra Puzzle][zebra] is a famous puzzle that has been said to have been
 invented by Einstein. It is not. Neither is it true that only 2% of people can
 solve it. But it <em>is</em> a very fun puzzle and I invite everyone to try to
-solve it on their own.  Below I sketch out how I did it.
+solve it on their own.
+
+Below I sketch out how I did it.
 
 The Puzzle
 ----------
