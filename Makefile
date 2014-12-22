@@ -25,7 +25,7 @@ compress: build
 		| parallel --no-notice -0 gzip -9
 
 dist: doctor build minify compress
-	rsync -avz --delete _site/. -e ssh foobar:/home/public
+	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
 clean:
 	rm -rf _site/
