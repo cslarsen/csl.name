@@ -46,10 +46,9 @@ Redirect 301 /rss /rss.xml
 Redirect 301 /sitemap /sitemap.xml
 
 # Redirects from the old site
-redirect 301 /lua {% post_url 2006-10-20-lua-and-cpp %}
+Redirect 301 /lua {% post_url 2006-10-20-lua-and-cpp %}
 Redirect 301 /py-syslog-win32 {% post_url 2008-11-14-python-syslog-client %}
 Redirect 301 /C-functions-from-Python {% post_url 2006-03-28-c-functions-python %}
-Redirect 301 /two-quines {% post_url 2011-12-24-two-quines %}
 
 # Non-existant pages
 ErrorDocument 404 /404/index.html.gz
