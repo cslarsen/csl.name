@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Compiling Qt on the command line"
+title:  "Building Qt apps on the command line"
 subtitle: ""
 date:      2012-11-25 00:00:00 +00:00
 updated:   2012-11-25 00:00:00 +00:00
@@ -9,8 +9,8 @@ disqus: true
 tags: Qt C++ gcc UNIX
 ---
 
-Most Qt tutorial seem to assume you want to code everything in Qt Creator.
-Here's how it's done purely on the command line.
+Most Qt tutorials seem to assume you want to use Qt Creator.
+Here's how you can build Qt apps on the command line.
 
 Create a directory `foo` and then put the code below into `foo.cpp`.
 
