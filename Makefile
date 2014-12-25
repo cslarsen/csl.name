@@ -9,7 +9,7 @@ build:
 	$(jekyll) build --lsi --trace
 
 serve:
-	$(jekyll) serve --lsi --watch
+	$(jekyll) serve --drafts --lsi --watch
 
 minify: build
 	yuicompressor _site/css/bootstrap.css -o _site/css/bootstrap.css
