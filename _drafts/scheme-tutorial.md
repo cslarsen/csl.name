@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "R7RS Scheme Tutorial"
+title:  "The Quick R<sup>7</sup>RS Scheme Tutorial"
 date:    2014-12-30 19:26:00 +01:00
 updated: 2014-12-30 19:26:00 +01:00
 categories: Scheme
@@ -21,8 +21,9 @@ Many people find it to be elegant because its core is farily small. The [latest
 specification][spec] runs only 80 pages and is very accessible. Use it as a
 reference when learning Scheme.  In addition to being small, the entire
 language itself is very close to pure lambda calculus: It is possible to base
-the entire language on [less than ten primitives][cowan-talk].  Because of
-this, the language is very cohesive and fits logically together.
+the entire language on [*four* primitives][cowan-video]
+([slides][cowan-slides]).  Because of this, the language is very cohesive and
+fits logically together.
 
 I want to be honest up front and mention some downsides as well. The language
 is quite fragmented across implementations due to several reasons. First of
@@ -33,7 +34,7 @@ defined one in 2007. Even worse, many people disagreed with its design, so the
 new R<sup>7</sup>RS spec has its own system.  This means that code is not by
 default portable between implementations.  In practice, this means that people
 usually stick to one or two implementation silos. Andy Wingo gives some 
-[good suggestions on how to pick one][wingo-implementations].
+[good suggestions on how to pick one][wingo-impls].
 
 Let's get started!
 ------------------
@@ -50,7 +51,7 @@ come from C.
 Save the following in `hello-world.scm`.
 
 {% highlight scheme %}
-{% include "scheme-tutorial/hello-world.scm" %}
+{% include scheme-tutorial/hello-world.scm %}
 {% endhighlight %}
 
 This can be run by typing
@@ -93,21 +94,21 @@ Let's put `cube` into a library. In Chibi Scheme, we need to put the library in 
 separate file that ends with `.sld`,
 
 {% highlight scheme %}
-{% include "scheme-tutorial/numbers.sld" %}
-(% endhighlight %}
+{% include scheme-tutorial/numbers.sld %}
+{% endhighlight %}
 
 I also want to introduce a few handy `print` functions to use instead of
 `display`:
 
 {% highlight scheme %}
-{% include "scheme-tutorial/print.sld" %}
-(% endhighlight %}
+{% include scheme-tutorial/print.sld %}
+{% endhighlight %}
 
 Then create a program `cube.scm` containing
 
 {% highlight scheme %}
-{% include "scheme-tutorial/cube.scm" %}
-(% endhighlight %}
+{% include scheme-tutorial/cube.scm %}
+{% endhighlight %}
 
 Unless you place the sld-files in the same directory as the cube script, you
 need to specify their location with `-Ipath`.  Let's run the example:
@@ -115,3 +116,10 @@ need to specify their location with `-Ipath`.  Let's run the example:
     $ chibi-scheme -Iinclude cube.scm
     12^3 = 1728
 
+
+
+[spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
+[cowan-video]: http://vimeo.com/29391029
+[cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
+[wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
+[chibi-scheme]: https://code.google.com/p/chibi-scheme/
