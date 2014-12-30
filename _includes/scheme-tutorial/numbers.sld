@@ -1,6 +1,6 @@
 (define-library (numbers)
-  (export square)
   (import (scheme base))
+  (export cube)
   (begin
-   (define (square n)
-    (* n n))))
+    (define (cube n)
+      (* n n n))))

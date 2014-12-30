@@ -49,7 +49,9 @@ come from C.
 
 Save the following in `hello-world.scm`.
 
-{% include "includes/scheme-tutorial/hello-world.scm" %}
+{% highlight scheme %}
+{% include "scheme-tutorial/hello-world.scm" %}
+{% endhighlight %}
 
 This can be run by typing
 
@@ -69,43 +71,47 @@ Variables
 
 You can define variables by using `define` and change existing ones using
 `set!`.  Almost anything in Scheme is a first class citizen, so you use
-`define` to bind functions to variables.  Here's a `square` function:
+`define` to bind functions to variables.  Here's a `cube` function:
 
-    (define square
+    (define cube
       (lambda (n)
-        (* n n)))
+        (* n n n)))
 
 What's going on here is that we create a function that takes one parameter `n`.
 By default, the *last* expression is used as a return value, and here that will
-be `(* n n)`.  We bind this function to the variable `square`.  To square a
-number, you just call `(square 12)`.
+be `(* n n)`.  We bind this function to the variable `cube`.  To cube a number,
+you just call `(cube 12)`.
 
 Since function definitions are so common, we can leave out the `lambda` by
-using the shorthand form `(define (square n) ...)`.  But sometimes, e.g. if you
+using the shorthand form `(define (cube n) ...)`.  But sometimes, e.g. if you
 want to return functions, it may be better to use a plain `lambda`.
 
-Let's put `square` into a library. In Chibi Scheme, we need to put the library in a
-separate file that ends with `.sld`.  Put this in `numbers.sld`:
+Libraries
+---------
 
-    (define-library numbers
-      (export square)
-      (import (scheme base))
-      (begin
-        (define (square n)
-          (* n n))))
+Let's put `cube` into a library. In Chibi Scheme, we need to put the library in a
+separate file that ends with `.sld`,
 
-Then create a program `square.scm`:
+{% highlight scheme %}
+{% include "scheme-tutorial/numbers.sld" %}
+(% endhighlight %}
 
-    (import (scheme base)
-            (scheme write)
-            (numbers))
+I also want to introduce a few handy `print` functions to use instead of
+`display`:
 
-    (display (square 12))
-    (newline)
+{% highlight scheme %}
+{% include "scheme-tutorial/print.sld" %}
+(% endhighlight %}
 
-To run everything, you need to specify an include path:
+Then create a program `cube.scm` containing
 
-    $ chibi-scheme -I. square.scm
-    144
+{% highlight scheme %}
+{% include "scheme-tutorial/cube.scm" %}
+(% endhighlight %}
 
+Unless you place the sld-files in the same directory as the cube script, you
+need to specify their location with `-Ipath`.  Let's run the example:
+
+    $ chibi-scheme -Iinclude cube.scm
+    12^3 = 1728
 
