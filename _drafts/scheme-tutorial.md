@@ -116,6 +116,14 @@ need to specify their location with `-Ipath`.  Let's run the example:
     $ chibi-scheme -Iinclude cube.scm
     12^3 = 1728
 
+TODO:
+
+- vis cube eksempel først, deretter println eksempel som også forklarer
+variadic funcs og apply
+ - Variadic functions
+ - Symbolic computation
+ - write to file, read from file
+ -zxc32  
 
 
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
