@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "A Small R⁷RS Scheme Tutorial"
+title:  "A Short R⁷RS Scheme Tutorial"
 date:    2015-01-01 11:58:04 +01:00
 updated: 2015-01-01 11:58:04 +01:00
 categories: Scheme
@@ -9,8 +9,10 @@ tags: Scheme
 ---
 
 <p class="lead">
-Here I will give you a quick introduction to Scheme. We'll be using the latest
-R<sup>7</sup>RS standard.
+This is a <em>work-in-progress</em> introduction to the Scheme programming
+language. Specifically, it's aimed at the latest version, R<sup>7</sup>RS.
+This little tutorial will be updated in the time ahead, so be sure to post
+comments so I know what needs to be done!
 </p>
 
 About Scheme
@@ -50,9 +52,9 @@ come from C.
 
 Save the following in `hello-world.scm`.
 
-{% highlight scheme %}
+<pre>
 {% include scheme-tutorial/hello-world.scm %}
-{% endhighlight %}
+</pre>
 
 This can be run by typing
 
@@ -101,9 +103,9 @@ to print a number and a string, we'd have to do
 Let's create a small family of variadic `print` functions that all print to the
 default output port. We'll bundle them up in a library.
 
-{% highlight scheme %}
+<pre>
 {% include scheme-tutorial/print.sld %}
-{% endhighlight %}
+</pre>
 
 To use them, you need to `(import (print))` in your code.  The implementations
 differ a bit in how they handle libraries.  E.g., Chibi Scheme requires that
@@ -111,8 +113,11 @@ differ a bit in how they handle libraries.  E.g., Chibi Scheme requires that
 name. Also, with Chibi Scheme you can specify library search paths using the
 `-I` option.
 
-The AST
--------
+Proper Tail Recursion
+---------------------
+
+The Scheme specification requires that implementations are *properly tail
+recursive*.  To explain this, let's make a short detour.
 
 One thing that all programming languages have is an [abstract syntax tree][ast]
 (AST). In Lisp dialects, this is very explicit. You're essentially coding very
@@ -131,10 +136,12 @@ For instance, consider the following factorial function written in Java.
 
 The AST for this function could be something like
 
-<img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
-     class="img-responsive center-block"
-     style="width: 66%; padding: 15pt;"
-     alt="Java factorial AST" />
+<p>
+  <img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
+       class="img-responsive center-block"
+       style="max-height: 384px;"
+       alt="Java factorial AST" />
+</p>
 
 Now, the way to evaluate this AST is to start at the top node, then descend to
 each child, left-to-right.  If we do that, we can write out the scheme code
@@ -162,10 +169,12 @@ Looking at the AST again, we'll remove the nodes `*` and its child `n` and move
 `fact` up so that it's a child of the `if` tree.  We'll then add an accumulator
 that computes the result for us, or `(* n acc)`.
 
-<img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
-     class="img-responsive center-block"
-     style="width: 66%; padding: 25pt;"
-     alt="Tail-recursive factorial" />
+<p>
+  <img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
+       class="wrapper img-responsive center-block"
+       style="max-height: 324px;"
+       alt="Tail-recursive factorial" />
+</p>
 
 Since we'll now take two parameters, we'll call the function `fact-helper`.
 Also, instead of doing `(equal? n 0)` we'll just use `(zero? n)`.
@@ -189,9 +198,50 @@ fact, a good implementation will reuse the stack frame used to call
 `fact-helper` so that each call is simply a jump instruction; as fast as an
 iterative version.
 
+Macros
+------
+
+Macros is a way to rewrite code and control evaluation.  It's very important to
+remember that macros are *always* and *only* expanded at *compilation time*.
+
+<div class="bs-callout bs-callout-warning">
+Scheme macros are *hygienic*.  It means that you'll when using identifiers
+local to your macro, they will never collide with identifiers at run-time.
+This is a good thing, but one downside is that you can't write <a
+href="https://en.wikipedia.org/wiki/Anaphoric_macro">anaphoric macros</a>.
+However, while R<sup>7</sup>RS only specifies hygienic macros using `syntax-rules`, most
+implementations also provide for a `defmacro`-like system.
+</div>
+
+Let's create a new branching macro.  It will be called `when`, and we want to
+be able to say `(when true-or-false do-something)`.
+
+Why can't this be a function? Because we don't want to evaluate arguments in
+the case that the predicate is false.  For instance, if `when` was a function,
+then
+
+    (when #false (format-harddrive))
+
+would call `(format-harddrive)`.  I'll just show you how you can do this using
+`syntax-rules` right now, and in a later update I'll explain what's going on.
+
+    (define-syntax when
+      (syntax-rules ()
+        ((when test code ...)
+         (if test (begin code ...)))))
+
+Continuations
+-------------
+
+The Scheme standard only has *undelimited* continuations via `call/cc`, but
+many implementations offer delimited continuations as well.
+
+This section will be covered later. Check back for updates!
+
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
 [cowan-video]: http://vimeo.com/29391029
 [cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
 [wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
 [chibi-scheme]: https://code.google.com/p/chibi-scheme/
 [ast]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+[anaphoric]: https://en.wikipedia.org/wiki/Anaphoric_macro
