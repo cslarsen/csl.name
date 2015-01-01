@@ -133,7 +133,7 @@ The AST for this function could be something like
 
 <img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
      class="img-responsive center-block"
-     style="width: 100% \9;"
+     style="width: 66%; padding: 15pt;"
      alt="Java factorial AST" />
 
 Now, the way to evaluate this AST is to start at the top node, then descend to
@@ -164,8 +164,8 @@ that computes the result for us, or `(* n acc)`.
 
 <img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
      class="img-responsive center-block"
-     style="width: 100% \9;"
-     alt="Java factorial AST" />
+     style="width: 66%; padding: 25pt;"
+     alt="Tail-recursive factorial" />
 
 Since we'll now take two parameters, we'll call the function `fact-helper`.
 Also, instead of doing `(equal? n 0)` we'll just use `(zero? n)`.
