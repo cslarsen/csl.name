@@ -136,6 +136,59 @@ The AST for this function could be something like
      style="width: 100% \9;"
      alt="Java factorial AST" />
 
+Now, the way to evaluate this AST is to start at the top node, then descend to
+each child, left-to-right.  If we do that, we can write out the scheme code
+directly.  The only difference is that we'll use `equal?` instead of `==`.
+
+    (if (equal? n 0) 1
+      (* n (fact (- n 1))))
+
+If you take a good look at this s-expression, you'll see that it is an *exact*
+representation of the AST.
+
+The reason I'm showing you this is because I want to talk about the tail call
+elimination that all compliant Scheme implementations have.  It lets you write
+recursive functions that will never blow up the stack: Every active tail call
+is associated with a constant amount of stack space.  But this is *only*
+possible when the *last thing* a function does is to *perform a function call*.
+
+Traverse the AST depth first from left to right. What's the last thing the
+function does before returning, assuming n is nonzero? Well, it has to multiply
+`n` and the result of `(fact (- n 1))`.  It also means that this function may
+blow up the stack for big numbers. But if we arrange so that the last thing it
+does is to call itself, Scheme will use tail call optimization.
+
+Looking at the AST again, we'll remove the nodes `*` and its child `n` and move
+`fact` up so that it's a child of the `if` tree.  We'll then add an accumulator
+that computes the result for us, or `(* n acc)`.
+
+<img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
+     class="img-responsive center-block"
+     style="width: 100% \9;"
+     alt="Java factorial AST" />
+
+Since we'll now take two parameters, we'll call the function `fact-helper`.
+Also, instead of doing `(equal? n 0)` we'll just use `(zero? n)`.
+
+    (define (fact-helper n acc)
+      (if (zero? n) acc
+        (fact-helper (- n 1)
+                     (* n acc))))
+
+For the final polish, we'll create a front-end function `fact`.
+
+    (define (fact n)
+      (define (fact-helper n acc)
+        (if (zero? n) acc
+          (fact-helper (- n 1)
+                       (* n acc))))
+      (fact-helper n 1))
+
+Now, the function is tail recursive and thus will never blow up the stack. In
+fact, a good implementation will reuse the stack frame used to call
+`fact-helper` so that each call is simply a jump instruction; as fast as an
+iterative version.
+
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
 [cowan-video]: http://vimeo.com/29391029
 [cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
