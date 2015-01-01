@@ -111,6 +111,31 @@ differ a bit in how they handle libraries.  E.g., Chibi Scheme requires that
 name. Also, with Chibi Scheme you can specify library search paths using the
 `-I` option.
 
+The AST
+-------
+
+One thing that all programming languages have is an [abstract syntax tree][ast]
+(AST). In Lisp dialects, this is very explicit. You're essentially coding very
+close to the AST. This has several benefits, but I'll only mention one. It
+becomes very clear how code is evaluated.
+
+For instance, consider the following factorial function written in Java.
+
+    public static int fact(int n)
+    {
+      if ( n == 0 )
+        return 1;
+      else
+        return n*fact(n-1);
+    }
+
+The AST for this function could be something like
+
+<p>
+  <img src="/gfx/post/scheme-tutorial/ast-java-fact.svg" 
+       class="img-responsive"
+       alt="Java factorial AST" />
+</p>
 
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
 [cowan-video]: http://vimeo.com/29391029
