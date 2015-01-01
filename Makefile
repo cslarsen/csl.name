@@ -18,10 +18,13 @@ compress: build
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.css/\\.css\\.gz/gi'
 	find _site -name '*.html' -print0 \
+		| parallel --no-notice -0 perl -pi -e 's/\\.svg/\\.svg\\.gz/gi'
+	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.js/\\.js\\.gz/gi'
 	find _site \( -name '*.html' -or \
 		            -name '*.css' -or \
-								-name '*.js' \) -print0 \
+								-name '*.js' -or \
+								-name '*.svg' \) -print0 \
 		| parallel --no-notice -0 gzip -9
 
 dist: doctor build minify compress
