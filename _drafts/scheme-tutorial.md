@@ -131,11 +131,10 @@ For instance, consider the following factorial function written in Java.
 
 The AST for this function could be something like
 
-<p>
-  <img src="/gfx/post/scheme-tutorial/ast-java-fact.svg" 
-       class="img-responsive"
-       alt="Java factorial AST" />
-</p>
+<img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
+     class="img-responsive center-block"
+     style="width: 100% \9;"
+     alt="Java factorial AST" />
 
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
 [cowan-video]: http://vimeo.com/29391029
