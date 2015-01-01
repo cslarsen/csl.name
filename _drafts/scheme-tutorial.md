@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "The Quick R<sup>7</sup>RS Scheme Tutorial"
-date:    2014-12-30 19:26:00 +01:00
-updated: 2014-12-30 19:26:00 +01:00
+title:  "A Small R⁷RS Scheme Tutorial"
+date:    2015-01-01 11:58:04 +01:00
+updated: 2015-01-01 11:58:04 +01:00
 categories: Scheme
 disqus: true
 tags: Scheme
@@ -30,7 +30,7 @@ is quite fragmented across implementations due to several reasons. First of
 all, the specifications leave some details unspecified so as to keep it small
 and leave enough wiggle room for implementations to decide how to do things.
 Most importantly, there wasn't an official library system until R<sup>6</sup>RS
-defined one in 2007. Even worse, many people disagreed with its design, so the
+in 2007. Even worse, many people disagreed with its design, so the
 new R<sup>7</sup>RS spec has its own system.  This means that code is not by
 default portable between implementations.  In practice, this means that people
 usually stick to one or two implementation silos. Andy Wingo gives some 
@@ -65,7 +65,7 @@ an expression like `2 * (3 + 4)` must be written as `(* 2 (+ 3 4))`.
 Personally I really love this way of writing programs, for several reasons:
 It's terse but readable, it's machine-readable, there aren't syntactical ambiquities, and so on.
 In particular, I like that *scope* is extremely visible because of the
-parenthesis.
+parenthesis, and you work very close to the [AST][ast].
 
 Variables
 ---------
@@ -90,40 +90,26 @@ want to return functions, it may be better to use a plain `lambda`.
 Libraries
 ---------
 
-Let's put `cube` into a library. In Chibi Scheme, we need to put the library in a
-separate file that ends with `.sld`,
+The function `display` takes one or two arguments: An object to print and an
+optional *port* --- an output destination like a file or a string buffer.
 
-{% highlight scheme %}
-{% include scheme-tutorial/numbers.sld %}
-{% endhighlight %}
+However, it only takes one argument, and is thus cumbersome to work with. E.g.,
+to print a number and a string, we'd have to do
 
-I also want to introduce a few handy `print` functions to use instead of
-`display`:
+    (display (string-append "12^3 = " (number->string (cube 12))))
+
+Let's create a small family of variadic `print` functions that all print to the
+default output port. We'll bundle them up in a library.
 
 {% highlight scheme %}
 {% include scheme-tutorial/print.sld %}
 {% endhighlight %}
 
-Then create a program `cube.scm` containing
-
-{% highlight scheme %}
-{% include scheme-tutorial/cube.scm %}
-{% endhighlight %}
-
-Unless you place the sld-files in the same directory as the cube script, you
-need to specify their location with `-Ipath`.  Let's run the example:
-
-    $ chibi-scheme -Iinclude cube.scm
-    12^3 = 1728
-
-TODO:
-
-- vis cube eksempel først, deretter println eksempel som også forklarer
-variadic funcs og apply
- - Variadic functions
- - Symbolic computation
- - write to file, read from file
- -zxc32  
+To use them, you need to `(import (print))` in your code.  The implementations
+differ a bit in how they handle libraries.  E.g., Chibi Scheme requires that
+`(define-library ...)` be in a separate file with the same name as the library
+name. Also, with Chibi Scheme you can specify library search paths using the
+`-I` option.
 
 
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
@@ -131,3 +117,4 @@ variadic funcs og apply
 [cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
 [wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
 [chibi-scheme]: https://code.google.com/p/chibi-scheme/
+[ast]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
