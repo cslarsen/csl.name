@@ -204,14 +204,14 @@ Macros
 Macros is a way to rewrite code and control evaluation.  It's very important to
 remember that macros are *always* and *only* expanded at *compilation time*.
 
-<div class="bs-callout bs-callout-warning">
+{% callout warning %}
 Scheme macros are *hygienic*.  It means that you'll when using identifiers
 local to your macro, they will never collide with identifiers at run-time.
 This is a good thing, but one downside is that you can't write <a
 href="https://en.wikipedia.org/wiki/Anaphoric_macro">anaphoric macros</a>.
 However, while R<sup>7</sup>RS only specifies hygienic macros using `syntax-rules`, most
 implementations also provide for a `defmacro`-like system.
-</div>
+{% endcallout %}
 
 Let's create a new branching macro.  It will be called `when`, and we want to
 be able to say `(when true-or-false do-something)`.
