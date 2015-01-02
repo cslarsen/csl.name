@@ -14,28 +14,19 @@ module Bootstrap
   # You can install the CSS from
   # http://cpratt.co/twitter-bootstrap-callout-css-styles/
   #
-  class CalloutBeginTag < Liquid::Tag
+  class Callout < Liquid::Block
     def initialize(tag_name, callout_type, tokens)
       super
       @type = "bs-callout-" + callout_type
     end
 
     def render(context)
-      "<div class='bs-callout #{@type}'>"
-    end
-  end
-
-  class CalloutEndTag < Liquid::Tag
-    def initialize(tag_name, wut, tokens)
-      super
-    end
-
-    def render(context)
-      "</div>"
+      content = super
+      html = "#{Kramdown::Document.new(content).to_html}"
+      "<div class='bs-callout #{@type}'>" + html + "</div>"
     end
   end
 
 end
 
-Liquid::Template.register_tag('callout', Bootstrap::CalloutBeginTag)
-Liquid::Template.register_tag('endcallout', Bootstrap::CalloutEndTag)
+Liquid::Template.register_tag('callout', Bootstrap::Callout)
