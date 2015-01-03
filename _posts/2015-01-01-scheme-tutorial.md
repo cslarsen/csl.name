@@ -31,18 +31,18 @@ I want to be honest up front and mention some downsides as well. The language
 is quite fragmented across implementations due to several reasons. First of
 all, the specifications leave some details unspecified so as to keep it small
 and leave enough wiggle room for implementations to decide how to do things.
-Most importantly, there wasn't an official library system until R<sup>6</sup>RS
-in 2007. Even worse, many people disagreed with its design, so the
-new R<sup>7</sup>RS spec has its own system.  This means that code is not by
-default portable between implementations.  In practice, this means that people
-usually stick to one or two implementation silos. Andy Wingo gives some 
-[good suggestions on how to pick one][wingo-impls].
+Most importantly, there wasn't an official library system until R⁶RS in 2007.
+Even worse, many people disagreed with its design, so the new R⁷RS spec has its
+own system.  This means that code is not by default portable between
+implementations.  In practice, this means that people usually stick to one or
+two implementation silos. Andy Wingo gives some [good suggestions on how to
+pick one][wingo-impls].
 
 Let's get started!
 ------------------
 
-In this tutorial I will use the so-called example R<sup>7</sup>RS
-implementation [Chibi Scheme][chibi-scheme].
+In this tutorial I will use the so-called example R⁷RS implementation [Chibi
+Scheme][chibi-scheme].
 
 When you invoke `chibi-scheme`, there are only two functions that are defined:
 `import` and `cond-expand`. So to write "Hello, world!" you need to import
@@ -204,12 +204,12 @@ Macros
 Macros is a way to rewrite code and control evaluation.  It's very important to
 remember that macros are *always* and *only* expanded at *compilation time*.
 
-{% callout warning %}
+{% callout info %}
 Scheme macros are *hygienic*.  It means that you'll when using identifiers
 local to your macro, they will never collide with identifiers at run-time.
 This is a good thing, but one downside is that you can't write <a
 href="https://en.wikipedia.org/wiki/Anaphoric_macro">anaphoric macros</a>.
-However, while R<sup>7</sup>RS only specifies hygienic macros using `syntax-rules`, most
+However, while R⁷RS only specifies hygienic macros using `syntax-rules`, most
 implementations also provide for a `defmacro`-like system.
 {% endcallout %}
 
