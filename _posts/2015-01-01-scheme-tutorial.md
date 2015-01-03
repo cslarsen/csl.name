@@ -351,6 +351,34 @@ continuations][matt.callcc].
 
 This section will be covered later. Check back for updates!
 
+Useful Datastructures
+---------------------
+
+You don't only work with lists in Scheme. To use hash tables, you can import
+the [SRFI-69][srfi-69] module.  SRFIs are requests for implementations to support
+various stuff.  Most implementations support many of them, but you never know
+which.  R7RS-large will incorporate some of them in the specification, though.
+
+I won't cover much of them here, but you generally want to be able to build
+hash tables. Here's how.
+
+    > (import (srfi 69))
+    > (define names (make-hash-table eq?))
+    > (hash-table-set! names 'jmc "John McCarthy")
+    > (hash-table-set! names 'gjs "Gerald Jay Sussman")
+    > (hash-table-ref names 'jmc)
+    "John McCarthy"
+
+As you can see, I'm using symbolic keys:
+
+    > (hash-table-keys names)
+    (jmc gjs)
+
+When you create a hash table using [SRFI-69][srfi-69], you need to tell how
+keys are compared. We're just using `eq?` here.  You need to read up on the
+[different equivalence predicates][eqv-preds] in the Scheme specification, as
+they have different trade-offs.
+
 Wrapping Up
 -----------
 
@@ -361,7 +389,10 @@ That's all for now! But check back later for more updates.
 [chibi-scheme]: https://code.google.com/p/chibi-scheme/
 [cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
 [cowan-video]: http://vimeo.com/29391029
+[eqv-preds]: https://en.wikipedia.org/wiki/Scheme_(programming_language)#Equivalence_predicates
 [ieee-754]: https://en.wikipedia.org/wiki/IEEE_floating_point
 [matt.callcc]: http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
+[srfi-1]: http://srfi.schemers.org/srfi-1/srfi-1.html
+[srfi-69]: http://srfi.schemers.org/srfi-69/srfi-69.html
 [wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
