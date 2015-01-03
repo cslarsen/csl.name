@@ -205,12 +205,14 @@ Macros is a way to rewrite code and control evaluation.  It's very important to
 remember that macros are *always* and *only* expanded at *compilation time*.
 
 {% callout info %}
+
 Scheme macros are *hygienic*.  It means that you'll when using identifiers
 local to your macro, they will never collide with identifiers at run-time.
 This is a good thing, but one downside is that you can't write <a
 href="https://en.wikipedia.org/wiki/Anaphoric_macro">anaphoric macros</a>.
 However, while R⁷RS only specifies hygienic macros using `syntax-rules`, most
 implementations also provide for a `defmacro`-like system.
+
 {% endcallout %}
 
 Let's create a new branching macro.  It will be called `when`, and we want to
@@ -236,6 +238,9 @@ Continuations
 The Scheme standard only has *undelimited* continuations via `call/cc`, but
 many implementations offer delimited continuations as well.
 
+Matt Might has a really [good introduction to Scheme's built-in
+continuations][matt.callcc].
+
 This section will be covered later. Check back for updates!
 
 [spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
@@ -245,3 +250,4 @@ This section will be covered later. Check back for updates!
 [chibi-scheme]: https://code.google.com/p/chibi-scheme/
 [ast]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 [anaphoric]: https://en.wikipedia.org/wiki/Anaphoric_macro
+[matt.callcc]: http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/
