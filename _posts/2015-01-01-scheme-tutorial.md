@@ -2,7 +2,7 @@
 layout: post
 title:  "A Short R⁷RS Scheme Tutorial"
 date:    2015-01-01 11:58:04 +01:00
-updated: 2015-01-01 11:58:04 +01:00
+updated: 2015-01-03 23:53:00 +01:00
 categories: Scheme
 disqus: true
 tags: Scheme
@@ -198,6 +198,114 @@ fact, a good implementation will reuse the stack frame used to call
 `fact-helper` so that each call is simply a jump instruction; as fast as an
 iterative version.
 
+Numbers and Exactness
+---------------------
+
+Numbers in Scheme have an *exactness* property that is orthogonal to any
+number. It basically means that you can tag a number as being exact, and
+operations between exact numbers will produce an exact result if possible.
+Inexactness is contagious; any operation involving them will generally be
+inexact.
+
+To mark a number as exact, just add the `#e` prefix.  To test if a number is
+exact, you can use `exact?`.
+
+    $ chibi-scheme
+    > (exact? 1)
+    #t
+    > (exact? (+ 1 2))
+    #t
+
+This is a bit more interesting for real numbers.  E.g., Python, which uses
+[IEEE-754][ieee-754] to represent floating point numbers, won't be able to
+represent exact floats out-of-the-box.
+
+    $ python
+    >>> 1.1*1.1
+    1.2100000000000002
+
+This is also true in Scheme,
+
+    > (exact? (* 1.1 1.1))
+    #f
+
+unless you mark them as exact,
+
+    > (exact? (* #e1.1 #e1.1))
+    #t
+
+However, irrational numbers cannot be represented exactly in numerical form.
+
+    > (import (scheme complex))
+    > (exact? 1+1i)
+    #t
+    > (exact? (magnitude 1+1i))
+    #f
+
+There are some built-in operations that work with exact numbers. For instance,
+`exact-integer-sqrt` will produce the integer square root and any remainder.
+
+    > (exact-integer-sqrt 4)
+    ((values) 2 0)
+    > (exact-integer-sqrt 8)
+    ((values) 2 4)
+
+In Chibi Scheme, integers are exact by default, but you can mark them as
+inexact. This is useful if you work with numbers that come from sources you
+know to be inexact.  You do that with the `#i` prefix.
+
+    > (exact? (* #e2 #i3))
+    #f
+
+You can work with binary and hexadecimal numbers as well.  Just add the `#b`
+and `#x` prefixes, respectively.
+
+    > #xff
+    255
+    > #b10101
+    21
+    > (exact? #i#xff)
+    #f
+
+You can also use `exact` and `inexact` to change the exactness of a number.
+
+Here's how you represent different numbers:
+
+<table class="table">
+  <thead>
+    <tr>
+      <td>Type</td>
+      <td>Syntax</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Integer</td>
+      <td><code>123</code>, <code>#e3e10</code>, <code>(exact 3e10)</code></td>
+    </tr>
+    <tr>
+      <td>Real</td>
+      <td><code>1.21</code>, <code>1.3e12</code></td>
+    </tr>
+    <tr>
+      <td>Rational</td>
+      <td><code>1/3</code></td>
+    </tr>
+    <tr>
+      <td>Complex</td>
+      <td><code>2+3i</code></td>
+    </tr>
+  </tbody>
+</table>
+
+This forms the so-called numeric tower in Scheme.  Note that the standard
+generally lets the implementations choose which numbers are supported.  A fully
+compliant implementation may only support a well defined subset of these, for
+instance.
+
+Also, exact complex numbers are not required by the R7RS-small specification.
+However, there was a vote on this for the R7RS-large specification.
+
 Macros
 ------
 
@@ -211,7 +319,7 @@ local to your macro, they will never collide with identifiers at run-time.
 This is a good thing, but one downside is that you can't write <a
 href="https://en.wikipedia.org/wiki/Anaphoric_macro">anaphoric macros</a>.
 However, while R⁷RS only specifies hygienic macros using `syntax-rules`, most
-implementations also provide for a `defmacro`-like system.
+implementations also provide a `defmacro` or other macro systems.
 
 {% endcallout %}
 
@@ -243,11 +351,17 @@ continuations][matt.callcc].
 
 This section will be covered later. Check back for updates!
 
-[spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
-[cowan-video]: http://vimeo.com/29391029
-[cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
-[wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
-[chibi-scheme]: https://code.google.com/p/chibi-scheme/
-[ast]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+Wrapping Up
+-----------
+
+That's all for now! But check back later for more updates.
+
 [anaphoric]: https://en.wikipedia.org/wiki/Anaphoric_macro
+[ast]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+[chibi-scheme]: https://code.google.com/p/chibi-scheme/
+[cowan-slides]: http://ccil.org/~cowan/scheme-2011-09.pdf
+[cowan-video]: http://vimeo.com/29391029
+[ieee-754]: https://en.wikipedia.org/wiki/IEEE_floating_point
 [matt.callcc]: http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/
+[spec]: http://trac.sacrideo.us/wg/raw-attachment/wiki/WikiStart/r7rs.pdf
+[wingo-impls]: http://wingolog.org/archives/2013/01/07/an-opinionated-guide-to-scheme-implementations
