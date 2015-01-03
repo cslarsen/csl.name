@@ -27,6 +27,19 @@ module Bootstrap
     end
   end
 
-end
+  class Lead < Liquid::Block
+    def initialize(name, whatever, tokens)
+      super
+    end
+
+    def render(context)
+      content = super
+      html = "#{Kramdown::Document.new(content).to_html}"
+       "<div class='lead'>" + html + "</div>"
+      end
+  end
+
+end # module Bootstrap
 
 Liquid::Template.register_tag('callout', Bootstrap::Callout)
+Liquid::Template.register_tag('lead', Bootstrap::Lead)

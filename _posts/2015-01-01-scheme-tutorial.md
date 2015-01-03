@@ -8,12 +8,12 @@ disqus: true
 tags: Scheme
 ---
 
-<p class="lead">
-This is a <em>work-in-progress</em> introduction to the Scheme programming
-language. Specifically, it's aimed at the latest version, R<sup>7</sup>RS.
+{% lead %}
+This is a *work-in-progress* introduction to the Scheme programming
+language. Specifically, it's aimed at the latest version, R⁷RS.
 This little tutorial will be updated in the time ahead, so be sure to post
 comments so I know what needs to be done!
-</p>
+{% endlead %}
 
 About Scheme
 ------------
