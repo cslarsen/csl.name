@@ -351,8 +351,8 @@ continuations][matt.callcc].
 
 This section will be covered later. Check back for updates!
 
-Useful Datastructures
----------------------
+Some Useful Data Structures
+---------------------------
 
 You don't only work with lists in Scheme. To use hash tables, you can import
 the [SRFI-69][srfi-69] module.  SRFIs are requests for implementations to support
