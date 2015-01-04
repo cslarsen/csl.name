@@ -14,7 +14,7 @@ Here's a small tutorial on how to call your C functions from Python.
 
 Let's make some simple functions in C. We'll call the file `myModule.c`.
 
-{% highlight Python %}
+{% highlight C %}
 #include <Python.h>
 
 /*
