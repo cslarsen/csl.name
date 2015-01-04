@@ -10,7 +10,9 @@ tags: Python C UNIX
 description: How to call C code from Python
 ---
 
+{% lead %}
 Here's a small tutorial on how to call your C functions from Python.
+{% endlead %}
 
 Let's make some simple functions in C. We'll call the file `myModule.c`.
 
@@ -54,7 +56,8 @@ void initmyModule()
 }
 {% endhighlight %}
 
-Compiling dynamic libraries on Mac OS X is different from the usual gcc -shared you might be used to:
+Compiling dynamic libraries on Mac OS X is different from the usual gcc -shared
+you might be used to:
 
     gcc -dynamiclib -I/usr/include/python2.3/ -lpython2.3 -o myModule.dylib myModule.c
 
@@ -86,5 +89,8 @@ The output is:
     Result from myFunction(): Hello from C!
     Result from myOtherFunction(4.0, 5.0): 20.0
 
-If you are going to make bigger libraries available from Python I suggest you
-check out SWIG, Boost Python or Cython.
+If you are going to make bigger libraries available from Python I *strongly*
+suggest you check out [SWIG][swig] or [Boost Python][boost.python].
+
+[boost.python]: http://www.boost.org/doc/libs/1_57_0/libs/python/doc/index.html
+[swig]: http://www.swig.org
