@@ -9,11 +9,11 @@ disqus: true
 tags: JavaScript Mandelbrot Math
 ---
 
-<p class="lead">
-In 2012, I made a <a href="http://mandelbrot-set.com">Mandelbrot renderer i
+{% lead %}
+In 2012, I made a <a href="http://mandelbrot-set.com">Mandelbrot renderer in
 JavaScript</a>. Here I will explain how you can do it yourself, including how
 to implement smooth coloring and making it fast.
-</p>
+{% endlead %}
 
 <p>
   <img class="img-rounded img-responsive"
@@ -60,30 +60,21 @@ Well, for large values of <span>|x|</span> and small for <span>|y|</span>
 Diverged points are painted black, so we can guess that the plot will be black
 in all directions some distance from origo.
 
-<div class="bs-callout bs-callout-warning">
-<h4>Divergence and convergence for complex numbers</h4>
-<p>
+{% callout warning: Complex limits %}
 The mathematical description here is very imprecise.
-</p>
 
-<p>
 Starting with <span>x</span> and <span>y</span>, for each iteration you'll get
 a new expression <span>a + ib</span>, i.e. a new point at <span>(a,b)</span>.
 As you iterate, you jump to new points in the complex plane.  For
 convergent sequences, we will jump closer and closer to an attractor point
 &mdash; usually curving towards it instead of a straight line.
-</p>
 
-<p>
 For the Mandelbrot set, it means that if
 any point lands outside a circle with radius two around origo, the sequence
 will diverge.
-</p>
 
-<p>
 <a href="https://en.wikipedia.org/wiki/Complex_quadratic_polynomial#Critical_orbit">Read more on Wikipedia</a>.
-</p>
-</div>
+{% endcallout %}
 
 But for points close to origo &mdash; say, <span>|x|</span> and
 <span>|y|</span> less than 1 &mdash; we would expect it to converge, because
@@ -100,7 +91,7 @@ We can even zoom endlessly into the plot and it will <em>still</em> be as
 non-uniform and complex as before.  While a disc would have a dimension of two,
 a fractal has a so-called so-called [Hausdorff dimension](http://en.wikipedia.org/wiki/Hausdorff_dimension)
 which is something in between a line and a plane.  We'd get a non-integer
-dimension; a <em>fractal</em>.
+dimension; a *fractal*.
 
 Calculating the Mandelbrot Set
 ------------------------------
