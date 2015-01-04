@@ -106,12 +106,11 @@ value.  If the magnitude of <span>z</span> &mdash; the distance to origo, or
 value we will assume that it will diverge into infinity.  If so, stop the
 calculation and plot a _black dot_ at the current location.
 
-<div class="bs-callout bs-callout-info">
+{% callout info %}
 For the Mandelbrot set, it can be shown that the threshold value is exactly two, i.e.
 any sequence with a <span>|z<sub>n</sub>| > 2</span> will diverge.
-
 <a href="http://www.mi.sanu.ac.rs/vismath/javier/b2.htm">Read more about this</a>.
-</div>
+{% endcallout %}
 
 If <span>|z|</span> has not exceeded the threshold value after a predecided
 number of iterations (which we choose at will), we will assume that the current
