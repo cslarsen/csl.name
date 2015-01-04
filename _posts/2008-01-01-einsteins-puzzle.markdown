@@ -8,12 +8,14 @@ disqus: true
 tags: puzzle logic
 ---
 
-The [Zebra Puzzle][zebra] is a famous puzzle that has been said to have been
-invented by Einstein. It is not. Neither is it true that only 2% of people can
-solve it. But it <em>is</em> a very fun puzzle and I invite everyone to try to
-solve it on their own.
+<p class="lead">
+The <a href="https://en.wikipedia.org/wiki/Zebra_Puzzle">Zebra Puzzle</a> is a
+famous puzzle that has been said to have been invented by Einstein. It is not.
+Neither is it true that only 2% of people can solve it. But it *is* a very fun
+puzzle and I invite everyone to try to solve it on their own.
 
 Below I sketch out how I did it.
+</p>
 
 The Puzzle
 ----------
@@ -45,7 +47,7 @@ The following facts are given:
 14. The Norwegian lives next to the blue house.
 15. The man who smokes blend has a neighour who drinks water.
 
-The question you need to answer is: **Who keeps fish** ?
+The question you need to answer is: **Who keeps fish?**
 
 Try to work on this problem yourself before looking at the solution! It is
 really not that hard once you find a good approach.
@@ -70,7 +72,7 @@ I found it much easier to just insert all possibilities up front. We will
 then eliminate possible values in each cell as we read the facts. This can
 easily be done with pen and paper.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>bgrwy</td>
@@ -115,7 +117,7 @@ easily be done with pen and paper.
 
 First up we simply eliminate possibilities by using facts 8, 9 and 10.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>grwy</td>
@@ -161,7 +163,7 @@ First up we simply eliminate possibilities by using facts 8, 9 and 10.
 The Brit lives in a red house (fact 1), so remove colour option r from all
 houses which doesnt have **b**rit as a possible nationality.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>gwy</td>
@@ -213,7 +215,7 @@ conclude that the second and last houses are green and white, respectively.
 
 We can now insert **b** for Brit in the red house.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>y</td>
@@ -270,7 +272,7 @@ option.
 The Swede keeps dogs, so remove s for Swede from the blue house, which has
 horses.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>y</td>
@@ -325,7 +327,7 @@ gives us tea for this house, and this leaves beer for the last house.
 
 Fact 10 means the Norwegian keeps cats.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>y</td>
@@ -371,7 +373,7 @@ Fact 10 means the Norwegian keeps cats.
 Now everything falls into place.  We will now skip all the intermediate
 steps and just show you the final table.
 
-<table class="solution_step">
+<table class="table">
 	<tr>
 		<td>Colour</td>
 		<td>y</td>
