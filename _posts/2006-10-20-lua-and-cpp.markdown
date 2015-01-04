@@ -11,8 +11,10 @@ keywords: "Lua C++ Tutorial script programming language C"
 disqus: true
 ---
 
+{% lead %}
 Using Lua is easy! In this short tutorial we'll show how to write a fully
 working host program in C++ with Lua callbacks.
+{% endlead %}
 
 Since the static Lua libraries are written in C, you must import them as
 such:
@@ -43,9 +45,7 @@ extern "C" {
 
 Compiling and linking with GNU g++:
 
-{% highlight bash %}
-$ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua
-{% endhighlight %}
+    $ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua
 
 Including lualib.h and lauxlib.h makes it easy to write a fully working host:
 
@@ -100,14 +100,13 @@ int main(int argc, char** argv)
 
 Compilation and linking:
 
-{% highlight bash %}
-$ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua -llualib
-{% endhighlight %}
+    $ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua -llualib
 
-<h2>Running Lua programs</h2>
+Running Lua programs
+--------------------
 
 Let's test this with some Lua programs.  The files here are from the
-distribution, hello.lua is simply:
+distribution, `hello.lua` is simply:
 
 {% highlight lua %}
 -- the first program in every language
@@ -116,21 +115,20 @@ io.write("Hello world, from ",_VERSION,"!\n")
 
 Executing a couple of Lua programs with our host program produces:
 
-{% highlight bash %}
-$ ./host test/hello.lua test/printf.lua
--- Loading file: test/hello.lua
-Hello world, from Lua 5.0.2!
+    $ ./host test/hello.lua test/printf.lua
+    -- Loading file: test/hello.lua
+    Hello world, from Lua 5.0.2!
 
--- Loading file: test/printf.lua
-Hello csl from Lua 5.0.2 on Wed Mar  2 13:13:05 2005
-{% endhighlight %}
+    -- Loading file: test/printf.lua
+    Hello csl from Lua 5.0.2 on Wed Mar  2 13:13:05 2005
 
-<h2>Calling C functions from Lua</h2>
+Calling C functions from Lua
+----------------------------
 
 It gets very interesting when Lua programs call your own functions.  In the
 following program, we define a function `my_function()` and register it with
 the Lua environment using `lua_register()`.  Our function prints its arguments
-as strings and returns the integer value of 123.
+as strings and returns the integer value of `123`.
 
 {% highlight c++ %}
 #include <iostream>
@@ -200,7 +198,7 @@ int main(int argc, char** argv)
 }
 {% endhighlight %}
 
-Let's write a small Lua program _test.lua_ to call `my_function()`:
+Let's write a small Lua program `test.lua` to call `my_function()`:
 
 {% highlight lua %}
 io.write("Running ", _VERSION, "\n")
@@ -208,61 +206,58 @@ a = my_function(1, 2, 3, "abc", "def")
 io.write("my_function() returned ", a, "\n")
 {% endhighlight %}
 
-With the new host program above, running test.lua produces:
+With the new host program above, running `test.lua` produces:
 
-{% highlight bash %}
-$ ./host test.lua
--- Loading file: test.lua
-Running Lua 5.0.2
--- my_function() called with 5 arguments:
--- argument 1: 1
--- argument 2: 2
--- argument 3: 3
--- argument 4: abc
--- argument 5: def
-my_function() returned 123
-{% endhighlight %}
+    $ ./host test.lua
+    -- Loading file: test.lua
+    Running Lua 5.0.2
+    -- my_function() called with 5 arguments:
+    -- argument 1: 1
+    -- argument 2: 2
+    -- argument 3: 3
+    -- argument 4: abc
+    -- argument 5: def
+    my_function() returned 123
 
-<h2>Loading and running bytecode</h2>
+Loading and running bytecode
+----------------------------
 
 The `luaL_loadfile()` function loads both source programs as well as compiled
 bytecode, so the following works as a charm:
 
-{% highlight bash %}
-$ ./bin/luac -s -o test.bytecode test.lua
-$ ls -lka test.bytecode
--rw-r--r--    1 csl csl   307 mar  2 13:46 test.bytecode
-$ ./host test.bytecode
--- Loading file: test.bytecode
-Running Lua 5.0.2
--- my_function() called with 5 arguments:
--- argument 1: 1
--- argument 2: 2
--- argument 3: 3
--- argument 4: abc
--- argument 5: def
-my_function() returned 123
-{% endhighlight %}
+    $ ./bin/luac -s -o test.bytecode test.lua
+    $ ls -lka test.bytecode
+    -rw-r--r--    1 csl csl   307 mar  2 13:46 test.bytecode
+    $ ./host test.bytecode
+    -- Loading file: test.bytecode
+    Running Lua 5.0.2
+    -- my_function() called with 5 arguments:
+    -- argument 1: 1
+    -- argument 2: 2
+    -- argument 3: 3
+    -- argument 4: abc
+    -- argument 5: def
+    my_function() returned 123
 
 Omitting our host program's log-messages produces clean output:
 
-{% highlight bash %}
-$ ./main test.bytecode 2>/dev/null
-Running Lua 5.0.2
-my_function() returned 123
-{% endhighlight %}
+    $ ./main test.bytecode 2>/dev/null
+    Running Lua 5.0.2
+    my_function() returned 123
 
-<h2>Next steps</h2>
+Next steps
+----------
 
 Suggestions for next steps would be to investigate how to have Lua's
 closures integrate neatly with your host program.
 
 If you're writing programs without consoles, then you'd probably want to
 trap `io.write()`.  I did that by copying the code from lualib.c and changing
-io_write to point to my own function.  This can be useful for game
+`io_write` to point to my own function.  This can be useful for game
 programming or plain X/Windows applications where you want to catch output.
 
-<h2>Using RAII</h2>
+Using RAII
+----------
 
 Also I'd recommend using the resource-acquisition-is-initialization (RAII)
 technique in which resources are allocated in a constructor and freed in the
