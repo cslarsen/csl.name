@@ -15,6 +15,12 @@ This little tutorial will be updated in the time ahead, so be sure to post
 comments so I know what needs to be done!
 {% endlead %}
 
+<p>
+  <img class="img-rounded img-responsive"
+       src="/gfx/post/scheme-tutorial/sea.jpg"
+       alt="Cold waves crashing onto stones" />
+</p>
+
 About Scheme
 ------------
 
