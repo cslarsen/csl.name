@@ -53,3 +53,10 @@ RedirectMatch 301 ^/einsteins_problem.*$ {% post_url 2008-01-01-einsteins-puzzle
 
 # Non-existant pages
 ErrorDocument 404 /404/index.html.gz
+
+<IfModule mod_rewrite.c>
+# Enforce SSL
+RewriteEngine on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
+</IfModule>
