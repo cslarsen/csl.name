@@ -55,8 +55,10 @@ RedirectMatch 301 ^/einsteins_problem.*$ {% post_url 2008-01-01-einsteins-puzzle
 ErrorDocument 404 /404/index.html.gz
 
 <IfModule mod_rewrite.c>
-# Enforce SSL
+# Enforce SSL, but not for older versions of MSIE or Android
 RewriteEngine on
+RewriteCond %{HTTP_USER_AGENT} !MSIE\ [2-8]
+RewriteCond %{HTTP_USER_AGENT} !Android.*(Mobile)?\ [0-3]
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
 </IfModule>
