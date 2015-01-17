@@ -50,7 +50,7 @@ RedirectMatch 301 ^/C-functions-from-Python.* {% post_url 2006-03-28-c-functions
 RedirectMatch 301 ^/lua.* {% post_url 2006-10-20-lua-and-cpp %}
 RedirectMatch 301 ^/py-syslog-win32.* {% post_url 2008-11-14-python-syslog-client %}
 RedirectMatch 301 ^/einsteins_problem.*$ {% post_url 2008-01-01-einsteins-puzzle %}
-RedirectMatch 301 ^/qt-gcc.*$ {% post_url 2012-11-25-qt-gcc.markdown %}
+RedirectMatch 301 ^/qt-gcc.*$ {% post_url 2012-11-25-qt-gcc %}
 
 # Non-existant pages
 ErrorDocument 404 /404/index.html.gz
