@@ -17,7 +17,7 @@
 <h1>jp2a gallery: Oswald, the lucky rabbit (side view) (ASCII)</h1>
 
 <div class="text">
-Go back to <a href="/">jp2a main page</a>.
+Go back to <a href="/jp2a">jp2a main page</a>.
 
 <pre style="font-size:9pt;">
 <?php include("Oswald-side.txt");?>

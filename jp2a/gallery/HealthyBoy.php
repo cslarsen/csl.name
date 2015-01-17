@@ -19,7 +19,7 @@
 <h1>jp2a gallery: <a href="http://www.healthyboy.no">Healthy Boy</a> CD-cover (ASCII)</h1>
 
 <div class="text">
-Go back to <a href="/">jp2a main page</a>.
+Go back to <a href="/jp2a">jp2a main page</a>.
 
 <pre style="font-size:7pt;">
 <?php include("HealthyBoy.txt");?>

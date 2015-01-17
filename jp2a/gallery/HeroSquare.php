@@ -19,7 +19,7 @@
 <h1>jp2a gallery: Statue in Hero's Square, Budapest (ASCII)</h1>
 
 <div>
-Go back to <a href="/">jp2a main page</a>.
+Go back to <a href="/jp2a">jp2a main page</a>.
 
 <pre style="font-size:5pt;">
 <?php include("HeroSquare.txt");?>
