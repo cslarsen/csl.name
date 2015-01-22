@@ -12,7 +12,6 @@ tags: emscripten
 [Archive.org](https://archive.org/details/softwarelibrary_msdos_games/v2) has
 released a number of MS-DOS games that can be played in the browser using
 em-dosbox.
-
 Here I'll show you how you can put your own MS-DOS stuff on the web by building em-dosbox.
 I'll be using Mac OS X and Homebrew.
 {% endlead %}
