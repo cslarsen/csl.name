@@ -1,34 +1,39 @@
 ---
 layout: post
-title:  "Compiling em-dosbox on Mac OS X"
-date:    2015-01-22 19:00:00 +01:00
-updated: 2015-01-22 19:00:00 +01:00
-categories: Dosbox
+title:  "Compiling and using em-dosbox"
+subtitle: "How to run DOS programs in your browser's JavaScript VM"
+date:    2015-01-22 22:08:00 +01:00
+updated: 2015-01-22 22:08:00 +01:00
+categories: JavaScript
 disqus: true
-tags: emscripten
+tags: emscripten dosbox demoscene javascript
 ---
 
 {% lead %}
-Archive.org has released a [large number of MS-DOS games](https://archive.org/details/softwarelibrary_msdos_games/v2) that can be
-played in the browser using [em-dosbox](https://github.com/dreamlayers/em-dosbox).
-Here I'll show you how you can put your own MS-DOS stuff on the web by building em-dosbox.
-I'll be using Mac OS X and [Homebrew](http://brew.sh).
+Archive.org has released a [large number of MS-DOS
+games](https://archive.org/details/softwarelibrary_msdos_games/v2) that can be
+played in the browser using
+[em-dosbox](https://github.com/dreamlayers/em-dosbox).  Here I'll show you how
+you can compile em-dosbox and put up your own MS-DOS programs on the web.  This
+guide assumes you're using Mac OS X and [Homebrew](http://brew.sh), but should be
+informative for any other UNIX users as well.
 {% endlead %}
 
 Installing Emscripten
 ---------------------
 
-The em-dosbox is a special fork of Dosbox that uses
-[emscripten](https://github.com/kripken/emscripten) so that it can be run in a
-browser.  Emscripten uses LLVM to produce intermediate code and then translates
-that to quite effective JavaScript.
+The [em-dosbox](https://github.com/dreamlayers/em-dosbox) project
+is a special fork of [DOSBox](http://www.dosbox.com) that uses
+[emscripten](https://github.com/kripken/emscripten) to cross-compile LLVM
+bitcode to JavaScript so it can run in your browser.  Emscripten can actually
+be used to cross-compile practically _any_ LLVM-compilable code to JavaScript!
 
-To build em-dosbox, we first need to install emscripten. We'll do that with
-Homebrew. You can review installation options by typing:
+So before we can build em-dosbox, we need to install emscripten. With Homebrew,
+you can review installation options with:
 
     $ brew options emscripten
 
-I did
+I used
 
     $ brew install emscripten --with-closure-compiler
 
@@ -38,7 +43,7 @@ Homebrew tells you that you need to update your `~/.emscripten` after running
     Manually set LLVM_ROOT to
       /usr/local/opt/emscripten/libexec/llvm/bin
 
-So let's run emcc first.
+So let's run `emcc` first.
 
     $ emcc
     WARNING  root: (Emscripten: system change: 1.28.2|asmjs-unknown-emscripten||6.0 vs 1.4.7|le32-unknown-nacl, clearing cache)
@@ -52,26 +57,26 @@ what Homebrew suggests:
 
     LLVM_ROOT = "/usr/local/opt/emscripten/libexec/llvm/bin"
 
-Now try running `emcc` to see that it runs without any errors.
+Now try running `emcc` to verify that it runs without any errors.
 
     $ emcc
     WARNING  root: (Emscripten: settings file has changed, clearing cache)
     INFO     root: (Emscripten: Running sanity checks)
     WARNING  root: no input files
 
-Looks good.
 
 Installing em-dosbox
 --------------------
 
-Now you need the `em-dosbox` sources. After that, you need to run `autogen.sh`.
-If it fails, you probably need to install autotools.
+You'll need the [em-dosbox source
+code](https://github.com/dreamlayers/em-dosbox), and then run `autogen.sh`.  If
+autogen fails, you probably need to install autotools.
 
-    $ git clone em-dosbox....
+    $ git clone https://github.com/dreamlayers/em-dosbox.git
     $ cd em-dosbox
     $ ./autogen.sh
 
-That should create a `configure` file.  Now use `emconfigure`:
+That should create a `configure` file.  Now run that through `emconfigure`:
 
     $ emconfigure ./configure
 
@@ -79,39 +84,79 @@ If that works fine, you should be able to build em-dosbox:
 
     $ make -j4
 
-Now, you can find `dosbox.js` and `dosbox.html` in `src/`.  These are templates
-for the web page that you'll use to run MS-DOS programs.
+On a successful build, you should find `dosbox.js` and `dosbox.html` in `src/`.
+These are templates for the web page that you'll use to run MS-DOS programs.
 
-You can try creating a new page for some DOS program like so:
+To take an MS-DOS program called `TEST.EXE` and bundle it with em-dosbox,
+creating the files `test.data` and `test.html`, you simply do:
 
     $ cd src
     $ ./packager.py test TEST.EXE
 
-On my system, it complains that it can't find `file_packager.py`.  This is part
-of the emscripten package. With Homebrew, emscripten is symlinked to the Cellar
-directory.  You should therefore set `EMSCRIPTEN_ROOT` in `~/.emscripten` to
-point to where the files are actually located.
+However, on my system, it complains that it can't find `file_packager.py`.
+This is part of the _emscripten_ package. With Homebrew, emscripten is
+symlinked to the `Cellar` directory.  You should therefore set
+`EMSCRIPTEN_ROOT` in `~/.emscripten` to point to where the files are actually
+located.
 
 Check what value `EMSCRIPTEN_ROOT` is:
 
     $ em-config EMSCRIPTEN_ROOT
 
 On my system I had to set this to
-`/usr/local/Cellar/emscripten/1.28.2/libexec`.
+`/usr/local/Cellar/emscripten/1.28.2/libexec` by modifying `~/.emscripten` so
+it looked like:
 
-Now, I have an old intro I made back in the day, called `intro.exe`.  Let's try
-to bundle it with em-dosbox:
+ Note: If you put paths relative to the home directory, do not forget os.path.expanduser
+
+    import os
+
+    EMSCRIPTEN_ROOT = "/usr/local/Cellar/emscripten/1.28.2/libexec"
+    LLVM_ROOT = "/usr/local/opt/emscripten/libexec/llvm/bin"
+
+    # ...
+
+Now, I have an old intro I made with Pascal and assembly back in the day. The
+file is called `A-SYSTEM.EXE`, so I ran it through the packager:
 
     $ cd em-dosbox/src
-    $ ./packager.py intro intro.exe
+    $ ./packager.py a-system A-SYSTEM.EXE
 
-Because of the same-origin policy, you need to test this through a simple web server:
+This creates `a-system.data` and `a-system.html`.  But if I open the HTML file
+in my browser, it won't be able to load the data file because of the
+[same-origin policy](https://en.wikipedia.org/wiki/Same-origin_policy).
+Therefore, I'll just start a simple web server in the current directory and
+access it through that:
 
     $ python -m SimpleHTTPServer &
-    $ open http://localhost:8000/intro.html
+    $ open http://localhost:8000/a-system.html
 
-If everything worked, you'll see your DOS program running! At least it worked for me!
+This works pretty well, but the intro runs quite slow.  Hitting `CTRL-F12`
+speeds up the framerate considerably. You can create a default configuration
+file by putting your EXE-file into a subdirectory form `src/` and adding a
+[`dosbox.conf`](http://www.dosbox.com/wiki/Dosbox.conf) file in the same
+directory.
 
-You may have to tweak some settings, though.  For instance, for my particular
-intro, I had to change some settings.
+I put this in `dosbox.conf`:
 
+    [cpu]
+    core = simple
+    cycles = fixed 20000
+
+    [dosbox]
+
+    [midi]
+    mpu401 = none
+    mididevice = none
+
+(I disabled MIDI to get rid of an annoying warning.)  To build the entire
+directory, I ran:
+
+    $ ./packager.py a-system a-system A-SYSTEM.EXE
+
+where the first argument is the name of the produced `.data` and `.html` files,
+the second the subfolder and the last the name of the executable DOS-file.
+
+I haven't [tweaked the `dosbox.conf`
+settings](http://www.dosbox.com/wiki/Dosbox.conf), but you can [view the
+A-SYSTEM 28k intro here](/a-system).
