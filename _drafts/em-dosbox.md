@@ -9,18 +9,22 @@ tags: emscripten
 ---
 
 {% lead %}
-[Archive.org](https://archive.org/details/softwarelibrary_msdos_games/v2) has
-released a number of MS-DOS games that can be played in the browser using
-em-dosbox.
+Archive.org has released a [large number of MS-DOS games](https://archive.org/details/softwarelibrary_msdos_games/v2) that can be
+played in the browser using [em-dosbox](https://github.com/dreamlayers/em-dosbox).
 Here I'll show you how you can put your own MS-DOS stuff on the web by building em-dosbox.
-I'll be using Mac OS X and Homebrew.
+I'll be using Mac OS X and [Homebrew](http://brew.sh).
 {% endlead %}
 
 Installing Emscripten
 ---------------------
 
-Before installing emscripten, review if you want to build it with any
-particular settings:
+The em-dosbox is a special fork of Dosbox that uses
+[emscripten](https://github.com/kripken/emscripten) so that it can be run in a
+browser.  Emscripten uses LLVM to produce intermediate code and then translates
+that to quite effective JavaScript.
+
+To build em-dosbox, we first need to install emscripten. We'll do that with
+Homebrew. You can review installation options by typing:
 
     $ brew options emscripten
 
