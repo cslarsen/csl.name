@@ -64,16 +64,51 @@ Installing em-dosbox
 Now you need the `em-dosbox` sources. After that, you need to run `autogen.sh`.
 If it fails, you probably need to install autotools.
 
-  $ git clone em-dosbox....
-  $ cd em-dosbox
-  $ ./autogen.sh
+    $ git clone em-dosbox....
+    $ cd em-dosbox
+    $ ./autogen.sh
 
 That should create a `configure` file.  Now use `emconfigure`:
 
-  $ emconfigure ./configure
+    $ emconfigure ./configure
 
 If that works fine, you should be able to build em-dosbox:
 
-  $ make -j4
+    $ make -j4
 
+Now, you can find `dosbox.js` and `dosbox.html` in `src/`.  These are templates
+for the web page that you'll use to run MS-DOS programs.
+
+You can try creating a new page for some DOS program like so:
+
+    $ cd src
+    $ ./packager.py test TEST.EXE
+
+On my system, it complains that it can't find `file_packager.py`.  This is part
+of the emscripten package. With Homebrew, emscripten is symlinked to the Cellar
+directory.  You should therefore set `EMSCRIPTEN_ROOT` in `~/.emscripten` to
+point to where the files are actually located.
+
+Check what value `EMSCRIPTEN_ROOT` is:
+
+    $ em-config EMSCRIPTEN_ROOT
+
+On my system I had to set this to
+`/usr/local/Cellar/emscripten/1.28.2/libexec`.
+
+Now, I have an old intro I made back in the day, called `intro.exe`.  Let's try
+to bundle it with em-dosbox:
+
+    $ cd em-dosbox/src
+    $ ./packager.py intro intro.exe
+
+Because of the same-origin policy, you need to test this through a simple web server:
+
+    $ python -m SimpleHTTPServer &
+    $ open http://localhost:8000/intro.html
+
+If everything worked, you'll see your DOS program running! At least it worked for me!
+
+You may have to tweak some settings, though.  For instance, for my particular
+intro, I had to change some settings.
 
