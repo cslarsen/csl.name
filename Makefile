@@ -24,6 +24,7 @@ compress: build
 	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/dosbox.js
 	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/index.html
 	perl -pi -e 's/intro.data/intro.data.gz/gi' _site/a-system/index.html
+	perl -pi -e 's/<code>dosbox.js.gz/<code>dosbox.js/gi' _site/post/em-dosbox/index.html
 	find _site \( -name '*.html' -or \
 		            -name '*.css' -or \
 								-name '*.js' -or \
