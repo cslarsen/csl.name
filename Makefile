@@ -21,13 +21,18 @@ compress: build
 		| parallel --no-notice -0 perl -pi -e 's/\\.svg/\\.svg\\.gz/gi'
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.js/\\.js\\.gz/gi'
+	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/dosbox.js
+	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/index.html
+	perl -pi -e 's/intro.data/intro.data.gz/gi' _site/a-system/index.html
 	find _site \( -name '*.html' -or \
 		            -name '*.css' -or \
 								-name '*.js' -or \
-								-name '*.svg' \) -print0 \
+								-name '*.svg' -or \
+								-name 'dosbox.html.mem' -or \
+								-name 'intro.data' \) -print0 \
 		| parallel --no-notice -0 gzip -9
 
-dist: doctor build minify compress
+dist: doctor minify compress
 	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
 clean:
