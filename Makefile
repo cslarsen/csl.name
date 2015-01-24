@@ -21,6 +21,8 @@ compress: build
 		| parallel --no-notice -0 perl -pi -e 's/\\.svg/\\.svg\\.gz/gi'
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.js/\\.js\\.gz/gi'
+	find _site -name '*.html' -print0 \
+		| parallel --no-notice -0 perl -pi -e 's/analytics.js.gz/analytics.js/gi'
 	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/dosbox.js
 	perl -pi -e 's/dosbox.html.mem/dosbox.html.mem.gz/gi' _site/a-system/index.html
 	perl -pi -e 's/intro.data/intro.data.gz/gi' _site/a-system/index.html
