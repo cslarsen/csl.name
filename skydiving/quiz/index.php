@@ -8,7 +8,8 @@ require_once("inc-chapters.php");
 
 // disable caching for reloads, so that picked questions are refreshed
 header('Cache-Control: private, no-cache');
-header('Pragma: no-cache');
+header('Pragma: no-cache');  
+header("Content-Type: text/html; charset=iso-8859-1");
   
 $debug = false;
 
