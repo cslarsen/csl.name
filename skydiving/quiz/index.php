@@ -396,7 +396,7 @@ foreach ( $posted['question_array'] as $id ) {
 	</p>
 
 <p style='margin-top:5em;'>
-<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><a href="http://christianstigenlarsen.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+<div id="disqus_thread"></div><script type="text/javascript" src="https://disqus.com/forums/christianstigenlarsen/embed.js"></script><noscript><a href="https://christianstigenlarsen.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="https://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 </p>
 
 	<small>$Id: index.php 161 2008-05-26 10:59:38Z csl $</small><br/>
@@ -404,12 +404,12 @@ foreach ( $posted['question_array'] as $id ) {
 	</div>
 
 <p>
-    <a href="http://validator.w3.org/check?uri=referer"><img
+    <a href="https://validator.w3.org/check?uri=referer"><img
         src="valid-xhtml10-blue.png"
         alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
 </p>
   
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+<script src="https://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
 _uacct = "UA-831752-4";
