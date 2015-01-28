@@ -8,7 +8,7 @@ timezone: Norway/Oslo
 
 # File lists
 include: [.htaccess]
-exclude: [TODO, Makefile, README.md, Gemfile]
+exclude: [TODO, Makefile, README.md, Gemfile, draft.sh]
 
 # additional settings for RSS
 copyright: "Copyright &copy; 1996-2015 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"

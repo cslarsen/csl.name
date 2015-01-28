@@ -14,6 +14,9 @@ serve:
 minify: build
 	yuicompressor _site/css/bootstrap.css -o _site/css/bootstrap.css
 
+draft:
+	@cd _tools && ./new-draft.sh
+
 compress: build
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.css/\\.css\\.gz/gi'
