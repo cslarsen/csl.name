@@ -1,6 +1,8 @@
 #!/usr/Bin/env python
 
+from StringIO import StringIO
 import sys
+import tokenize
 
 class Stack:
     def __init__(self):
@@ -162,11 +164,11 @@ class Machine:
     def dump_stack(self):
         print("Data stack (top first):")
 
-        for v in reversed(self._values):
+        for v in reversed(self.data_stack._values):
             print(" - type %s, value '%s'" % (type(v), v))
 
 
-if __name__ == "__main__":
+def examples():
     print("** Program 1: Runs the code for `print((2+3)*4)`")
     Machine([2, 3, "+", 4, "*", "println"]).run()
 
@@ -186,3 +188,28 @@ if __name__ == "__main__":
         2, "%", 0, "==", '"even."', '"odd."', "if", "println",
         0, "jmp" # loop forever!
     ]).run()
+
+def parse(text):
+    code = []
+    tokens = tokenize.generate_tokens(StringIO(text).readline)
+    for toknum, tokval, _, _, _ in tokens:
+        if toknum == tokenize.NUMBER:
+            code.append(int(tokval))
+        elif toknum in [tokenize.OP, tokenize.STRING, tokenize.NAME]:
+            code.append(tokval)
+        elif toknum == tokenize.ENDMARKER:
+            break
+        else:
+            raise RuntimeError("Unknown token %s: '%s'" %
+                    (tokenize.tok_name[toknum], tokval))
+    return code
+
+def repl():
+    while True:
+        source = raw_input("> ")
+        code = parse(source)
+        Machine(code).run()
+
+if __name__ == "__main__":
+    repl()
+
