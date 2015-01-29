@@ -9,14 +9,10 @@ class Stack:
     def pop(self):
         if len(self._values) == 0:
             raise RuntimeError("Stack underflow")
-        else:
-            return self._values.pop()
+        return self._values.pop()
 
     def push(self, value):
         self._values.append(value)
-
-    def top(self):
-        return self._values[-1]
 
 class Machine:
     def __init__(self, code):
@@ -30,9 +26,6 @@ class Machine:
 
     def push(self, value): # convenience function
         self.data_stack.push(value)
-
-    def top(self): # convenience function
-        return self.data_stack.top()
 
     def run(self):
         while self.instruction_pointer < len(self.code):
@@ -98,7 +91,9 @@ class Machine:
         self.push(self.pop() % last)
 
     def dup(self):
-        self.push(self.top())
+        a = self.pop()
+        self.push(a)
+        self.push(a)
 
     def over(self):
         b = self.pop()
@@ -137,20 +132,20 @@ class Machine:
     def eq(self):
         self.push(self.pop() == self.pop())
 
-
     def if_stmt(self):
         false_clause = self.pop()
         true_clause = self.pop()
         test = self.pop()
 
         # False values: False, 0, "", everyting else is true
-        result = True
         if isinstance(test, bool) and test == False:
             result = False
-        if isinstance(test, str) and len(test) == 0:
+        elif isinstance(test, str) and len(test) == 0:
             result = False
-        if isinstance(test, int) and test == 0:
+        elif isinstance(test, int) and test == 0:
             result = False
+        else:
+            result = True
 
         if result == True:
             self.push(true_clause)
@@ -166,6 +161,7 @@ class Machine:
 
     def dump_stack(self):
         print("Data stack (top first):")
+
         for v in reversed(self._values):
             print(" - type %s, value '%s'" % (type(v), v))
 
