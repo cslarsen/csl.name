@@ -226,6 +226,7 @@ def constant_fold(code):
                 code.insert(i, result)
                 keep_running = True
                 print("Optimizer: Constant-folded %d%s%d to %d" % (a,op,b,result))
+                break
     return code
 
 def repl():
