@@ -1,4 +1,4 @@
-#!/usr/Bin/env python
+#!/usr/bin/env python
 
 from StringIO import StringIO
 import sys
@@ -23,14 +23,14 @@ class Stack:
 class Machine:
     def __init__(self, code):
         self.data_stack = Stack()
-        self.return_addr_stack = Stack()
+        self.return_stack = Stack()
         self.instruction_pointer = 0
         self.code = code
 
-    def pop(self): # convenience function
+    def pop(self):
         return self.data_stack.pop()
 
-    def push(self, value): # convenience function
+    def push(self, value):
         self.data_stack.push(value)
 
     def top(self):
@@ -256,7 +256,17 @@ def test_optimizer(code = [2, 3, "+", 5, "*", "println"]):
 
 if __name__ == "__main__":
     try:
-        repl()
+        if len(sys.argv) > 1:
+            cmd = sys.argv[1]
+            if cmd == "repl":
+                repl()
+            elif cmd == "test":
+                test_optimizer()
+                examples()
+            else:
+                print("Commands: repl, test")
+        else:
+            repl()
     except KeyboardInterrupt:
         pass
     except EOFError:
