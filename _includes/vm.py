@@ -31,14 +31,9 @@ class Machine:
 
     def run(self):
         while self.instruction_pointer < len(self.code):
-            try:
-                opcode = self.code[self.instruction_pointer]
-                self.instruction_pointer += 1
-                self.dispatch(opcode)
-            except KeyboardInterrupt:
-                return
-            except EOFError:
-                return
+            opcode = self.code[self.instruction_pointer]
+            self.instruction_pointer += 1
+            self.dispatch(opcode)
 
     def dispatch(self, op):
         dispatch_map = {
@@ -211,5 +206,9 @@ def repl():
         Machine(code).run()
 
 if __name__ == "__main__":
-    repl()
-
+    try:
+        repl()
+    except KeyboardInterrupt:
+        pass
+    except EOFError:
+        pass
