@@ -16,6 +16,10 @@ class Stack:
     def push(self, value):
         self._values.append(value)
 
+    def top(self):
+        return self._values[-1]
+
+
 class Machine:
     def __init__(self, code):
         self.data_stack = Stack()
@@ -28,6 +32,9 @@ class Machine:
 
     def push(self, value): # convenience function
         self.data_stack.push(value)
+
+    def top(self):
+        return self.data_stack.top()
 
     def run(self):
         while self.instruction_pointer < len(self.code):
@@ -199,11 +206,53 @@ def parse(text):
                     (tokenize.tok_name[toknum], tokval))
     return code
 
+def constant_fold(code):
+    """Constant-folds simple expressions like 2 3 + to 5."""
+
+    # Loop until we haven't done any optimizations.  E.g., "2 3 + 5 *" will be
+    # optimized to "5 5 *" and in the next iteration to 25.
+
+    keep_running = True
+    while keep_running:
+        keep_running = False
+        # Find two consecutive numbes and an arithmetic operator
+        for i, ops in enumerate(zip(code, code[1:], code[2:])):
+            a, b, op = ops
+            if type(a)==type(b)==int and op in ["+", "-", "*", "/"]:
+                m = Machine(ops)
+                m.run()
+                result = m.top()
+                del code[i:i+3]
+                code.insert(i, result)
+                keep_running = True
+                print("Optimizer: Constant-folded %d%s%d to %d" % (a,op,b,result))
+    return code
+
 def repl():
     while True:
         source = raw_input("> ")
         code = parse(source)
+        code = constant_fold(code)
         Machine(code).run()
+
+def test_optimizer(code = [2, 3, "+", 5, "*", "println"]):
+    print("Code before optimization: %s" % str(code))
+    optimized = constant_fold(code)
+    print("Code after optimization: %s" % str(optimized))
+
+    print("Stack after running original program:")
+    a = Machine(code)
+    a.run()
+    a.dump_stack()
+
+    print("Stack after running optimized program:")
+    b = Machine(optimized)
+    b.run()
+    b.dump_stack()
+
+    result = a.data_stack._values == b.data_stack._values
+    print("Result: %s" % ("OK" if result else "FAIL"))
+    return result
 
 if __name__ == "__main__":
     try:
