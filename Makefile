@@ -1,4 +1,4 @@
-jekyll=jekyll
+jekyll := jekyll
 
 default: build
 
