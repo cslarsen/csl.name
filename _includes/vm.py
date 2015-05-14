@@ -190,20 +190,18 @@ def constant_fold(code):
     # Loop until we haven't done any optimizations.  E.g., "2 3 + 5 *" will be
     # optimized to "5 5 *" and in the next iteration to 25.
 
-    keep_running = True
-    while keep_running:
-        keep_running = False
+    while True:
         # Find two consecutive numbes and an arithmetic operator
         for i, (a, b, op) in enumerate(zip(code, code[1:], code[2:])):
             if type(a)==type(b)==int and op in {"+", "-", "*", "/"}:
                 m = Machine((a, b, op))
                 m.run()
-                result = m.top()
                 del code[i:i+3]
-                code.insert(i, result)
-                keep_running = True
-                print("Constant-folded (%s %s %s) to %s" % (a, op, b, result))
+                code.insert(i, m.top())
+                print("Constant-folded (%s %s %s) to %s" % (a, op, b, m.top()))
                 break
+        else:
+            break
     return code
 
 def repl():
