@@ -147,7 +147,7 @@ class Machine:
     def dump_stack(self):
         print("Data stack (top first):")
 
-        for v in reversed(self.data_stack._values):
+        for v in reversed(self.data_stack):
             print(" - type %s, value '%s'" % (type(v), v))
 
 
@@ -173,19 +173,17 @@ def examples():
     ]).run()
 
 def parse(text):
-    code = []
     tokens = tokenize.generate_tokens(StringIO(text).readline)
     for toknum, tokval, _, _, _ in tokens:
         if toknum == tokenize.NUMBER:
-            code.append(int(tokval))
+            yield int(tokval)
         elif toknum in [tokenize.OP, tokenize.STRING, tokenize.NAME]:
-            code.append(tokval)
+            yield tokval
         elif toknum == tokenize.ENDMARKER:
             break
         else:
             raise RuntimeError("Unknown token %s: '%s'" %
                     (tokenize.tok_name[toknum], tokval))
-    return code
 
 def constant_fold(code):
     """Constant-folds simple expressions like 2 3 + to 5."""
@@ -197,16 +195,15 @@ def constant_fold(code):
     while keep_running:
         keep_running = False
         # Find two consecutive numbes and an arithmetic operator
-        for i, ops in enumerate(zip(code, code[1:], code[2:])):
-            a, b, op = ops
+        for i, (a, b, op) in enumerate(zip(code, code[1:], code[2:])):
             if type(a)==type(b)==int and op in {"+", "-", "*", "/"}:
-                m = Machine(ops)
+                m = Machine((a, b, op))
                 m.run()
                 result = m.top()
                 del code[i:i+3]
                 code.insert(i, result)
                 keep_running = True
-                print("Optimizer: Constant-folded %d%s%d to %d" % (a,op,b,result))
+                print("Constant-folded (%s %s %s) to %s" % (a, op, b, result))
                 break
     return code
 
@@ -215,7 +212,7 @@ def repl():
     while True:
         try:
             source = raw_input("> ")
-            code = parse(source)
+            code = list(parse(source))
             code = constant_fold(code)
             Machine(code).run()
         except (RuntimeError, IndexError) as e:
@@ -238,7 +235,7 @@ def test_optimizer(code = [2, 3, "+", 5, "*", "println"]):
     b.run()
     b.dump_stack()
 
-    result = a.data_stack._values == b.data_stack._values
+    result = a.data_stack == b.data_stack
     print("Result: %s" % ("OK" if result else "FAIL"))
     return result
 
