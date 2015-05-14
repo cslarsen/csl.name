@@ -48,6 +48,7 @@ class Machine:
             "cast_str": self.cast_str,
             "drop":     self.drop,
             "dup":      self.dup,
+            "exit":     self.exit,
             "if":       self.if_stmt,
             "jmp":      self.jmp,
             "over":     self.over,
@@ -73,6 +74,9 @@ class Machine:
     def plus(self):
         self.push(self.pop() + self.pop())
 
+    def exit(self):
+        sys.exit(0)
+
     def minus(self):
         last = self.pop()
         self.push(self.pop() - last)
@@ -89,9 +93,7 @@ class Machine:
         self.push(self.pop() % last)
 
     def dup(self):
-        a = self.pop()
-        self.push(a)
-        self.push(a)
+        self.push(self.top())
 
     def over(self):
         b = self.pop()
@@ -140,7 +142,7 @@ class Machine:
         if isinstance(addr, int) and 0 <= addr < len(self.code):
             self.instruction_pointer = addr
         else:
-            raise RuntimError("JMP address must be a valid integer.")
+            raise RuntimeError("JMP address must be a valid integer.")
 
     def dump_stack(self):
         print("Data stack (top first):")
@@ -197,7 +199,7 @@ def constant_fold(code):
         # Find two consecutive numbes and an arithmetic operator
         for i, ops in enumerate(zip(code, code[1:], code[2:])):
             a, b, op = ops
-            if type(a)==type(b)==int and op in ["+", "-", "*", "/"]:
+            if type(a)==type(b)==int and op in {"+", "-", "*", "/"}:
                 m = Machine(ops)
                 m.run()
                 result = m.top()
@@ -209,11 +211,17 @@ def constant_fold(code):
     return code
 
 def repl():
+    print('Type "exit" to quit.')
     while True:
-        source = raw_input("> ")
-        code = parse(source)
-        code = constant_fold(code)
-        Machine(code).run()
+        try:
+            source = raw_input("> ")
+            code = parse(source)
+            code = constant_fold(code)
+            Machine(code).run()
+        except (RuntimeError, IndexError) as e:
+            print("IndexError: %s" % e)
+        except KeyboardInterrupt:
+            print("\nKeyboardInterrupt")
 
 def test_optimizer(code = [2, 3, "+", 5, "*", "println"]):
     print("Code before optimization: %s" % str(code))
