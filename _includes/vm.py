@@ -207,7 +207,8 @@ def constant_fold(code):
     return code
 
 def repl():
-    print('Type "exit" to quit.')
+    print('Hit CTRL+D or type "exit" to quit.')
+
     while True:
         try:
             source = raw_input("> ")
@@ -219,7 +220,7 @@ def repl():
         except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
 
-def test_optimizer(code = [2, 3, "+", 5, "*", "println"]):
+def test(code = [2, 3, "+", 5, "*", "println"]):
     print("Code before optimization: %s" % str(code))
     optimized = constant_fold(code)
     print("Code after optimization: %s" % str(optimized))
@@ -245,13 +246,11 @@ if __name__ == "__main__":
             if cmd == "repl":
                 repl()
             elif cmd == "test":
-                test_optimizer()
+                test()
                 examples()
             else:
                 print("Commands: repl, test")
         else:
             repl()
-    except KeyboardInterrupt:
-        pass
     except EOFError:
-        pass
+        print("")
