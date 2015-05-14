@@ -185,19 +185,14 @@ def parse(text):
                     (tokenize.tok_name[toknum], tokval))
 
 def constant_fold(code):
-    """Constant-folds simple expressions like 2 3 + to 5."""
-
-    # Loop until we haven't done any optimizations.  E.g., "2 3 + 5 *" will be
-    # optimized to "5 5 *" and in the next iteration to 25.
-
+    """Constant-folds simple mathematical expressions like 2 3 + to 5."""
     while True:
-        # Find two consecutive numbes and an arithmetic operator
+        # Find two consecutive numbers and an arithmetic operator
         for i, (a, b, op) in enumerate(zip(code, code[1:], code[2:])):
-            if type(a)==type(b)==int and op in {"+", "-", "*", "/"}:
+            if isinstance(a, int) and isinstance(b, int) and op in {"+", "-", "*", "/"}:
                 m = Machine((a, b, op))
                 m.run()
-                del code[i:i+3]
-                code.insert(i, m.top())
+                code[i:i+3] = [m.top()]
                 print("Constant-folded (%s %s %s) to %s" % (a, op, b, m.top()))
                 break
         else:
