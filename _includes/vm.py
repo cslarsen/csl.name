@@ -133,25 +133,11 @@ class Machine:
         false_clause = self.pop()
         true_clause = self.pop()
         test = self.pop()
-
-        # False values: False, 0, "", everyting else is true
-        if isinstance(test, bool) and test == False:
-            result = False
-        elif isinstance(test, str) and len(test) == 0:
-            result = False
-        elif isinstance(test, int) and test == 0:
-            result = False
-        else:
-            result = True
-
-        if result == True:
-            self.push(true_clause)
-        else:
-            self.push(false_clause)
+        self.push(true_clause if test else false_clause)
 
     def jmp(self):
         addr = self.pop()
-        if isinstance(addr, int) and addr >= 0 and addr < len(self.code):
+        if isinstance(addr, int) and 0 <= addr < len(self.code):
             self.instruction_pointer = addr
         else:
             raise RuntimError("JMP address must be a valid integer.")
