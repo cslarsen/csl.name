@@ -51,7 +51,7 @@ class Machine:
             "if":       self.if_stmt,
             "jmp":      self.jmp,
             "over":     self.over,
-            "print":    self.print_,
+            "print":    self.print,
             "println":  self.println,
             "read":     self.read,
             "stack":    self.dump_stack,
@@ -109,13 +109,12 @@ class Machine:
         self.push(b)
         self.push(a)
 
-    def print_(self):
+    def print(self):
         sys.stdout.write(str(self.pop()))
         sys.stdout.flush()
 
     def println(self):
-        self.print_()
-        sys.stdout.write("\n")
+        sys.stdout.write("%s\n" % self.pop())
         sys.stdout.flush()
 
     def read(self):
