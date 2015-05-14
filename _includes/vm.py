@@ -172,6 +172,9 @@ def examples():
     ]).run()
 
 def parse(text):
+    # Note that the tokenizer module is intended for parsing Python source
+    # code, so if you're going to expand on the parser, you may have to use
+    # another tokenizer.
     tokens = tokenize.generate_tokens(StringIO(text).readline)
     for toknum, tokval, _, _, _ in tokens:
         if toknum == tokenize.NUMBER:
