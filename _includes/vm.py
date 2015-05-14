@@ -1,23 +1,17 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from StringIO import StringIO
+from collections import deque
 import sys
 import tokenize
 
-class Stack:
-    def __init__(self):
-        self._values = []
 
-    def pop(self):
-        if len(self._values) == 0:
-            raise RuntimeError("Stack underflow")
-        return self._values.pop()
-
-    def push(self, value):
-        self._values.append(value)
+class Stack(deque):
+    push = deque.append
 
     def top(self):
-        return self._values[-1]
+        return self[-1]
 
 
 class Machine:
