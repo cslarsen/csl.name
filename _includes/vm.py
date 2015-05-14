@@ -61,13 +61,12 @@ class Machine:
 
         if op in dispatch_map:
             dispatch_map[op]()
-        else:
-            if isinstance(op, int):
+        elif isinstance(op, int):
                 self.push(op) # push numbers on stack
-            elif isinstance(op, str) and op[0]==op[-1]=='"':
-                self.push(op[1:-1]) # push quoted strings on stack
-            else:
-                raise RuntimeError("Unknown opcode: '%s'" % op)
+        elif isinstance(op, str) and op[0]==op[-1]=='"':
+            self.push(op[1:-1]) # push quoted strings on stack
+        else:
+            raise RuntimeError("Unknown opcode: '%s'" % op)
 
     # OPERATIONS FOLLOW:
 
