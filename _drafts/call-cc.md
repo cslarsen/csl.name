@@ -31,7 +31,7 @@ that it only takes one parameter, and the return-value is what the entire
 
 For instance,
 
-    (+ 1 2 (call/cc (c) 3))
+    (+ 1 2 (call/cc (lambda (c) 3)))
 
 is the same as
 
