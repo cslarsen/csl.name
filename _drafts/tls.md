@@ -1,0 +1,47 @@
+---
+layout: post
+title: "Adding a TLS certificate to your NearlyFreeSpeech site"
+date: 2016-01-23 22:54:29 +0100
+updated: 2016-01-23 22:54:29 +0100
+categories: web
+disqus: true
+tags: nfsn
+---
+
+I recently had to renew the TLS certificate on [csl.name](https://csl.name),
+which is hosted on [NearlyFreeSpeech (NFSN)](https://www.nearlyfreespeech.net).
+But I had forgotten how to. So I decided to post a [condensed version of the
+steps found here][steps] on my own site.
+
+First I made a secret key on the NearlyFreeSpeech login server (aliases as
+`nfsn` here):
+
+    ssh nfsn
+    mkdir /home/protected/ssl
+    cd /home/protected/ssl
+    openssl genrsa -out csl.name.key 4096
+
+Using this, I made a certificate signing request (CSR). I left most fields
+blank, except FQDN, which had to be `csl.name`:
+
+    openssl req -new -sha256 -key csl.name.key -out csl.name.csr
+
+After buying the [Comodo PositiveSSL certificate on
+NameCheap](https://www.namecheap.com/security/ssl-certificates/comodo/positivessl.aspx),
+pasting the CSR into their SSL wizard and completing the DCV verification (any
+method is fine), I got a ZIP-file containing the already bundled-up [TLS
+certificate chain][tls chain] along with the certificate itself.
+
+Next I copied the files over and verified them:
+
+    openssl verify -untrusted csl.name.chn csl.name.crt
+    csl.name: OK
+
+Note that this process failed locally, probably because I had an older version
+of OpenSSL.
+
+The final step was to file a support request with NFSN to install the
+certificate, which they promptly did.
+
+[steps]: https://www.mc-guinness.co.uk/blog/20150710/set-up-https-ssl-tls-encryption-access-to-nearlyfreespeech-hosted-sites/
+[tls chain]: https://faq.nearlyfreespeech.net/section/ourservice/tlschain#tlschain
