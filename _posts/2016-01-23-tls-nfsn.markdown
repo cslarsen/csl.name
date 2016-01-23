@@ -50,7 +50,7 @@ certificate, which they promptly did. Just be sure that the
     csl.name.key
 
 By the way, if you're thinking about doing this you may want to consider trying
-[LetsEncrypt.org][https://letsencrypt.org], which give you free TLS
+[LetsEncrypt.org](https://letsencrypt.org), which give you free TLS
 certificates. I don't know much about them, or how many browsers support their
 CA, and so on, but it's worth a shot.
 
