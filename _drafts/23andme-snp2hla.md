@@ -1,7 +1,8 @@
 ---
 layout: post
-title:  "HLA allele analysis of 23andMe raw data"
-date:    2015-11-12 22:18:00 +01:00
+title: "HLA allele analysis of 23andMe raw data"
+date: 2015-11-12 22:18:00 +01:00
+updated: 2015-11-12 22:18:00 +01:00
 categories: DNA
 disqus: true
 tags: plink 23andMe

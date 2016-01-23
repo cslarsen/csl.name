@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "The straight call/cc story"
-date:    2014-12-25 19:33:00 +01:00
+title: "The straight call/cc story"
+date: 2014-12-25 19:33:00 +01:00
 updated: 2014-12-25 19:33:00 +01:00
 categories: Scheme
 disqus: true
