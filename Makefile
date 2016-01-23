@@ -2,6 +2,13 @@ jekyll := jekyll
 
 default: build
 
+help:
+	@echo "Usage:"
+	@echo "  make build - builds static _site/"
+	@echo "  make clean"
+	@echo "  make dist  - compress + publish"
+	@echo "  make draft - create a draft post"
+
 doctor:
 	$(jekyll) doctor
 
