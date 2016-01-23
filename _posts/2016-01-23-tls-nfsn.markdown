@@ -41,7 +41,18 @@ Note that this process failed locally, probably because I had an older version
 of OpenSSL.
 
 The final step was to file a support request with NFSN to install the
-certificate, which they promptly did.
+certificate, which they promptly did. Just be sure that the
+`/home/protected/ssl` directory contains the _all_ the necessary files:
+
+    csl.name.chn
+    csl.name.crt
+    csl.name.csr
+    csl.name.key
+
+By the way, if you're thinking about doing this you may want to consider trying
+[LetsEncrypt.org][https://letsencrypt.org], which give you free TLS
+certificates. I don't know much about them, or how many browsers support their
+CA, and so on, but it's worth a shot.
 
 [steps]: https://www.mc-guinness.co.uk/blog/20150710/set-up-https-ssl-tls-encryption-access-to-nearlyfreespeech-hosted-sites/
 [tls chain]: https://faq.nearlyfreespeech.net/section/ourservice/tlschain#tlschain
