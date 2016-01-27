@@ -332,32 +332,82 @@ actually be macros, meaning you don't really know when --- or if --- your
 arguments are evaluated, and that makes it hard to reason about your program.
 I think they're great if used with care.
 
-Anyway, back to our goto-library.
+Anyway, back to libraries. To put `println` in a library, put this in a file
+called `print.sld`. If you keep the `sld`-files in a separate directory, be
+sure to pass the `-Ipath` option to Chibi.
 
-What we want is to be able to write
+    (define-library (print)
+      (import (scheme base)
+              (scheme write))
+      (export println)
+      (begin
+        (define (println . args)
+          (for-each display args)
+          (newline))))
+
+Now we can `(import (print))` in our code. Back to the goto library.  What we
+want is to be able to write
 
     (import (scheme base)
             (scheme write)
             (goto))
 
-    (let
-      ((label #f))
-        (make-label label)
-        (write "Nyan ")
-        (goto label))
+    (let ((label #f))
+      (make-label label)
+      (write "Nyan ")
+      (goto label))
 
 and with value-passing:
 
     (import (scheme base)
             (scheme write)
+            (print)
             (goto))
 
-    (let
-      ((label #f))
-        (make-label label)
-        (write "Nyan ")
-        (goto label))
+    (define *age* #f)
+    (define *name* #f)
 
+    (define (print-person name age)
+      (println (set-label *name* name) " is "
+               (set-label *age* age) " years old."))
+
+    (print-person "John Doe" "123")
+    (goto-label *name* "Jane Doe")
+    (goto-label *age* "500")
+
+We'll use the same strategy as before, except that `set-label` and `goto-label`
+can be invoked using a label and value, or only a label.
+
+    (define-library (goto)
+      (import (scheme base)
+              (scheme write)
+              (scheme case-lambda))
+      (export set-label
+              goto-label)
+      (begin
+        (define goto-label
+          (case-lambda
+            ((label) (label '()))
+            ((label value) (label value))))
+
+        (define-syntax set-label
+          (syntax-rules ()
+            ((_ label value)
+               (call/cc (lambda (k)
+                          (if (not label) (set! label k))
+                          value)))
+            ((_ label)
+               (set-label label '()))))))
+
+The `goto-label` function uses `case-lambda`, which patterns matches on its
+invocation form. The first line matches calls to `(goto-label <label>)`, while
+the secod matches `(goto-label <label> <value>)`.
+
+The `set-label` macro also matches on the same two patterns. Here we use a
+single underscore instead of typing out the full name of the macro.
+
+Put that in a file called `goto.sld`, and you should be able to run the above
+examples.
 
 Delimited and undelimited continuations
 ---------------------------------------

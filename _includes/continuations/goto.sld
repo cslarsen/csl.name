@@ -19,4 +19,4 @@
                       (set! label k))
                     value)))
         ((_ label)
-         (make-label label '()))))))
+         (set-label '()))))))
