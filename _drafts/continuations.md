@@ -8,30 +8,30 @@ disqus: true
 tags: scheme continuations
 ---
 
-<div class="lead">
-<p>
-I gave a <a href="https://speakerdeck.com/csl/r7rs-scheme">talk I gave on
-R<sup>7</sup>RS Scheme</a> that included some neat examples on macros and
-continuations. This article expands on that, intended for anyone curious about
-Scheme.
+<p class="lead">
+Once, I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory
+talk on R<sup>7</sup>RS Scheme</a> that included some neat examples using
+macros and continuations. This article expands on that, intended for anyone
+curious about Scheme.
 </p>
 
-Before we start, I'd like to tell you what continuations can do for you. They
-can be used to implement any other control flow construct: Gotos, exception
-handling, restartable exceptions, coroutines, cooperative multi-threading,
-nondeterministic programming and on and on.
+If your programming language supports continuations, you can implement
+[any control flow construct](controlflow) in native source code form. Meaning
+you can import them without requiring any binary shared libraries:
 
-Not only that, you can write those constructs in the programming language
-itself, using native code, and put them in libraries:
-
-    (import (goto)
-            (try-catch)
+    (import (goto-statements)
+            (exception-handling)
             (restartable-exceptions)
             (coroutines)
             (cooperative-multithreading)
             (nondeterministic-programming))
 
-How cool is that?
+I'll show some examples using plaing
+href="http://trac.sacrideo.us/wg/wiki/R7RSHomePage">R<sup>7</sup>RS Scheme</a>.
+That means I only get to use undelimited continuations (more on that below).
+
+You can run the examples using [Chibi Scheme](Chibi Scheme), but to cater to a
+wider audience, I've included some pseudo-JavaScript code as well.
 
 Implementing goto
 -----------------
@@ -138,7 +138,7 @@ of `goto-label` is straight-forward:
     (define (goto-label new-value)
       (label new-value))
 
-The final program can be run in [chibi](Chibi Scheme). Put the following in a
+The final program can be run in [Chibi Scheme](chibi). Put the following in a
 file called `print-person-0.scm`:
 
     (import (scheme base)
@@ -193,10 +193,10 @@ Continuations as call stack manipulations
 Knowing a little bit about implementation strategies for continuations is of
 great help in understanding them.
 
-Many Schemes use [cps](continuation passing style), but I think it's much
+Many Schemes use [continuation passing style](cps), but I think it's much
 easier to think of it in terms of copying and reinstating the call stack.
 
-Recall that a [callstack](call stack) is a collection of stack frames. Each
+Recall that a [call stack](callstack) is a collection of stack frames. Each
 frame contains a return address, function arguments and perhaps also a
 placeholder for a return value.
 
@@ -323,8 +323,8 @@ Nay, the elegant solution is to use macros to *control evaluation*:
 
     (unless #t (wipe-root))
 
-Running the above code in [chibi](Chibi Scheme) will not call `wipe-root` and,
-hence, not print anything.
+Running the above code in [Chibi](chibi) will not call `wipe-root`, and
+therefore not print anything.
 
 Note that some people dislike macros, because it can obscure the exact
 behaviour of your program. For example, things that look like functions may
@@ -368,11 +368,11 @@ frame of the top-level. This prevents us from having endless loops whenever we
 reinstate a continuation. It's a detail, don't worry.
 
 Dealing with continuations in Scheme is done through the ``call/cc`` form. It
-provides [undelimited](undelimited continuations), which --- while still
-powerful --- are not as general as [delimited](delimited continuations).
+provides [undelimited continuations](undelimited), which --- while still
+powerful --- are not as general as [delimited continuations](delimited).
 
 Now, the big deal about continuations is that you can use them to implement
-[controlflows](any other control flow structure), from simple gotos to
+[any other control flow construct](controlflow), from simple gotos to
 exception mechanisms, coroutines, cooperative threads, non-deterministic
 programming and so on.
 
