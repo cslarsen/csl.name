@@ -8,23 +8,32 @@ help:
 	@echo "  make clean"
 	@echo "  make dist  - compress + publish"
 	@echo "  make draft - create a draft post"
+	@echo "  make update-posts - update the updated field in posts"
 
 doctor:
+	@echo -- Jekyll doctor
 	$(jekyll) doctor
 
 build:
+	@echo -- Building
 	$(jekyll) build --lsi --trace
 
 serve:
 	$(jekyll) serve --drafts --host 0.0.0.0 --lsi --watch
 
 minify: build
+	@echo -- Minifying CSS
 	yuicompressor _site/css/bootstrap.css -o _site/css/bootstrap.css
+
+update-posts:
+	@echo -- Updating post dates
+	python _tools/update_post.py _posts/*.markdown _posts/*.md
 
 draft:
 	@cd _tools && ./new-draft.sh
 
 compress: build
+	@echo -- Compressing files
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.css/\\.css\\.gz/gi'
 	find _site -name '*.html' -print0 \
@@ -45,7 +54,8 @@ compress: build
 								-name 'intro.data' \) -print0 \
 		| parallel --no-notice -0 gzip -9
 
-dist: doctor minify compress
+dist: update-posts doctor minify compress
+	@echo -- Publishing
 	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
 clean:

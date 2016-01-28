@@ -21,7 +21,7 @@ layout: default
           <b><a href="/" style="color:black;">By Christian Stigen Larsen</a></b>
           <br/>
           {% if page.date < page.updated %}
-            {{ page.date | date_to_string }}, updated {{ page.updated | date_to_string }}
+            Posted {{ page.date | date_to_string }} &mdash; updated {{ page.updated | date_to_string }}
           {% else %}
             {{ page.date | date_to_string }}
           {% endif %}
