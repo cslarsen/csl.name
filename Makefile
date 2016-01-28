@@ -10,11 +10,11 @@ help:
 	@echo "  make draft - create a draft post"
 	@echo "  make update-posts - update the updated field in posts"
 
-doctor: update-posts
+doctor: build
 	@echo -- Jekyll doctor
 	$(jekyll) doctor
 
-build: update-posts doctor
+build: update-posts
 	@echo -- Building
 	$(jekyll) build --lsi --trace
 
