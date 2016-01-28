@@ -997,6 +997,21 @@ Also: http://matt.might.net/articles/programming-with-continuations--exceptions-
 
 Green threads: https://en.wikipedia.org/wiki/Continuation
 
+What (R7RS) Scheme DOESN'T have
+-------------------------------
+
+It doesn't have anaphoric macros, but most systems give you defmacro anyway.
+It's just not standardized. However, the macro system in RnRS Scheme is
+hygienic, which is a good thing.
+
+It doesn't have delimited continuations, but again, most Schemes actually
+provide them, it's just that there isn't a standardized interface.
+
+What about Common Lisp? It probably has ALL of the above, either in the
+language itself (perhaps not call/cc?) but has it in libraries anyway. I don't
+know Common Lisp, so I would'nt know. Also, Common Lisp compilers are
+supposedly *really* good at delivering optimized binaries.
+
 Why would you care?
 -------------------
 
