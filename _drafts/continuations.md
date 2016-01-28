@@ -9,10 +9,11 @@ tags: scheme continuations
 ---
 
 <p class="lead">
-Once, I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory
-talk on R<sup>7</sup>RS Scheme</a> that included some neat examples using
-macros and continuations. This article expands on that, intended for anyone
-curious about Scheme.
+I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory talk
+on R<sup>7</sup>RS Scheme</a> that included some neat examples using closures,
+continuations and macros to do some cool stuff. This article expands on that.
+The intended audience is anyone curious about Scheme or those concepts
+(featuring: pseudo-JavaScript code).
 </p>
 
 If your programming language supports continuations, you can implement
@@ -26,24 +27,23 @@ you can import them without requiring any binary shared libraries:
             (cooperative-multithreading)
             (nondeterministic-programming))
 
-I'll show some examples using plaing
+I'll give simple examples on how all of the above can be implemented using
+closures, continuations and macros, using plain <a
 href="http://trac.sacrideo.us/wg/wiki/R7RSHomePage">R<sup>7</sup>RS Scheme</a>.
-That means I only get to use undelimited continuations (more on that below).
 
-You can run the examples using [Chibi Scheme](Chibi Scheme), but to cater to a
-wider audience, I've included some pseudo-JavaScript code as well.
+You can run the examples using [Chibi Scheme](Chibi Scheme).
 
-Implementing goto
------------------
+What are continuations?
+-----------------------
 
 There are many ways to explain what continuations are, but I will offer two
 mental models that are very useful, with a minor trade-off with exactness.
 
 A continuation represents the rest of the computation. A good way to think
 about this is that whenever you capture a continuation, you essentially set a
-label in the code that you can later jump back to. So it's a GOTO or JUMP
-instruction, with the additional benefit of being able to pass along new values
-that will replace the value at the location where it jumps to.
+label in the code that you can later jump back to. So it's almost like a GOTO
+or JUMP instruction, with the additional benefit of being able to pass along
+new values that will replace the value at the location where it jumps to.
 
 So, if you have a function that computes some mathematical expression, you can
 surround one of the variables with such a label. Later on, you can back jump to this
@@ -83,8 +83,11 @@ running at the `set_label(age)` location. At this point in time, the value of
 arguments. Finally, `print_person` itself has to return, and the return
 location this time around will be right after the `goto_label(500)` statement.
 
-If we translate the example to Scheme, we can implement `set_label` and
-`goto_label`.
+Implementing goto
+-----------------
+
+If we translate the previous example to Scheme, we can implement `set_label`
+and `goto_label`.
 
     (import (scheme base)
             (scheme write))
@@ -111,11 +114,27 @@ form:
       (lambda (continuation)
         <body>))
 
-For now, just completely ignore how that works, and I'll explain it later. The
-important point here is that `continuation` is actually a function that lets
-you jump back to the `(call/cc ...)` block. This is called capturing the
-current continuation. You can also pass it values. Just keep reading and you'll
-understand.
+Your code goes into `<body>`, and from there we have access to a variable
+called `continuation`. It's actually a special function that lets you exit from
+the surrounding `(call/cc ...)`-block with a return value. If you do
+`(continuation 123)`, the program will jump back to the location of the
+original `call/cc` and continue running from there as if `call/cc` returned
+`123`. And you can do that as many times as you want.
+
+For example,
+
+    (define set-number-and-run-println-again #f)
+
+    ; When this runs the first time, 3 will be printed.
+    (println (+ 1
+                (call/cc (lambda (k)
+                  (set! set-number-and-run-println-again k)
+                  2))))
+
+    (set-number-and-run-println-again 100)
+    ; The above will run from the call/cc location, but with the value 100.
+    ; That value will go into (+ 1 100), which passes 101 to println, which
+    ; prints it.
 
 Now, the definition of `set-label` uses the above form:
 
@@ -483,6 +502,271 @@ continuation on to.
       (divide 3 0))
 
     (println "End of program")
+
+A better try-catch library
+--------------------------
+
+    (define-library (try-catch)
+      (import (scheme base)
+              (print))
+
+      (export
+        try)
+
+      (begin
+        (define-syntax try
+          (syntax-rules (catch)
+            ((try 
+               (exception-handler handler)
+               body ...
+               (catch exception-catcher))
+             (begin
+               (define handler (lambda (error) #f)) ; default: do nothing
+               (call/cc
+                 (lambda (exit)
+                   (set! handler
+                     (lambda (error)
+                       (exception-catcher error)
+                       (exit)))
+                   body ...))))))))
+
+Example usage:
+
+    (import (scheme base)
+            (print)
+            (try-catch))
+
+    (println  "--start--")
+
+    (try
+      (exception-handler oops)
+
+      (define (divide a b)
+        (if (zero? b)
+          (oops "Division by zero")
+          (println a "/" b " = " (inexact (/ a b)))))
+
+      (divide 10 2)
+      (divide 1 3)
+      (divide 3 0)
+      (println "This should not execute")
+
+      (catch
+        (lambda (error)
+          (println "Hey, we caught an error: " error))))
+
+    (println "--end--")
+
+Restartable exceptions
+----------------------
+
+When you catch an exception, wouldn't it be cool to fix the error and then have
+the program continue as if nothing happened? Here's one way of doing that.
+
+    (define-library (try-restart)
+      (import (scheme base)
+              (print))
+
+      (export
+        try)
+
+      (begin
+        (define-syntax try
+          (syntax-rules (catch)
+            ((try 
+               (exception-handler handler)
+               (restart-handler the-restart)
+               body ...
+               (catch exception-catcher))
+             (begin
+               (define handler (lambda (error) #f)) ; default: do nothing
+               (define the-restart #f); default
+               (call/cc
+                 (lambda (exit) ; exit try-scope
+
+                   (set! handler
+                     (lambda (error)
+                       (call/cc
+                         (lambda (current-restart)
+                           (set! the-restart current-restart)
+                           (exception-catcher error)
+                           (exit))))) ; handler
+
+                   (begin body ...)))))))))
+
+Example usage:
+
+    (import (scheme base)
+            (print)
+            (try-restart))
+
+    (println  "--start--")
+
+    (try
+      (exception-handler oops)
+      (restart-handler phew)
+
+      (define (divide a b)
+        (let
+          ((b (if (not (zero? b))
+                b
+                (oops
+                  (string-append
+                    "Division by zero: "
+                    (number->string a) "/"
+                    (number->string b))))))
+          (println a "/" b " = " (inexact (/ a b)))))
+
+      (divide 10 2)
+      (divide 3 0)
+      (println "Whoa, we recovered from an error!")
+      (println "Restartable exceptions are neat!")
+
+      (catch
+        (lambda (error)
+          (begin
+            (println "Hey, we caught an error: " error)
+            (println "Restart division with 1 as numerator:")
+            (phew 1)))))
+
+(println "--end--")
+
+Lazy evaluation
+---------------
+
+Any language with closures can implement lazy evaluation, but if you have a
+macro system, you can change the user interface so that it feels like a natural
+part of the language.
+
+    (define-library (lazy-evaluation)
+      (import (scheme base))
+
+      (export
+        delay-computation
+        force-computation)
+
+      (begin
+        (define-syntax delay-computation
+          (syntax-rules ()
+            ((_ thunk)
+             (list 'delayed (lambda () thunk)))))
+
+        (define (force-computation delayed)
+          (if (and (list? delayed)
+                   (eq? (car delayed) 'delayed))
+            ((cadr delayed))
+            (error "Not a delayed computation")))))
+
+Usage example:
+
+    (import (scheme base)
+            (scheme eval)
+            (print)
+            (lazy-evaluation))
+
+    (define (format-harddrive)
+      (println "Formatting harddrive, oops!"))
+
+    (define (calc expr)
+      (println "The result of " expr " is " (eval expr)))
+
+    (define delayed
+      (list
+        (delay-computation (format-harddrive))
+        (delay-computation (calc '(* 12 12)))
+        (delay-computation (calc '(+ 12 12)))))
+
+    (force-computation (list-ref delayed 2))
+    (force-computation (list-ref delayed 1))
+
+Implementing a commenting system
+--------------------------------
+
+I forgot to say this, but macro expansions happens at *compile time*. That's
+very important to remember. That means we should be able to provide our own
+comment system to Scheme. Our system will allow for nested comments as well, as
+in you can comment some code, but add an *uncomment* directive outside of
+*that* to make it run again.
+
+Pseudo-code:
+
+    // This section will disappear during compilation
+    comment(
+      function foo() {
+        print("foo()");
+      }
+    );
+
+If we later on want to enable that part of the code, we can do
+
+    // This part of the code will now work again
+    uncomment(
+      comment(
+        function foo() {
+          print("foo()");
+          (comment But, the part here will *still* be a comment, because we
+                   only uncommented the outer part.);
+        }
+      ));
+
+The comments library:
+
+    (define-library (comments)
+      (import (scheme base))
+      (export
+        comment
+        uncomment)
+      (begin
+        (define-syntax comment
+          (syntax-rules ()
+            ((comment body ...)
+             (begin))))
+
+        ;; Works because macros are expanded from the outside and in, unlike
+        ;; evaluation, which is a depth-first traversal.
+        ;;
+        ;; Notice we explicitly match (uncomment (comment body ...))
+        ;;                                        ^^^^^^^
+        (define-syntax uncomment
+          (syntax-rules ()
+            ((uncomment (comment body ...))
+             (begin body ...))))))
+
+Usage example:
+
+    (import (scheme base)
+            (print)
+            (comments))
+
+    (comment
+      (define (hello)
+        (println "The example did NOT work!")))
+
+    (define (hello)
+      (println "The example worked fine!"))
+
+    (hello)
+
+Another usage example:
+
+    (import (scheme base)
+            (print)
+            (comments))
+
+    ;; Notice that macros are expanded from the OUTSIDE IN,
+    ;; unlike evaluation which is a depth-first traversal.
+    ;;
+    ;; That is why this works:
+    (uncomment
+      (comment
+        (define (hello)
+          (println "The example worked fine!"))))
+
+    (comment
+      (define (hello)
+        (println "The example did NOT work!")))
+
+    (hello)
 
 Why would you care?
 -------------------
