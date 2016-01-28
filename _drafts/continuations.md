@@ -768,6 +768,235 @@ Another usage example:
 
     (hello)
 
+Transforming code into strings
+------------------------------
+
+Imagine you have a unit-testing framework where you test some code. If it
+fails, you want to print the expected result, the actual result but also the
+source code that gave you the error.
+
+This can be done in languages like C using their `#define`-macros, but it is a
+bit limited and will not always let you define local variables and so on.
+
+Here's a simple library that does that in Scheme.
+
+    (define-library (quote-code)
+      (import (scheme base)
+              (scheme write))
+      (export
+        run
+        code+result
+        quote-code)
+      (begin
+
+        ;; Print "<code> ==> <result>"
+        ;;
+        (define-syntax run
+          (syntax-rules ()
+            ((_ body ...)
+             (begin
+               (display (code+result body ...))
+               (newline)))))
+
+
+        ;; Returns quoted code and its result
+        ;;
+        (define-syntax quote-code
+          (syntax-rules ()
+            ((_ body ...)
+             (let
+               ((code (quote body ...))
+                (result (begin body ...)))
+               (values code result)))))
+
+        ;; Return string in form "code ==> result".
+        ;;
+        (define-syntax code+result
+          (syntax-rules ()
+            ((_ body ...)
+             (call-with-values
+               (lambda () (quote-code body ...))
+               (lambda (code result)
+                 (call-with-port (open-output-string)
+                   (lambda (s)
+                     (display code s)
+                     (display " ==> " s)
+                     (display result s)
+                     (get-output-string s))))))))))
+
+A generator library (coroutines)
+--------------------------------
+
+(I *think* I wrote this)
+
+    (define-library (generator)
+      (import (scheme base))
+      (export generator-lambda)
+      (begin
+        ;; NOTE: does not accept any parameters, yet...
+        (define-syntax generator-lambda
+          (syntax-rules ()
+            ((generator-lambda yielder body ...)
+              (letrec
+                ((next
+                   (lambda (return)
+                     (let-syntax
+                       ((yielder (syntax-rules ()
+                                   ((_ value)
+                                    (set! return
+                                      (call/cc (lambda (here)
+                                                 (return (cons here value)))))))))
+                       (return (begin body ...))))))
+
+                 ;; trampoline
+                 (lambda ()
+                   (let
+                     ((v (call/cc (lambda (cc) (next cc)))))
+                     (if (pair? v)
+                       (begin
+                         (set! next (car v))
+                         (cdr v)) v)))))))))
+
+Usage eaxmple:
+
+    (import (scheme base)
+            (scheme write)
+            (generator))
+
+    (define (println . s)
+      (for-each display s)
+      (newline))
+
+    (define num
+      (generator-lambda yield
+        (yield 10)
+        (yield 20)
+        (yield 30)
+        -1))
+
+    (println "1: " (num) " (should be 10)")
+    (println "2: " (num) " (should be 20)")
+    (println "3: " (num) " (should be 30)")
+    (println "4: " (num) " (should be -1)")
+    (println "5: " (num) " (should be -1)")
+
+Memoization
+-----------
+
+Probably the most boring thing to do, since you've probably done it yourself,
+but here it is anyway.
+
+    (define-library (memoization)
+      (import (scheme base)
+              (scheme write)
+              (srfi 69))
+      (export
+        define-memoize
+        lambda-memoize)
+      (begin
+        (define-syntax lambda-memoize
+          (syntax-rules ()
+            ((_ (arg ...) body ...)
+             (let
+               ((table (make-hash-table equal?)))
+               (lambda (arg ...)
+                 (let ((key (list arg ...)))
+                   (if (hash-table-exists? table key)
+                     (hash-table-ref table key)
+                     (let
+                       ((value (begin body ...)))
+                       (hash-table-set! table key value)
+                        value))))))))
+
+        (define-syntax define-memoize
+          (syntax-rules ()
+            ((_ (name arg ...) body ...)
+             (define name
+               (lambda-memoize (arg ...)
+                  (begin body ...))))))))
+
+We also need the measure-time library:
+
+    (define-library (measure-time)
+      (import (scheme base)
+              (scheme time)
+              (print))
+      (export
+        measure-time
+        report-time)
+      (begin
+        (define-syntax measure-time
+          (syntax-rules ()
+            ((_ body ...)
+             (let*
+               ((start (current-second))
+                (value (begin body ...))
+                (time-taken (- (current-second) start)))
+               (values time-taken value)))))
+
+        (define-syntax report-time
+          (syntax-rules ()
+            ((_ body ...)
+             (let
+               ((code (quote body ...)))
+               (call-with-values
+                 (lambda () (measure-time body ...))
+                 (lambda (time value)
+                   (println code " ==> " value " (" time " secs)")
+                   value))))))))
+
+Usage:
+
+    (import (scheme base)
+            (measure-time)
+            (print)
+            (quote-code)
+            (memoization))
+
+    (define mul
+      (lambda-memoize (a b)
+        (println "<calculating " a "*" b ">")
+        (* a b)))
+
+    (define (fibo-slow n)
+      (if (<= n 1) n
+          (+ (fibo-slow (- n 1))
+             (fibo-slow (- n 2)))))
+
+    (define-memoize (fibo-fast n)
+      (if (<= n 1) n
+          (+ (fibo-fast (- n 1))
+             (fibo-fast (- n 2)))))
+
+    (println "Prove that memoization works ...")
+
+    (run (mul 12 12))
+    (run (mul 12 12))
+    (run (mul 12 12))
+    (newline)
+
+    (run (mul 21 21))
+    (run (mul 12 12))
+    (run (mul 21 21))
+    (newline)
+
+    (println "Measuring times for fibo-slow and fibo-fast ...")
+
+    (report-time (fibo-slow 35))
+    (report-time (fibo-fast 35))
+    (report-time (fibo-fast 100))
+
+Other things
+------------
+
+Object orientation as a library: Bryan's Object System (actually the guy who
+wrote "Real World Haskell", I think).
+
+Non-deterministic programming: http://c2.com/cgi/wiki?AmbSpecialForm
+Also: http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/
+
+Green threads: https://en.wikipedia.org/wiki/Continuation
+
 Why would you care?
 -------------------
 
