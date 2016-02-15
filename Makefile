@@ -29,6 +29,8 @@ update-posts:
 	@echo -- Updating post dates
 	python _tools/update_post.py _posts/*.markdown _posts/*.md
 
+new: draft
+
 draft:
 	@cd _tools && ./new-draft.sh
 
