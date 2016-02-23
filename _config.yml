@@ -11,7 +11,7 @@ include: [.htaccess]
 exclude: [TODO, Makefile, README.md, Gemfile, draft.sh]
 
 # additional settings for RSS
-copyright: "Copyright &copy; 1996-2016 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
+copyright: "&copy; 1996-2016 Christian Stigen Larsen.<br/>Verbatim copying and redistribution of content from this site is permitted provided this notice is preserved.<br/>"
 description: "Personal homepage with posts mainly on programming"
 url: https://csl.name
 
