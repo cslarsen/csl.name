@@ -1,0 +1,154 @@
+---
+layout: post
+title: "Using GNU Global with C++ and Git"
+date: 2016-02-15 20:19:20 +0100
+updated: 2016-02-15 20:19:20 +0100
+categories: programming
+disqus: true
+tags: tools git c++ gnu global
+---
+
+<p class="lead">
+<a href="https://www.gnu.org/software/global/">GNU global</a> is a very
+compelling way to quickly search your project for function definitions. Here I
+show how to index your code and update it automatically when using git.
+</p>
+
+Indexing your code
+------------------
+
+To index your code, simply run the following in your project root directory:
+
+    $ gtags
+
+This will parse your code for tags and create the database files `GPATH`,
+`GRTAGS` and `GTAGS`. It's blazing fast, too: A project with several million
+lines of code took only seven seconds on my workstation.
+
+For C++ projects, note that `gtags` may interpret `.h` files as C code. You can
+fix that up with `~/.globalrc`, but so far I haven't had any big problem with
+that.
+
+Querying the code
+-----------------
+
+Now that you have indexed your project, you can query for specific functions by
+typing `global name`. For example,
+
+    $ global value_t
+    lib/optional/libffi/ffi.cpp
+
+Add `-x` to get a code excerpt:
+
+    $ global -x value_t
+    value_t            28 lib/optional/libffi/ffi.cpp struct value_t {
+
+To see where `value_t` is referenced, add `-r`:
+
+    $ global -xr value_t
+    value_t           415 lib/optional/libffi/ffi.cpp   value_t *retval = new value_t(size);
+    value_t           463 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           471 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           479 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           487 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           495 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           503 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+    value_t           511 lib/optional/libffi/ffi.cpp   value_t* value = static_cast<value_t*>(car(p)->pointer->value);
+
+You can also use `-g` to grep, so you don't have to spell out the correct name:
+
+    $ global -xg make_clo
+    make_clo           34 include/mickey/eval.h cons_t* make_closure(cons_t* args, cons_t* body, environment_t* e);
+    make_clo          371 src/core-transition.cpp    * (or we could call make_closure here):
+    make_clo          218 src/eval.cpp               cons_t *closure = make_closure(def_args, def_body, e->extend());
+    make_clo          272 src/eval.cpp             return make_closure(args, body, e->extend());
+    make_clo          613 src/library/scheme-base.cpp    * (or we could call make_closure here):
+    make_clo           60 src/library/srfi-16.cpp   return make_closure(symbol("args"), cons(cond_cases), e);
+    make_clo           14 src/make-closure.cpp cons_t* make_closure(cons_t* args, cons_t* body, environment_t* e)
+
+You can also use regular expressions ith `-e`. See `man global` for the full
+story.
+
+Protip: Create an alias for `global`:
+
+    $ alias gx='global -x'
+    $ gx main
+    main              144 src/mickey.cpp   int main(int argc, char** argv)
+    $ gx -r make_closure
+    make_closure       34 include/mickey/eval.h cons_t* make_closure(cons_t* args, cons_t* body, environment_t* e);
+    make_closure      218 src/eval.cpp               cons_t *closure = make_closure(def_args, def_body, e->extend());
+    make_closure      272 src/eval.cpp             return make_closure(args, body, e->extend());
+    make_closure       60 src/library/srfi-16.cpp   return make_closure(symbol("args"), cons(cond_cases), e);
+
+There is also the `gtags-cscope` utility. It lets you interactively search for
+stuff and open an editor. I'm not sure I'll be using it much, but it's there.
+
+Setting up with git
+-------------------
+
+At work, I've set up so that the tag-files are automatically updated whenever
+git changes the files on disk, for example when I fetch and checkout,
+cherry-pick and so on. I'll show how to do that.
+
+First, add `GPATH`, `GRTAGS` and `GTAGS` to `.gitignore`:
+
+    $ echo "GPATH\nGRTAGS\nGTAGS" >> .gitignore
+
+Next, you need to set up some git hooks.  The whole approach here is taken from
+[Effortless Ctags with
+Git](http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html) by Tim
+Pope, and slightly modified to work with GNU global.
+
+Put the below script in `.git/hooks/gtags`:
+
+    #! /bin/sh
+    set -e
+    dir="`git rev-parse --git-dir`"
+    trap 'rm -f "$dir/$$.gtags"' EXIT
+    git ls-files | \
+      gtags --file=- --skip-unreadable "$dir/$$.gtags"
+    mv $dir/$$.gtags/* "$dir/.."
+
+Unfortunately, GNU global doesn't allow relative paths in the environment
+variable `GTAGSROOT`, so we can't store the database under `.git`.
+
+Put the following in `post-commit`, `post-merge`, `post-checkout`:
+
+    #! /bin/sh
+    .git/hooks/gtags >/dev/null 2>&1 &
+
+Notice that it runs `gtags` in the background, which is nice.
+
+Put this in `post-rewrite`:
+
+    #! /bin/sh
+    case "$1" in
+      rebase) exec .git/hooks/post-merge ;;
+    esac
+
+For an explanation of the above hooks, look at the post by Tim Pope above. It
+suggests putting them in a git template directory, which means they are
+automatically copied over to new or cloned repositories.
+
+Finally, make them executable:
+
+    $ chmod +x .git/hooks/gtags \
+               .git/hooks/post-commit \
+               .git/hooks/post-merge \
+               .git/hooks/post-checkout \
+               .git/hooks/post-rewrite
+
+Now, whenever you checkout etc., the index will be updated.
+
+As Tim Pope writes, you can even create a command `git gtags` so you can update
+on demand:
+
+    $ git config --global alias.gtags '!.git/hooks/gtags'
+
+This lets you do
+
+    $ git gtags
+
+to manually update the database. However, if you have only changed a few files
+and want to reindex, you might be better off using `global -u` to perform an
+update. It could be faster.
