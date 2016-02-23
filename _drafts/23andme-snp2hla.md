@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Imputing the presence of HLA-B27 using your raw 23andMe data file"
+title: "Imputing the presence of the HLA-B27 antigen using your 23andMe genome"
 date: 2015-11-12 22:18:00 +01:00
 updated: 2016-02-23 22:19:06 +01:00
 categories: DNA
@@ -13,27 +13,35 @@ Recently, I wanted to see if I could impute the presence of the <a
 href="https://en.wikipedia.org/wiki/HLA-B27">HLA-B27 antigen</a> using my raw
 23andMe DNA data. This is a pretty important antigen, because it is correlated
 strongly with several diseases. Although I used a very small reference data
-set, I managed to get a rough result that coincided with the result of a
-HLA-B27 blood test (but that could have been due to luck as well).
+set, I managed to get a rough result that happened to coincide with the result
+of a HLA-B27 blood test. Here's how you can do it, too!
 </p>
 
-First off, note that I'm just a hobbyist when it comes to this stuff. Don't be
-afraid to let me know if this approach is wrong.if this approach is wrong.
+**NOTE:** I'm just a hobbyist when it comes to this stuff. That means (1) I
+don't really know what I'm talking about, (2) you shouldn't draw conclusions if
+you try this yourself, and (3) let me know if I've done anything wrong.
 
 Prerequisites
 -------------
 
-Install `snp2hla` and third party software by following the instructions at
-[https://www.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html](https://www.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html).
+  * You will need [SNP2HLA](https://www.broadinstitute.org/mpg/snp2hla/) by
+    Broad Institute researchers. Install it along with third party software by
+    following [the installation
+    instructions](https://www.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html).
 
-I used plink 1 instead of plink2 / 1.9.
-You can download the beagle version 3.0.4 from
-[http://faculty.washington.edu/browning/beagle/b3.html](http://faculty.washington.edu/browning/beagle/b3.html),
-or more exactly
-[http://faculty.washington.edu/browning/beagle/recent.versions/beagle_3.0.4_05May09.zip](http://faculty.washington.edu/browning/beagle/recent.versions/beagle_3.0.4_05May09.zip)
+  * I used [plink version 1](http://pngu.mgh.harvard.edu/~purcell/plink/)
+    instead of [version 1.9 or 2](https://www.cog-genomics.org/plink2).
 
-To convert your 23andMe raw data file to plink output files (`.bed`, `.bim` and `.fam`),
-we use plink2:
+  * Install [Beagle](http://faculty.washington.edu/browning/beagle/b3.html).
+    SNP2HLA is very specific about requiring [version 3.0.4](http://faculty.washington.edu/browning/beagle/recent.versions/beagle_3.0.4_05May09.zip).
+
+Converting your 23andMe files
+-----------------------------
+
+Download your (raw 23andMe data files)[https://www.23andme.com/you/download/].
+
+To convert your them to plink output files (`.bed`, `.bim` and `.fam`), we use
+plink2:
 
     $ plink2 --23file genome.txt SURNAME FORENAME M --out foo
 
@@ -48,9 +56,9 @@ Imputing the presence of HLA-B27
 
 Next, we need to perform the actual imputation for HLA. To do this, we need a
 reference data set, and we'll use the `HM_CEU_REF` set. There is supposedly one
-much better, with over 5000 individuals, but as of snp2hla version 1.0.3, it's not
-bundled anymore, because privacy and security. If you're a serious researcher,
-you can ask for a copy of the full set.
+much better, with over 5000 individuals, but as of SNP2HLA version 1.0.3, it's
+not bundled anymore, because of privacy and security. If you're a serious
+researcher, you can ask for a copy of the full set. No, I don't have it.
 
 To perform imputation, simply do
 
@@ -58,7 +66,7 @@ To perform imputation, simply do
 
 The first argument, `foo` is the name of the output files in the previous step.
 `HM_CEU_REF` is the set to base the imputation on, `foo2hla` is the output
-basename for this operation (I like to discern between plink and snp2hla
+basename for this operation (I like to discern between plink and SNP2HLA
 output), then there's a path to plink (I use `plink2`). The last two arguments
 are memory limits. It's really only needed when processing large groups of, but
 I kept them anyway.
