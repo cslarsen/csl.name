@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 """
 Updates the "updated: " field in Jekyll posts, using the most recent git commit
 date.

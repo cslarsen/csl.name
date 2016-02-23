@@ -3,7 +3,7 @@ layout: post
 title:  "Palindromes in The Gettysburg Address and Shakespeare&apos;s collected works"
 subtitle: "A programming puzzle"
 date:      2011-03-03 09:10:27 -08:00
-updated:   2011-03-03 09:10:27 -08:00
+updated: 2016-02-23 21:03:44 +01:00
 categories: C
 tags: C palindrome puzzle
 ---
@@ -20,10 +20,11 @@ submissions lead to recruitment talks. I did talk with them, but as a
 foreigner I did not have any US worker's visa, and they were too small to
 have any time and money to spend on getting me one.)
 
-Anyway, there are many algorithms for doing this. Mine is just based on a
-brute force scan of the text. I see I claim that the running time is linear
-on the average input, but quadratic in the worst case (I haven't
-double-checked this).
+Anyway, there are many algorithms for doing this. Mine is just based on a brute
+force scan of the text. I see I claim that the running time is linear on the
+average input and quadratic in the worst case. Update: Today I would have used
+the word *in practice* instead of *on average*, because there really is nothing
+fancy about this code (except that it's a bit cute).
 
 {% highlight C++ %}
 /*
@@ -110,7 +111,7 @@ running time which is quadratic, though; if you feed it a string of same
 characters, for instance.
 
 To find the palindromes in Shakespeare's collected works, I first modified
-the code to load the text from disk. I changed print_best to print all
+the code to load the text from disk. I changed `print_best` to print all
 palindromes equal to or longer than the current best, so we get a longer
 list of palindromes. I also had to prepare Shakespeare's collected works
 into a format suitable for processing: First I removed the name of which
