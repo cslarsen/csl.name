@@ -2,7 +2,7 @@
 layout: post
 title: "Imputing the presence of HLA-B27 using your raw 23andMe data file"
 date: 2015-11-12 22:18:00 +01:00
-updated: 2015-11-12 22:18:00 +01:00
+updated: 2016-02-23 22:19:06 +01:00
 categories: DNA
 disqus: true
 tags: 23andme dna
