@@ -59,7 +59,7 @@ come from C.
 Save the following in `hello-world.scm`.
 
 <pre>
-{% include scheme-tutorial/hello-world.scm %}
+{% include scheme/tutorial/hello-world.scm %}
 </pre>
 
 This can be run by typing
@@ -110,7 +110,7 @@ Let's create a small family of variadic `print` functions that all print to the
 default output port. We'll bundle them up in a library.
 
 <pre>
-{% include scheme-tutorial/print.sld %}
+{% include scheme/tutorial/print.sld %}
 </pre>
 
 To use them, you need to `(import (print))` in your code.  The implementations

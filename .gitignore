@@ -1,3 +1,4 @@
+*.out
 *.pyc
-_site
 Gemfile.lock
+_site

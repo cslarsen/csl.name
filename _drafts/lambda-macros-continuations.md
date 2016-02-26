@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "The straight (call/cc) story"
+title: "A tutorial on lambdas, macros and continuations in Scheme"
 date: 2016-01-27 17:35:18 +0100
 updated: 2016-01-27 17:35:18 +0100
 categories: programming
@@ -11,27 +11,49 @@ tags: scheme continuations
 <p class="lead">
 I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory talk
 on R<sup>7</sup>RS Scheme</a> that included some neat examples using closures,
-continuations and macros to do some cool stuff. This article expands on that.
-The intended audience is anyone curious about Scheme or those concepts
-(featuring: pseudo-JavaScript code).
+continuations and macros to do some cool stuff. This article expands on that,
+intended for anyone curious about those concepts.
 </p>
 
 If your programming language supports continuations, you can implement
-[any control flow construct](controlflow) in native source code form. Meaning
-you can import them without requiring any binary shared libraries:
+[any control flow construct](controlflow) in native source code form. That
+means you can import things like
 
-    (import (goto-statements)
-            (exception-handling)
-            (restartable-exceptions)
+    (import (goto)
+            (exceptions)
+            (continuable-exceptions)
             (coroutines)
             (cooperative-multithreading)
-            (nondeterministic-programming))
+            (nondeterminism))
 
 I'll give simple examples on how all of the above can be implemented using
 closures, continuations and macros, using plain <a
 href="http://trac.sacrideo.us/wg/wiki/R7RSHomePage">R<sup>7</sup>RS Scheme</a>.
 
 You can run the examples using [Chibi Scheme](Chibi Scheme).
+
+Creating your first Scheme library
+----------------------------------
+
+To get started, we need a function `println` that simply prints all of its
+arguments. We'll create a variadic function that simply calls `display` on all
+its arguments, and put it in a library called `print`.
+
+{% highlight scheme %}
+{% include scheme/goto/print.sld %}
+{% endhighlight %}
+
+Here's a test program
+
+{% highlight scheme %}
+{% include scheme/goto/print-example.scm %}
+{% endhighlight %}
+
+Running it produces
+
+{% highlight scheme %}
+{% include scheme/goto/print-example.out %}
+{% endhighlight %}
 
 What are continuations?
 -----------------------
@@ -158,45 +180,17 @@ of `goto-label` is straight-forward:
       (label new-value))
 
 The final program can be run in [Chibi Scheme](chibi). Put the following in a
-file called `print-person-0.scm`:
+file called `print-person.scm`:
 
-    (import (scheme base)
-            (scheme write))
-
-    (define (println . args)
-      (for-each display args)
-      (newline))
-
-    (define (set-label initial-return-value)
-      (call/cc
-        (lambda (continuation)
-          (set! label continuation)
-          initial-return-value)))
-
-    (define (goto-label new-value)
-      (label new-value))
-
-    (define label #f)
-
-    (define (print-person name age)
-      (println name " is " (set-label age) " years old."))
-
-    (println "Value of label: " label)
-    (print-person "John Doe" 123)
-
-    (println "Value of label after calling print-person: " label)
-    (goto-label 500)
-
-    (println "Done!")
+{% highlight scheme %}
+{% include scheme/goto/print-person.scm %}
+{% endhighlight %}
 
 Executing it gives:
 
-    $ chibi-scheme print-person-0.scm
-    Value of label: #f
-    John Doe is 123 years old.
-    Value of label after calling print-person: #<procedure #f>
-    John Doe is 500 years old.
-    Done!
+{% highlight shell %}
+{% include scheme/goto/print-person.out %}
+{% endhighlight %}
 
 Now I'll suggest a few mental models that can be used to understand how
 continuations work. After that, we'll revisit this example, but wrap everything

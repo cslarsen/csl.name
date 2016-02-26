@@ -14,11 +14,11 @@ doctor: build
 	@echo -- Jekyll doctor
 	$(jekyll) doctor
 
-build: update-posts
+build: includes update-posts
 	@echo -- Building
 	$(jekyll) build --lsi --trace
 
-serve:
+serve: includes
 	$(jekyll) serve --drafts --host 0.0.0.0 --lsi --watch
 
 minify: build
@@ -28,6 +28,13 @@ minify: build
 update-posts:
 	@echo -- Updating post dates
 	python _tools/update_post.py _posts/*.markdown _posts/*.md
+
+includes:
+	@echo -- Building include files
+	$(MAKE) -C _includes/scheme/goto/ -f _Makefile all
+
+clean-includes:
+	$(MAKE) -C _includes/scheme/goto/ -f _Makefile clean
 
 new: draft
 
@@ -60,5 +67,5 @@ dist: update-posts doctor minify compress
 	@echo -- Publishing
 	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
-clean:
+clean: clean-includes
 	rm -rf _site/

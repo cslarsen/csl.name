@@ -1,0 +1,12 @@
+TARGETS := \
+	print-example.out \
+	print-person.out
+
+%.out: %.scm
+	echo "$$ chibi-scheme $<" > $@
+	chibi-scheme $< >> $@
+
+all: $(TARGETS)
+
+clean:
+	rm -f $(TARGETS)
