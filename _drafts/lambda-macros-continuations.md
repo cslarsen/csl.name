@@ -51,7 +51,7 @@ Here's a test program
 
 Running it produces
 
-{% highlight scheme %}
+{% highlight bash %}
 {% include scheme/goto/print-example.out %}
 {% endhighlight %}
 
@@ -345,21 +345,7 @@ actually be macros, meaning you don't really know when --- or if --- your
 arguments are evaluated, and that makes it hard to reason about your program.
 I think they're great if used with care.
 
-Anyway, back to libraries. To put `println` in a library, put this in a file
-called `print.sld`. If you keep the `sld`-files in a separate directory, be
-sure to pass the `-Ipath` option to Chibi.
-
-    (define-library (print)
-      (import (scheme base)
-              (scheme write))
-      (export println)
-      (begin
-        (define (println . args)
-          (for-each display args)
-          (newline))))
-
-Now we can `(import (print))` in our code. Back to the goto library.  What we
-want is to be able to write
+What we want is to be able to write
 
     (import (scheme base)
             (scheme write)
@@ -372,45 +358,16 @@ want is to be able to write
 
 and with value-passing:
 
-    (import (scheme base)
-            (scheme write)
-            (print)
-            (goto))
-
-    (define *age* #f)
-    (define *name* #f)
-
-    (define (print-person name age)
-      (println (set-label *name* name) " is "
-               (set-label *age* age) " years old."))
-
-    (print-person "John Doe" "123")
-    (goto-label *name* "Jane Doe")
-    (goto-label *age* "500")
+{% highlight scheme %}
+{% include scheme/goto/goto-example.scm %}
+{% endhighlight %}
 
 We'll use the same strategy as before, except that `set-label` and `goto-label`
 can be invoked using a label and value, or only a label.
 
-    (define-library (goto)
-      (import (scheme base)
-              (scheme write)
-              (scheme case-lambda))
-      (export set-label
-              goto-label)
-      (begin
-        (define goto-label
-          (case-lambda
-            ((label) (label '()))
-            ((label value) (label value))))
-
-        (define-syntax set-label
-          (syntax-rules ()
-            ((_ label value)
-               (call/cc (lambda (k)
-                          (if (not label) (set! label k))
-                          value)))
-            ((_ label)
-               (set-label label '()))))))
+{% highlight scheme %}
+{% include scheme/goto/goto.sld %}
+{% endhighlight %}
 
 The `goto-label` function uses `case-lambda`, which patterns matches on its
 invocation form. The first line matches calls to `(goto-label <label>)`, while
@@ -420,7 +377,11 @@ The `set-label` macro also matches on the same two patterns. Here we use a
 single underscore instead of typing out the full name of the macro.
 
 Put that in a file called `goto.sld`, and you should be able to run the above
-examples.
+examples:
+
+{% highlight bash %}
+{% include scheme/goto/goto-example.out %}
+{% endhighlight %}
 
 Delimited and undelimited continuations
 ---------------------------------------
@@ -465,37 +426,15 @@ To make our exception library useful, we'll wrap the functionality in macros.
 The basic idea is to have a global ``throw`` function that we pass the
 continuation on to.
 
-    (import (scheme base)
-            (scheme write))
+{% highlight scheme %}
+{% include scheme/goto/try-catch-0.scm %}
+{% endhighlight %}
 
-    (define throw (lambda () #f))
+Running the above program,
 
-    (define-syntax try
-      (syntax-rules (catch)
-        ((try (catch thunk) body ...)
-         (call/cc
-           (lambda (exit)
-             (set! throw
-               (lambda (error)
-                 (println "Exception: " error)
-                 (exit)))
-             body ...)))))
-
-    (try
-      (catch
-        (lambda (error)
-          (println "Error: " error)))
-
-      (define (divide a b)
-        (if (zero? b)
-          (throw "Divide by zero")
-          (println a "/" b " = " (/ a b))))
-
-      (divide 10 2)
-      (divide 1 3)
-      (divide 3 0))
-
-    (println "End of program")
+{% highlight scheme %}
+{% include scheme/goto/try-catch-0.out %}
+{% endhighlight %}
 
 A better try-catch library
 --------------------------

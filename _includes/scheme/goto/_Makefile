@@ -1,6 +1,8 @@
 TARGETS := \
+	goto-example.out \
 	print-example.out \
-	print-person.out
+	print-person.out \
+	try-catch-0.out
 
 %.out: %.scm
 	echo "$$ chibi-scheme $<" > $@
