@@ -31,9 +31,11 @@ update-posts:
 
 includes:
 	@echo -- Building include files
+	$(MAKE) -C _includes/scheme/exceptions/ -f _Makefile all
 	$(MAKE) -C _includes/scheme/goto/ -f _Makefile all
 
 clean-includes:
+	$(MAKE) -C _includes/scheme/exceptions/ -f _Makefile clean
 	$(MAKE) -C _includes/scheme/goto/ -f _Makefile clean
 
 new: draft

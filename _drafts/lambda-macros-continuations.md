@@ -433,7 +433,7 @@ continuation on to.
 Running the above program,
 
 {% highlight scheme %}
-{% include scheme/goto/try-catch-0.out %}
+{% include scheme/exceptions/try-catch-0.out %}
 {% endhighlight %}
 
 A better try-catch library
