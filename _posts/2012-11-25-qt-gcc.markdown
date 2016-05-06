@@ -3,7 +3,7 @@ layout: post
 title:  "Building Qt apps on the command line"
 subtitle: ""
 date:      2012-11-25 00:00:00 +00:00
-updated:   2012-11-25 00:00:00 +00:00
+updated:   2016-05-06 20:25:00 +00:00
 categories: C++
 disqus: true
 tags: Qt C++ gcc UNIX
@@ -32,7 +32,24 @@ int main(int argc, char** argv)
 
 Using `qmake`, set up a new Qt project and create a GNU makefile.
 
-    $ qmake -project
+    $ qmake -project -o foo.pro
+
+UPDATE: With newer versions of Qt, you have to edit `foo.pro` after creating
+it. Add the line `qt += WIDGETS` to be able to compile:
+
+    TEMPLATE = app
+    TARGET = foo
+    INCLUDEPATH += .
+    QT += widgets  # <== Add this
+
+    # Input
+    SOURCES += foo.cpp
+
+If you use other parts of Qt, like network, you need to add `QT += networking`,
+then recreate the makefile below to make it compile.
+
+Now, generate a makefile:
+
     $ qmake -makefile
     $ ls
     Makefile foo.cpp foo.pro
@@ -49,3 +66,65 @@ Building and running it,
 the result should look similar to the image below.
 
 !["Hello, world" in Qt](/gfx/post/qt-gcc.png)
+
+Using the meta-object compiler
+==============================
+
+You have to invoke `make mocables`, then `#include "foo.moc"` at the end of
+your file. Then the meta object compiler will compile `foo.cpp` and put the
+output in `foo.moc`.
+
+For example,
+
+    #include <qapplication.h>
+    #include <qdialog.h>
+    #include <qmessagebox.h>
+    #include <qobject.h>
+    #include <qpushbutton.h>
+
+    class MyApp : public QDialog {
+      Q_OBJECT
+    public:
+        MyApp(QObject* /*parent*/ = 0):
+          button(this)
+        {
+          button.setText("Hello world!");
+          button.resize(100, 30);
+
+          // When the button is clicked, run button_clicked
+          connect(&button, &QPushButton::clicked, this, &MyApp::button_clicked);
+        }
+
+    public slots:
+        void button_clicked() {
+          QMessageBox box;
+          box.setWindowTitle("Howdy");
+          box.setText("You clicked the button");
+          box.show();
+          box.exec();
+        }
+
+    protected:
+      QPushButton button;
+    };
+
+    int main(int argc, char** argv)
+    {
+      QApplication app(argc, argv);
+
+      MyApp myapp;
+      myapp.show();
+
+      return app.exec();
+    }
+
+    #include "foo.moc"
+
+Compile with
+
+    $ make mocables
+    $ make all
+    $ open foo.app
+
+This should give you a window with a button. When you click it, a pop-up window
+should appear.
