@@ -3,14 +3,15 @@ layout: post
 title:  "Building Qt apps on the command line"
 subtitle: ""
 date:      2012-11-25 00:00:00 +00:00
-updated:   2016-05-06 20:25:00 +00:00
+updated:   2016-05-06 22:54:24 +02:00
 categories: C++
 disqus: true
 tags: Qt C++ gcc UNIX
 ---
 
-Most Qt tutorials seem to assume you want to use Qt Creator.
-Here's how you can build Qt apps on the command line.
+Most Qt tutorials seem to assume you want to use Qt Creator.  This shows you
+how to build Qt apps on the command line, meaning you can experiment much
+quicker while feeling that you're in control.
 
 Create a directory `foo` and then put the code below into `foo.cpp`.
 
@@ -34,19 +35,16 @@ Using `qmake`, set up a new Qt project and create a GNU makefile.
 
     $ qmake -project -o foo.pro
 
-UPDATE: With newer versions of Qt, you have to edit `foo.pro` after creating
-it. Add the line `qt += WIDGETS` to be able to compile:
+With newer versions of Qt, you have to edit `foo.pro` after creating it. Add
+the line `qt += WIDGETS` to be able to compile:
 
     TEMPLATE = app
     TARGET = foo
     INCLUDEPATH += .
-    QT += widgets  # <== Add this
+    QT += widgets # <== Add this
 
     # Input
     SOURCES += foo.cpp
-
-If you use other parts of Qt, like network, you need to add `QT += networking`,
-then recreate the makefile below to make it compile.
 
 Now, generate a makefile:
 
@@ -54,27 +52,38 @@ Now, generate a makefile:
     $ ls
     Makefile foo.cpp foo.pro
 
-Now you can simple `make` the app.  It depends on the system what the final
-binary will be called.  For instance, on OS X, it will be `foo.app/`, an app
-bundle.
+If you use other parts of Qt, for example networking, you may have to add
+additional such lines (`QT += networking`). In that case, you have to recreate
+the makefile with the above command.
 
-Building and running it,
+Now you can simply `make` the app.
 
     $ make
+
+It depends on the system what the final binary will be called.  On Mac OS X, it
+will be `foo.app`, and on Windows I guess it will be `foo.exe`. To open the
+application bundle on OS X, do
+
     $ open foo.app
 
-the result should look similar to the image below.
+The result should look similar to the image below.
 
 !["Hello, world" in Qt](/gfx/post/qt-gcc.png)
 
 Using the meta-object compiler
 ==============================
 
-You have to invoke `make mocables`, then `#include "foo.moc"` at the end of
-your file. Then the meta object compiler will compile `foo.cpp` and put the
-output in `foo.moc`.
+You'll soon want to use the meta-object compiler to be able to play with slots
+and signals. The makefile already supports this, but you have to explicitly
+call the target to build the `.moc` files. Type
 
-For example,
+    $ make mocables
+
+to build them. If you copy the below code, this command will create `foo.moc`.
+After that, you need to `#include "foo.moc"` at the end of `foo.cpp` to make
+sure the linker doesn't complain about missing vtables.
+
+Here's a really simple example to get you going:
 
     #include <qapplication.h>
     #include <qdialog.h>
@@ -122,9 +131,12 @@ For example,
 
 Compile with
 
-    $ make mocables
-    $ make all
+    $ make mocables all
     $ open foo.app
 
-This should give you a window with a button. When you click it, a pop-up window
-should appear.
+This will give you a window with a single button, which opens a pop-up window
+when clicked.
+
+You can hack the makefile to automatically build `foo.moc`, but since it's
+automatically generated, I suggest you either just build the mocables
+explicitly, or find out how to add the moc targets to `foo.pro`.
