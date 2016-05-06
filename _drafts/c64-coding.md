@@ -101,15 +101,6 @@ and then
 While loading, you may hit Command-W to enter warp speed, then disable it again
 before running.
 
-The last time I looked at the Dust tutorial above, they had a huge amount of
-space between the BASIC loader and the start of the main assembly code. This
-doesn't just waste disk space, it also takes ages to load, even in warp mode.
-In the below example, the main assembly code starts right after the loader. Of
-course, if your program becomes larger, you may want to split your code into
-several files, and then just have a loader. Using `LOAD "*",8,1` also runs it
-right off the bat, as the last `,1` loads right into memory and executes from
-there.
-
 A BASIC loader
 --------------
 
@@ -144,7 +135,7 @@ The BASIC loader I use there is
     ; but still be able to run it.
     ; For this, see http://codebase64.org/doku.php?id=base:acme-macro-tu
 
-The file `constants.asm` are simply
+The contents of `constants.asm` is simply
 
     ;; Start of BASIC program
     basic = $0801
@@ -177,7 +168,34 @@ To use the BASIC booter, include the file and invoke the macro with `+start_at
       jmp .loop
 
 It wraps the loader in an ACME macro `start_at`. The main assembly here starts
-as `$0900`, meaning it loads super fast.
+at `$0900`, meaning it loads super fast: The BASIC loader starts `$0801` and
+the rest of the code at `$0900`. Now, the `.PRG` file format simply consists of
+a destination address in memory to load the file contents into. If the space
+between your BASIC loaer (which *must* start at `$0801`) and your entry point
+is huge, then you'll waste space, and the file will take forever to load, even
+if you're using warp mode in your emulator. If you need more space, let the
+first `.PRG` file be a loader so your program gets up and running quickly.
+
+If you put the above code into `flicker.asm`, using the above makefile you can
+now run it by typing
+
+    $ make flicker
+    acme --cpu 6510 --format cbm --outfile flicker.prg flicker.asm
+    /Applications/Vice64/tools/c1541 -format foo,id d64 flicker.d64 -write flicker.prg
+    Unit: 0
+    Formatting in unit 8...
+    Writing file `FLICKER.PRG' as `FLICKER.PRG' to unit 8.
+    open /Applications/Vice64/x64.app flicker.d64
+    rm flicker.prg
+
+The output is given below
+
+![Commodore 64 loading flicekr demo](/gfx/post/c64-loading.png)
+
+![Commodore 64 flicker demo](/gfx/post/c64-flicker.png)
+
+What next?
+----------
 
 The only thing you need now is a lot of time on your hands, a good C64
 reference manual and memory map, and you're set for hours of fun (*after*
