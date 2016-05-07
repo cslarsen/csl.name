@@ -63,7 +63,7 @@ What are continuations?
 =======================
 
 There are many ways to explain what continuations are, but I will offer two
-mental models that are very useful, with a minor trade-off with exactness.
+mental models that are very useful, with minor trade-offs in exactness.
 
 A continuation represents the rest of the computation. A good way to think
 about this is that whenever you capture a continuation, you essentially set a
