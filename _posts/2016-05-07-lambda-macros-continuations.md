@@ -11,8 +11,8 @@ tags: scheme continuations
 <p class="lead">
 I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory talk
 on R<sup>7</sup>RS Scheme</a> in 2013 that included some neat examples using
-closures, continuations and macros to do some cool stuff. This article expands
-on that, intended for anyone curious about those concepts.
+closures, continuations and macros. This article expands on that, intended for
+anyone curious about those concepts.
 </p>
 
 If your programming language supports continuations, you can implement
@@ -31,7 +31,8 @@ closures, continuations and macros, using plain <a
 href="http://trac.sacrideo.us/wg/wiki/R7RSHomePage">R<sup>7</sup>RS Scheme</a>.
 
 **NOTE:** This post is a work in progress that I'm posting early. The later
-examples doesn't include explanations, and some are outright missing.
+examples doesn't include explanations, and some are outright missing. Also, if
+I get anything wrong, please let me know in the comments at the bottom.
 
 You can run the examples using [Chibi Scheme](Chibi Scheme).
 
