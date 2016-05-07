@@ -9,21 +9,15 @@ tags: Lisp Scheme
 ---
 
 <p class="lead">
-I've read too many needlessly hard explanations for what <em>call/cc</em> is.
-In essence, it's just what Guy Steele originally called <em>gotos with
-parameters</em>.  If that doesn't make sense, think of them as being about
-saving and restoring the entire call stacks.  Here I'll explain that and the
-difference between delimited and undelimited continuations.
+The concept of continuations are probably best understood as first class call
+stacks. I'll explain that in more detail here, along with the difference
+between delimited (aka `call/cc`) and undelimited continuations.
 </p>
 
-Gotos with parameters
---------------------------------
-
-Forget what you've heard about continuations and time travelling.  When you see
-`(call/cc ...)` in any part of your code, that is a location that you can
-potentially jump back to.  If you want to, you can also pass a parameter that
-will replace the entire `call/cc`-block with a value.  Evaluation then proceeds
-as normal.
+When you see `(call/cc ...)` in any part of your code, that is a location that
+you can potentially jump back to.  If you want to, you can also pass a
+parameter that will replace the entire `call/cc`-block with a value.
+Evaluation then proceeds as normal.
 
 The _syntax_ for `call/cc` is almost the same as `lambda`, with the exception
 that it only takes one parameter, and the return-value is what the entire
