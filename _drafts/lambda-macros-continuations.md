@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "A tutorial on lambdas, macros and continuations in Scheme"
-date: 2016-01-27 17:35:18 +0100
-updated: 2016-01-27 17:35:18 +0100
+title: "Lambdas, macros and continuations in Scheme — a tutorial"
+date: 2016-05-07 07:30:18 +0000
+updated: 2016-05-07 07:30:18 +0000
 categories: programming
 disqus: true
 tags: scheme continuations
@@ -10,9 +10,9 @@ tags: scheme continuations
 
 <p class="lead">
 I gave an <a href="https://speakerdeck.com/csl/r7rs-scheme">introductory talk
-on R<sup>7</sup>RS Scheme</a> that included some neat examples using closures,
-continuations and macros to do some cool stuff. This article expands on that,
-intended for anyone curious about those concepts.
+on R<sup>7</sup>RS Scheme</a> in 2013 that included some neat examples using
+closures, continuations and macros to do some cool stuff. This article expands
+on that, intended for anyone curious about those concepts.
 </p>
 
 If your programming language supports continuations, you can implement
@@ -30,10 +30,13 @@ I'll give simple examples on how all of the above can be implemented using
 closures, continuations and macros, using plain <a
 href="http://trac.sacrideo.us/wg/wiki/R7RSHomePage">R<sup>7</sup>RS Scheme</a>.
 
+**NOTE:** This post is a work in progress that I'm posting early. The later
+examples doesn't include explanations, and some are outright missing.
+
 You can run the examples using [Chibi Scheme](Chibi Scheme).
 
 Creating your first Scheme library
-----------------------------------
+==================================
 
 To get started, we need a function `println` that simply prints all of its
 arguments. We'll create a variadic function that simply calls `display` on all
@@ -56,7 +59,7 @@ Running it produces
 {% endhighlight %}
 
 What are continuations?
------------------------
+=======================
 
 There are many ways to explain what continuations are, but I will offer two
 mental models that are very useful, with a minor trade-off with exactness.
@@ -106,7 +109,7 @@ arguments. Finally, `print_person` itself has to return, and the return
 location this time around will be right after the `goto_label(500)` statement.
 
 Implementing goto
------------------
+=================
 
 If we translate the previous example to Scheme, we can implement `set_label`
 and `goto_label`.
@@ -201,7 +204,7 @@ up in a neat little library, so that we can write
 in our Scheme programs.
 
 Continuations as call stack manipulations
------------------------------------------
+=========================================
 
 Knowing a little bit about implementation strategies for continuations is of
 great help in understanding them.
@@ -233,7 +236,7 @@ definitions branch out from there. Next, it has a branch for the definition for
     ^
     The top-level
 
-The vertical line going from root and downwards --- the trunk, so to speak ---
+The vertical line going from root and downwards — the trunk, so to speak —
 is what we call the *top-level* in Scheme.
 
 Now, what `call/cc` does, in some implementations, is to take a copy of the
@@ -248,20 +251,20 @@ call stack: Chop off the current call stack from the top-level up to the
 current position, and replace it with the one we have stored. Finally, we have
 a value to pass on (goto with *parameters*), so we place that in the correct
 location at the very top of the stack where there is a place for the
-reeturn-value. Then we continue running from there.
+return-value. Then we continue running from there.
 
 I'm doing some hand-waving here, of course. There are many other details that
 you'd have to do, but the point is to understand the general strategy.
 
 Creating a "goto" library using macros
---------------------------------------
+======================================
 
 Recall the goto example given earlier. It used a global variable `label` to
 hold the continuation. This is a problem if we want to make a general
 goto-library, because it means you can only ever jump to *one* location.
 
 So we should take an extra argument to `set-label` and `goto-label`. But Scheme
-passes arguments by value and cannot --- in general --- mutate their "outer"
+passes arguments by value and cannot — in general — mutate their "outer"
 values: A function taking an argument can only modify it locally.
 
 There are two ways to solve this: With or without macros.
@@ -341,7 +344,7 @@ therefore not print anything.
 
 Note that some people dislike macros, because it can obscure the exact
 behaviour of your program. For example, things that look like functions may
-actually be macros, meaning you don't really know when --- or if --- your
+actually be macros, meaning you don't really know when — or if — your
 arguments are evaluated, and that makes it hard to reason about your program.
 I think they're great if used with care.
 
@@ -384,7 +387,7 @@ examples:
 {% endhighlight %}
 
 Delimited and undelimited continuations
----------------------------------------
+=======================================
 
 Using the call stack model of explanation explained earlier, it means that
 taking a continuation copies the entire call stack down to the second-to-last
@@ -392,8 +395,8 @@ frame of the top-level. This prevents us from having endless loops whenever we
 reinstate a continuation. It's a detail, don't worry.
 
 Dealing with continuations in Scheme is done through the ``call/cc`` form. It
-provides [undelimited continuations](undelimited), which --- while still
-powerful --- are not as general as [delimited continuations](delimited).
+provides [undelimited continuations](undelimited), which — while still
+powerful — are not as general as [delimited continuations](delimited).
 
 Now, the big deal about continuations is that you can use them to implement
 [any other control flow construct](controlflow), from simple gotos to
@@ -415,7 +418,7 @@ Anyway, undelimited continuations are unfortunately not part of the official
 R<sup>7</sup>RS specification, so I will focus on `call/cc` here.
 
 A simple exception system
--------------------------
+=========================
 
 Anyway, let's dive right into the examples. Let's say we want to implement a
 simple exception system. We can do that using ``call/cc`` and then users can
@@ -427,7 +430,7 @@ The basic idea is to have a global ``throw`` function that we pass the
 continuation on to.
 
 {% highlight scheme %}
-{% include scheme/goto/try-catch-0.scm %}
+{% include scheme/exceptions/try-catch-0.scm %}
 {% endhighlight %}
 
 Running the above program,
@@ -562,10 +565,10 @@ Example usage:
             (println "Restart division with 1 as numerator:")
             (phew 1)))))
 
-(println "--end--")
+    (println "--end--")
 
 Lazy evaluation
----------------
+===============
 
 Any language with closures can implement lazy evaluation, but if you have a
 macro system, you can change the user interface so that it feels like a natural
@@ -590,7 +593,8 @@ part of the language.
             ((cadr delayed))
             (error "Not a delayed computation")))))
 
-Usage example:
+Usage example
+-------------
 
     (import (scheme base)
             (scheme eval)
@@ -613,7 +617,7 @@ Usage example:
     (force-computation (list-ref delayed 1))
 
 Implementing a commenting system
---------------------------------
+================================
 
 I forgot to say this, but macro expansions happens at *compile time*. That's
 very important to remember. That means we should be able to provide our own
@@ -665,7 +669,8 @@ The comments library:
             ((uncomment (comment body ...))
              (begin body ...))))))
 
-Usage example:
+Commenting usage example
+------------------------
 
     (import (scheme base)
             (print)
@@ -680,7 +685,8 @@ Usage example:
 
     (hello)
 
-Another usage example:
+Another commenting example
+--------------------------
 
     (import (scheme base)
             (print)
@@ -702,7 +708,7 @@ Another usage example:
     (hello)
 
 Transforming code into strings
-------------------------------
+==============================
 
 Imagine you have a unit-testing framework where you test some code. If it
 fails, you want to print the expected result, the actual result but also the
@@ -758,9 +764,9 @@ Here's a simple library that does that in Scheme.
                      (get-output-string s))))))))))
 
 A generator library (coroutines)
---------------------------------
+================================
 
-(I *think* I wrote this)
+(I *think* I wrote this. I'll find out and give credit where due.)
 
     (define-library (generator)
       (import (scheme base))
@@ -790,7 +796,8 @@ A generator library (coroutines)
                          (set! next (car v))
                          (cdr v)) v)))))))))
 
-Usage eaxmple:
+Generator usage example
+-----------------------
 
     (import (scheme base)
             (scheme write)
@@ -814,7 +821,7 @@ Usage eaxmple:
     (println "5: " (num) " (should be -1)")
 
 Memoization
------------
+===========
 
 Probably the most boring thing to do, since you've probably done it yourself,
 but here it is anyway.
@@ -878,7 +885,8 @@ We also need the measure-time library:
                    (println code " ==> " value " (" time " secs)")
                    value))))))))
 
-Usage:
+Usage
+-----
 
     (import (scheme base)
             (measure-time)
@@ -920,7 +928,7 @@ Usage:
     (report-time (fibo-fast 100))
 
 Other things
-------------
+============
 
 Object orientation as a library: Bryan's Object System (actually the guy who
 wrote "Real World Haskell", I think).
@@ -930,8 +938,8 @@ Also: http://matt.might.net/articles/programming-with-continuations--exceptions-
 
 Green threads: https://en.wikipedia.org/wiki/Continuation
 
-What (R7RS) Scheme DOESN'T have
--------------------------------
+What (R<sup>7</sup>RS) Scheme *doesn't* have
+============================================
 
 It doesn't have anaphoric macros, but most systems give you defmacro anyway.
 It's just not standardized. However, the macro system in RnRS Scheme is
@@ -940,16 +948,15 @@ hygienic, which is a good thing.
 It doesn't have delimited continuations, but again, most Schemes actually
 provide them, it's just that there isn't a standardized interface.
 
-What about Common Lisp? It probably has ALL of the above, either in the
-language itself (perhaps not call/cc?) but has it in libraries anyway. I don't
-know Common Lisp, so I would'nt know. Also, Common Lisp compilers are
-supposedly *really* good at delivering optimized binaries.
+What about Common Lisp? It probably has *all* of the above, either in the
+language itself or in libraries.  Also, Common Lisp compilers are supposedly
+*really* good at delivering optimized binaries.
 
 Why would you care?
--------------------
+===================
 
-Remember I used pseudo-JavaScript in the very first example? Well, many people
-have talked about adding continuations to JavaScript. So it's better to learn
+Remember I used pseudo-JavaScript in the very first example? Well, there has
+been talk about adding continuations to JavaScript.  So it's better to learn
 about it now than later.
 
 What other cool stuff can you implement with continuations? Take a look at what
@@ -964,7 +971,7 @@ could program as if the user was there all the time, as in:
     print_to_user("Your name is %s and your age is %d", name, age);
 
 The above program serves a complete HTML page to the user, asking his name.
-If he chooses to answer --- and after any amount of time --- the program will
+If he chooses to answer — and after any amount of time — the program will
 extract his reply, put it in the `name` variable and continue running as if
 nothing had happened in between. In other words, we plug the statelessness hole
 of HTTP using continuations, and can write programs that look like any other,
