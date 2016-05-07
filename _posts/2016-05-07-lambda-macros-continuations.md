@@ -70,6 +70,9 @@ about this is that whenever you capture a continuation, you essentially set a
 label in the code that you can later jump back to. So it's almost like a GOTO
 or JUMP instruction, with the additional benefit of being able to pass along
 new values that will replace the value at the location where it jumps to.
+(Moreover, when you jump, the code will continue running from that location,
+returning to the correct functions that were active when you first captured the
+continuation.)
 
 So, if you have a function that computes some mathematical expression, you can
 surround one of the variables with such a label. Later on, you can back jump to this
@@ -250,9 +253,9 @@ When we want to invoke a continuation, we want to continue running at the same
 location that the continuation was taken. To do this, we just reinstate the
 call stack: Chop off the current call stack from the top-level up to the
 current position, and replace it with the one we have stored. Finally, we have
-a value to pass on (goto with *parameters*), so we place that in the correct
-location at the very top of the stack where there is a place for the
-return-value. Then we continue running from there.
+a value to pass on, so we place that in the correct location at the very top of
+the stack where there is a place for the return-value. Then we continue running
+from there.
 
 I'm doing some hand-waving here, of course. There are many other details that
 you'd have to do, but the point is to understand the general strategy.
