@@ -58,8 +58,8 @@ Well, for large values of <span>|x|</span> and small for <span>|y|</span>
 Diverged points are painted black, so we can guess that the plot will be black
 in all directions some distance from origo.
 
-{% callout warning: Complex limits %}
-The mathematical description here is very imprecise.
+<i>
+<b>Note:</b> The mathematical description here is very imprecise.
 
 Starting with <span>x</span> and <span>y</span>, for each iteration you'll get
 a new expression <span>a + ib</span>, i.e. a new point at <span>(a,b)</span>.
@@ -71,8 +71,10 @@ For the Mandelbrot set, it means that if
 any point lands outside a circle with radius two around origo, the sequence
 will diverge.
 
-<a href="https://en.wikipedia.org/wiki/Complex_quadratic_polynomial#Critical_orbit">Read more on Wikipedia</a>.
-{% endcallout %}
+<span class="u-pull-right">
+  <a href="https://en.wikipedia.org/wiki/Complex_quadratic_polynomial#Critical_orbit">Read more on Wikipedia</a>
+</span>
+</i>
 
 But for points close to origo &mdash; say, <span>|x|</span> and
 <span>|y|</span> less than 1 &mdash; we would expect it to converge, because
@@ -104,11 +106,13 @@ value.  If the magnitude of <span>z</span> &mdash; the distance to origo, or
 value we will assume that it will diverge into infinity.  If so, stop the
 calculation and plot a _black dot_ at the current location.
 
-{% callout info %}
+<i>
 For the Mandelbrot set, it can be shown that the threshold value is exactly two, i.e.
 any sequence with a <span>|z<sub>n</sub>| > 2</span> will diverge.
-<a href="http://www.mi.sanu.ac.rs/vismath/javier/b2.htm">Read more about this</a>.
-{% endcallout %}
+<span class="u-pull-right">
+  <a href="http://www.mi.sanu.ac.rs/vismath/javier/b2.htm">Read more about this</a>.
+</span>
+</i>
 
 If <span>|z|</span> has not exceeded the threshold value after a predecided
 number of iterations (which we choose at will), we will assume that the current
