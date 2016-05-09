@@ -21,17 +21,20 @@ build: includes
 serve: includes
 	$(jekyll) serve --drafts --host 0.0.0.0 --lsi --watch
 
-minify: build
-	@echo -- Minifying CSS
-	yuicompressor _site/css/normalize.css -o _site/css/normalize.css
-	yuicompressor _site/css/skeleton.css -o _site/css/skeleton.css
+_includes/css/all.css: css/normalize.css css/skeleton.css css/customized.css css/font.css
+	cat $^ > $@
+	yuicompressor $@ -o $@.tmp
+	mv $@.tmp $@
+
+minify:
+	@echo -- Minified CSS
 
 # Currently not being used
 update-posts:
 	@echo -- Updating post dates
 	python _tools/update_post.py _posts/*.markdown _posts/*.md
 
-includes:
+includes: _includes/css/all.css
 	@echo -- Building include files
 	$(MAKE) -C _includes/scheme/exceptions/ -f _Makefile all
 	$(MAKE) -C _includes/scheme/goto/ -f _Makefile all
@@ -72,4 +75,4 @@ dist: doctor minify compress
 	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
 clean: clean-includes
-	rm -rf _site/
+	rm -rf _site/ _includes/css/all.css _includes/css/all.css.tmp
