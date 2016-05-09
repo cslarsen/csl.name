@@ -58,6 +58,7 @@ Well, for large values of <span>|x|</span> and small for <span>|y|</span>
 Diverged points are painted black, so we can guess that the plot will be black
 in all directions some distance from origo.
 
+<div>
 <i>
 <b>Note:</b> The mathematical description here is very imprecise.
 
@@ -71,10 +72,11 @@ For the Mandelbrot set, it means that if
 any point lands outside a circle with radius two around origo, the sequence
 will diverge.
 
-<span class="u-pull-right">
+<p class="u-pull-right">
   <a href="https://en.wikipedia.org/wiki/Complex_quadratic_polynomial#Critical_orbit">Read more on Wikipedia</a>
-</span>
+</p>
 </i>
+</div>
 
 But for points close to origo &mdash; say, <span>|x|</span> and
 <span>|y|</span> less than 1 &mdash; we would expect it to converge, because
