@@ -13,7 +13,7 @@ language. Specifically, it's aimed at the latest version, R⁷RS.
 This little tutorial will be updated in the time ahead, so be sure to post
 comments so I know what needs to be done!
 
-<img class="u-full-width"
+<img class="u-max-full-width"
      src="/gfx/post/scheme-tutorial/sea.jpg"
      alt="Cold waves crashing onto stones" />
 
