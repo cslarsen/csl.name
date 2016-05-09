@@ -21,7 +21,7 @@ build: includes
 serve: includes
 	$(jekyll) serve --drafts --host 0.0.0.0 --lsi --watch
 
-_includes/css/all.css: css/normalize.css css/skeleton.css css/customized.css css/font.css
+_includes/css/all.css: _includes/css/normalize.css _includes/css/skeleton.css _includes/css/customized.css _includes/css/font.css
 	cat $^ > $@
 	yuicompressor $@ -o $@.tmp
 	mv $@.tmp $@
