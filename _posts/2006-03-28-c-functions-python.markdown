@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Calling C functions from Python"
-subtitle: ""
 date:      2006-03-28 00:00:00 +00:00
 updated:   2006-03-28 00:00:00 +00:00
 categories: Python

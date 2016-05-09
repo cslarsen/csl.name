@@ -14,7 +14,7 @@ doctor: build
 	@echo -- Jekyll doctor
 	$(jekyll) doctor
 
-build: includes update-posts
+build: includes
 	@echo -- Building
 	$(jekyll) build --lsi --trace
 
@@ -26,6 +26,7 @@ minify: build
 	yuicompressor _site/css/normalize.css -o _site/css/normalize.css
 	yuicompressor _site/css/skeleton.css -o _site/css/skeleton.css
 
+# Currently not being used
 update-posts:
 	@echo -- Updating post dates
 	python _tools/update_post.py _posts/*.markdown _posts/*.md
@@ -66,7 +67,7 @@ compress: build
 								-name 'intro.data' \) -print0 \
 		| parallel --no-notice -0 gzip -9
 
-dist: update-posts doctor minify compress
+dist: doctor minify compress
 	@echo -- Publishing
 	rsync -avz --delete _site/. -e ssh cslarsen:/home/public
 
