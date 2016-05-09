@@ -23,7 +23,8 @@ serve: includes
 
 minify: build
 	@echo -- Minifying CSS
-	yuicompressor _site/css/bootstrap.css -o _site/css/bootstrap.css
+	yuicompressor _site/css/normalize.css -o _site/css/normalize.css
+	yuicompressor _site/css/skeleton.css -o _site/css/skeleton.css
 
 update-posts:
 	@echo -- Updating post dates
