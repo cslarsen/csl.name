@@ -48,7 +48,7 @@ new: draft
 draft:
 	@cd _tools && ./new-draft.sh
 
-compress: build
+compress: build pngfix
 	@echo -- Compressing files
 	find _site -name '*.html' -print0 \
 		| parallel --no-notice -0 perl -pi -e 's/\\.css/\\.css\\.gz/gi'
@@ -69,6 +69,11 @@ compress: build
 								-name 'dosbox.html.mem' -or \
 								-name 'intro.data' \) -print0 \
 		| parallel --no-notice -0 gzip -9
+
+pngfix: build
+	@echo -- Optimizing PNG images
+	for a in _site/gfx/post/*.png; do pngfix --suffix=.tmp --strip=all --optimize $$a; done
+	for a in _site/gfx/post/*.png.tmp; do mv $$a $${a%.tmp}; done
 
 dist: doctor minify compress
 	@echo -- Publishing
