@@ -8,18 +8,14 @@ disqus: true
 tags: Scheme
 ---
 
-{% lead %}
 This is a *work-in-progress* introduction to the Scheme programming
 language. Specifically, it's aimed at the latest version, R⁷RS.
 This little tutorial will be updated in the time ahead, so be sure to post
 comments so I know what needs to be done!
-{% endlead %}
 
-<p>
-  <img class="img-rounded img-responsive"
-       src="/gfx/post/scheme-tutorial/sea.jpg"
-       alt="Cold waves crashing onto stones" />
-</p>
+<img class="u-full-width"
+     src="/gfx/post/scheme-tutorial/sea.jpg"
+     alt="Cold waves crashing onto stones" />
 
 About Scheme
 ------------
@@ -142,12 +138,10 @@ For instance, consider the following factorial function written in Java.
 
 The AST for this function could be something like
 
-<p>
-  <img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
-       class="img-responsive center-block"
-       style="max-height: 384px;"
-       alt="Java factorial AST" />
-</p>
+<img src="/gfx/post/scheme-tutorial/ast-java-fact.svg"
+     class="u-full-width"
+     style="max-height: 384px;"
+     alt="Java factorial AST" />
 
 Now, the way to evaluate this AST is to start at the top node, then descend to
 each child, left-to-right.  If we do that, we can write out the scheme code
@@ -175,12 +169,10 @@ Looking at the AST again, we'll remove the nodes `*` and its child `n` and move
 `fact` up so that it's a child of the `if` tree.  We'll then add an accumulator
 that computes the result for us, or `(* n acc)`.
 
-<p>
-  <img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
-       class="wrapper img-responsive center-block"
-       style="max-height: 324px;"
-       alt="Tail-recursive factorial" />
-</p>
+<img src="/gfx/post/scheme-tutorial/ast-fact-tail.svg"
+     class="u-full-width"
+     style="max-height: 324px;"
+     alt="Tail-recursive factorial" />
 
 Since we'll now take two parameters, we'll call the function `fact-helper`.
 Also, instead of doing `(equal? n 0)` we'll just use `(zero? n)`.

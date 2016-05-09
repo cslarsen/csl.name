@@ -11,10 +11,8 @@ keywords: "Lua C++ Tutorial script programming language C"
 disqus: true
 ---
 
-{% lead %}
 Using Lua is easy! In this short tutorial we'll show how to write a fully
 working host program in C++ with Lua callbacks.
-{% endlead %}
 
 Since the static Lua libraries are written in C, you must import them as
 such:

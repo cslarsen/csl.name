@@ -9,11 +9,9 @@ disqus: true
 tags: JavaScript Mandelbrot Math
 ---
 
-{% lead %}
 In 2012, I made a <a href="http://mandelbrot-set.com">Mandelbrot renderer in
 JavaScript</a>. Here I will explain how you can do it yourself, including how
 to implement smooth coloring and making it fast.
-{% endlead %}
 
 <p>
   <img class="img-rounded img-responsive"

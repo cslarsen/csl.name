@@ -10,9 +10,7 @@ tags: Python C UNIX
 description: How to call C code from Python
 ---
 
-{% lead %}
 Here's a small tutorial on how to call your C functions from Python.
-{% endlead %}
 
 Let's make some simple functions in C. We'll call the file `myModule.c`.
 
