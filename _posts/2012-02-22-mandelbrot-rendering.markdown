@@ -14,7 +14,7 @@ JavaScript</a>. Here I will explain how you can do it yourself, including how
 to implement smooth coloring and making it fast.
 
 <p>
-  <img class="img-rounded img-responsive"
+  <img class="u-max-full-width"
        src="/gfx/post/mandelbrot-2.jpg"
        alt="The Mandelbrot Set" />
 </p>

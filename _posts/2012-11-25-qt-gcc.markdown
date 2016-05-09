@@ -67,7 +67,9 @@ application bundle on OS X, do
 
 The result should look similar to the image below.
 
-!["Hello, world" in Qt](/gfx/post/qt-gcc.png)
+<img class="u-max-full-width"
+     src="/gfx/post/qt-gcc.png"
+     alt="A 'Hello, world!' desktop application made with Qt">
 
 Using the meta-object compiler
 ==============================
