@@ -4,177 +4,53 @@ layout: default
 
 <div class="container">
   <div class="row">
-    <div class="col-md-8">
-      <div class="post-header">
-        <div class="page-header">
-          <small><a href="/">&laquo; Home</a></small>
-          <h1>
-            {% if page.formatted_title %}
-              {{ page.formatted_title }}
-            {% else %}
-              {{ page.title }}
-            {% endif %}
-            <br/><small>{{ page.subtitle }}</small>
-          </h1>
-        </div>
-        <div class="byline">
-          <b><a href="/" style="color:black;">By Christian Stigen Larsen</a></b>
-          <br/>
-          {% if page.date < page.updated %}
-            Posted {{ page.date | date_to_string }} &mdash; updated {{ page.updated | date_to_string }}
-          {% else %}
-            {{ page.date | date_to_string }}
-          {% endif %}
-        </div>
-      </div>
+    <div class="column" style="margin-top: 15%">
+      <h1><a href="/" style="background-color: transparent;">
+        {% if page.formatted_title %}
+          {{ page.formatted_title }}
+        {% else %}
+          {{ page.title }}
+        {% endif %}
+        {% if page.subtitle %}
+        — <small>{{ page.subtitle }}</small>
+        {% endif %}
+      </h1>
+      <p class="sans-serif author">
+        <b>By <a href="/" style="background-color:transparent;">Christian Stigen Larsen</a></b>
+        <br/>
+        {% if page.date < page.updated %}
+          Posted {{ page.date | date_to_string }} &mdash; updated {{ page.updated | date_to_string }}
+        {% else %}
+          {{ page.date | date_to_string }}
+        {% endif %}
+      </p>
+    {{ content }}
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-8">
-      <div class="post-body margin-top">
-        {{ content }}
-      </div>
-    </div>
-
-    {% if page.nolinks == null %}
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">About me</div>
-        <div class="panel-body">
-          {% include bio.html %}
-        </div>
-        <div class="panel-heading">Me on the net</div>
-        <div class="panel-body">
-           <table>
-            <tr><td><a href="/">Front page</a></td></tr>
-            <tr><td><a href="{{ site.github }}">GitHub</a></td></tr>
-            <tr><td><a href="{{ site.twitter }}">Twitter</a></td></tr>
-            <tr><td><a href="{{ site.linkedin }}">LinkedIn</a></td></tr>
-            <tr><td><a href="{{ site.stackoverflow }}">Stack Overflow</a></td></tr>
-            <tr><td><a href="{{ site.speakerdeck }}">Speaker Deck</a></td></tr>
-            <tr><td><a href="/feed.xml">RSS feed</a></td></tr>
-            <tr><td><a href="mailto:{{ site.email }}">Email</a></td></tr>
-          </table>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
-    <div class="col-md-4">
-      {% assign showTags = false %}
-      {% if page.tags %}
-        {% for tag in page.tags %}
-          {% if site.tags[tag].size > 1 %}
-            {% assign showTags = true %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-
-      {% assign showCategories = false %}
-      {% if page.categories %}
-        {% for category in page.categories %}
-          {% if site.categories[category].size > 1 %}
-            {% assign showCategories = true %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-
-      {% assign showRelated = false %}
-      {% if site.related_posts.size > 1 %}
-        {% for p in site.related_posts %}
-          {% if p.url != page.url %}
-            {% assign showRelated = true %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-
-      {% if showTags or showCategories or showRelated %}
-      <div class="panel panel-default">
-      {% endif %}
-
-      {% if showTags %}
-        {% for tag in page.tags %}
-          {% if site.tags[tag].size > 1 %}
-          <div class="panel-heading">Posts tagged 
-            &laquo;<b>{{ tag }}</b>&raquo;
-          </div>
-          <div class="panel-body">
-            <table>
-              {% for p in site.tags[tag] %}
-                {% if p.url != page.url %}
-                <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-                {% endif %}
-              {% endfor %}
-            </table>
-          </div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-
-      {% if showCategories %}
-        {% for category in page.categories %}
-          {% if site.categories[category].size > 1 %}
-          <div class="panel-heading">Other posts under the category
-            &laquo;<b class="text-capitalize">{{ category }}</b>&raquo;
-          </div>
-          <div class="panel-body">
-            <table>
-              {% for p in site.categories[category] %}
-                {% if p.url != page.url %}
-                  <tr><td><a href="{{ p.url }}">{{ p.title }}</a></td></tr>
-                {% endif %}
-              {% endfor %}
-            </table>
-          </div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-
-      {% if showRelated %}
-        <div class="panel-heading">Possible related posts</div>
-        <div class="panel-body">
-          <table>
-            {% for p in site.related_posts %}
-              {% if p.url != page.url %}
-              <tr>
-                <td><a href="{{ p.url }}">{{ p.title }}</a></td>
-              </tr>
-              {% endif %}
-            {% endfor %}
-          </table>
-        </div>
-      {% endif %}
-      </div>
-    </div>
-  </div><!-- row -->
 
   {% if page.disqus != false %}
-  <div class="row">
-    <div class="col-md-8">
+  <div class="row" style="margin-top: 10rem;">
+    <div class="column">
       <div id="disqus_thread"></div>
-        <script type="text/javascript">
-            var disqus_shortname = '{{ site.disqus_user }}';
-            (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-            })();
-        </script>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      <script type="text/javascript">
+          var disqus_shortname = '{{ site.disqus_user }}';
+          (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
     </div>
   </div>
   {% endif %}
 
-  <div class="row">
-    <div class="col-md-12">
+  <div class="row" style="margin-top: 10rem;">
+    <div class="column">
       <footer>
         <p>
         {{ site.copyright }}
-        </p>
-        <p>
-        Site generated using <a href="http://jekyllrb.com">Jekyll</a>.
-        Style by <a href="http://getbootstrap.com">Bootstrap</a>.
         </p>
       </footer>
     </div>

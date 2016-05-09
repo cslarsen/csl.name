@@ -9,9 +9,11 @@
     <meta name="author" content="Christian Stigen Larsen" />
     <meta name="description" content="{{ page.description }}" />
 
-    <link href="/css/bootstrap.css"
-          type="text/css"
-          rel="stylesheet" />
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/skeleton.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Crimson+Text:400,600'
+          rel='stylesheet' type='text/css'>
 
     <link rel="alternate"
           type="application/rss+xml"
@@ -19,54 +21,64 @@
           href="/feed.xml" />
 
     <style type="text/css">
-    .bs-callout {
-        padding: 20px;
-        margin: 20px 0;
-        border: 1px solid #eee;
-        border-left-width: 5px;
-        border-radius: 3px;
-    }
-
-    .bs-callout-info {
-        border-left-color: #5bc0de;
-    }
-
-    .bs-callout-info h4 {
-        color: #5bc0de;
-    }
-
-    .bs-callout-warning {
-        border-left-color: #f0ad4e;
-    }
-    .bs-callout-warning h4 {
-        color: #f0ad4e;
+    body {
+      font-family: "Crimson Text", serif;
+      font-size: 2.1rem;
+      text-align: justify;
+      text-justify: inter-word;
+      color: black;
     }
 
     footer {
-      margin-top: 2em;
-      color: #bbb;
-      font-size: 8pt;
-    }
-
-    footer a {
-      color: #888;
+      font-size: small;
+      font-family: "Helvetica", sans-serif;
     }
 
     h1 {
-      font-weight: bolder;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    h2 {
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .sans-serif {
+      font-family: "Helvetica", sans-serif;
+    }
+
+    .author {
+      font-size: 1.7rem;
+      padding: 0rem;
+      text-align: left;
+    }
+
+    a {
+      text-decoration: none;
+      background-color: #eafffa;
+      color: black;
+    }
+
+    mark {
+      background-color: #ffe8f8;
+    }
+
+    h1 a:hover {
+      color: black;
     }
 
     a:hover {
-      text-decoration: none;
+      color: black;
     }
 
-    #disqus_thread {
-      margin-top: 6em;
-      margin-bottom: 6em;
+    code {
+      border: none;
+      color: black;
     }
 
-    .margin-top {
-      margin-top: 2em;
+    p code {
+      color: #233a31;
     }
     </style>
 
@@ -83,7 +95,7 @@
     {% endif %}
 
   </head>
-<body>
+  <body>
   {{ content }}
-</body>
+  </body>
 </html>

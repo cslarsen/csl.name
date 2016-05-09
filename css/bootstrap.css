@@ -1,4 +1,0 @@
----
-# Renders CSS template from _includes/css/bootstrap.css
----
-{% include css/bootstrap.css %}

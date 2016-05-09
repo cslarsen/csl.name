@@ -4,26 +4,11 @@ title: Christian Stigen Larsen
 disqus: false
 ---
 
-<div class="container">
+<div class="container" style="max-width: 960px;">
   <div class="row">
-    <div class="col-md-8">
-      <div class="post-body margin-top">
-        <div class="post-header">
-          <div class="page-header">
-            <h1>Christian Stigen Larsen</h1>
-            <p class="lead">
-              This is my personal site for posting stuff about programming.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-8">
-      <h2>Posts</h2>
-      <table class="table table-condensed">
+    <div class="nine columns" style="margin-top: 15%;">
+      <h1>Posts</h1>
+      <table class="u-full-width">
         <thead>
           <tr>
             <th class="text-center">Updated</th>
@@ -34,47 +19,29 @@ disqus: false
           {% assign sorted_posts = site.posts | sort: "updated" %}
           {% for post in sorted_posts reversed %}
           <tr>
-            <td class="text-center" style="white-space: nowrap;">{{ post.updated | date_to_string }}</td>
+            <td class="text-center" style="white-space: nowrap;">{{
+              post.updated | date: "%Y-%m-%d" }}</td>
             <td><a href="{{ post.url }}">{{ post.title }}</a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">About me</div>
-        <div class="panel-body">
-          {% include bio.html %}
-        </div>
-        <div class="panel-heading">Me on the net</div>
-        <div class="panel-body">
-           <table>
-            <tr><td><a href="/">Front page</a></td></tr>
-            <tr><td><a href="{{ site.github }}">GitHub</a></td></tr>
-            <tr><td><a href="{{ site.twitter }}">Twitter</a></td></tr>
-            <tr><td><a href="{{ site.linkedin }}">LinkedIn</a></td></tr>
-            <tr><td><a href="{{ site.stackoverflow }}">Stack Overflow</a></td></tr>
-            <tr><td><a href="{{ site.speakerdeck }}">Speaker Deck</a></td></tr>
-            <tr><td><a href="/feed.xml">RSS feed</a></td></tr>
-            <tr><td><a href="mailto:{{ site.email }}">Email me</a></td></tr>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <footer>
-        <p>
-        {{ site.copyright }}
-        </p>
-        <p>
-        Site generated using <a href="http://jekyllrb.com">Jekyll</a>.
-        Style by <a href="http://getbootstrap.com">Bootstrap</a>.
-        </p>
-      </footer>
+    <div class="three columns author" style="margin-top: 25%">
+      <b>Author</b>
+      {% include bio.html %}
+
+      <b>Links</b>
+       <ul style="padding-left: 2rem;">
+         <li><a href="{{ site.github }}">GitHub</a></li>
+         <li><a href="{{ site.twitter }}">Twitter</a></li>
+         <li><a href="{{ site.speakerdeck }}">Speaker Deck</a></li>
+         <li><a href="{{ site.stackoverflow }}">Stack Overflow</a></li>
+         <li><a href="{{ site.linkedin }}">LinkedIn</a></li>
+         <li><a href="/feed.xml">RSS feed</a></li>
+      </ul>
     </div>
+
   </div>
 </div>
