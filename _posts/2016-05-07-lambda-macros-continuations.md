@@ -378,7 +378,7 @@ can be invoked using a label and value, or only a label.
 
 The `goto-label` function uses `case-lambda`, which patterns matches on its
 invocation form. The first line matches calls to `(goto-label <label>)`, while
-the secod matches `(goto-label <label> <value>)`.
+the second matches `(goto-label <label> <value>)`.
 
 The `set-label` macro also matches on the same two patterns. Here we use a
 single underscore instead of typing out the full name of the macro.

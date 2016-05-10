@@ -115,13 +115,13 @@ the code to load the text from disk. I changed `print_best` to print all
 palindromes equal to or longer than the current best, so we get a longer
 list of palindromes. I also had to prepare Shakespeare's collected works
 into a format suitable for processing: First I removed the name of which
-character is speaking (done by sed), then I converted all text to lowercase
+character is speaking (done by `sed`), then I converted all text to lowercase
 and deleted all non-alphanumeric characters.
 
 Since Shakespeare wrote his plays more than 300 years before copyright law
 was invented, you can download and use it freely. I got mine off a site with
 all the stuff in different directories. Here's what I did to prepare them,
-all in one jolly line of unix goodness:
+all in one jolly line of UNIX goodness:
 
 {% highlight bash %}
 $ find shakespeare/ -type f \        # for all files
