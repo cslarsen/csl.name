@@ -1,0 +1,47 @@
+---
+layout: default
+title: Christian Stigen Larsen
+disqus: false
+---
+
+<div class="container" style="max-width: 960px;">
+  <div class="row">
+    <div class="nine columns" style="margin-top: 15%;">
+      <h1>Posts</h1>
+      <table class="u-full-width">
+        <thead>
+          <tr>
+            <th class="text-center">Updated</th>
+            <th>Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% assign sorted_posts = site.posts | sort: "updated" %}
+          {% for post in sorted_posts reversed %}
+          <tr>
+            <td class="text-center" style="white-space: nowrap;">{{
+              post.updated | date: "%Y-%m-%d" }}</td>
+            <td><a href="{{ post.url }}">{{ post.title }}</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="three columns author" style="margin-top: 25%">
+      <b>Author</b>
+      {% include bio.html %}
+
+      <b>Links</b>
+       <ul style="padding-left: 2rem;">
+         <li><a href="{{ site.github }}">GitHub</a></li>
+         <li><a href="{{ site.twitter }}">Twitter</a></li>
+         <li><a href="{{ site.speakerdeck }}">Speaker Deck</a></li>
+         <li><a href="{{ site.stackoverflow }}">Stack Overflow</a></li>
+         <li><a href="{{ site.linkedin }}">LinkedIn</a></li>
+         <li><a href="/feed.xml">RSS feed</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
