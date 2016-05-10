@@ -5,6 +5,7 @@ highlighter: true
 permalink: /post/:title/
 encoding: utf-8
 timezone: Norway/Oslo
+redirect_to_https: false
 
 # File lists
 include: [.htaccess]

@@ -54,6 +54,7 @@ RedirectMatch 301 ^/qt-gcc.*$ {% post_url 2012-11-25-qt-gcc %}
 
 # Non-existant pages
 ErrorDocument 404 /404/index.html.gz
+{% if redirect_to_https %}
 
 <IfModule mod_rewrite.c>
 # Enforce SSL, but not for older versions of MSIE or Android
@@ -63,3 +64,4 @@ RewriteCond %{HTTP_USER_AGENT} !Android.*(Mobile)?\ [0-3]
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
 </IfModule>
+{% endif %}
