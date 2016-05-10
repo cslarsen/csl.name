@@ -9,6 +9,11 @@
     <meta name="author" content="Christian Stigen Larsen" />
     <meta name="description" content="{{ page.description }}" />
 
+    {% comment %}
+      When landing directly on a post, prefetch front page.
+    {% endcomment %}
+    <link rel="prefetch" href="/">
+
     <link rel="alternate"
           type="application/rss+xml"
           title="RSS"
