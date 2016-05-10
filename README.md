@@ -5,6 +5,9 @@ This repo contains the source code for https://csl.name, which is (mostly) a
 static site. When publishing, the makefile will compress and minify everything
 before rsyncing.
 
+The `make dist` target scores very high on Google's PageSpeed index for both
+mobile and desktop. You need to install several tools to make it work.
+
 Prerequisites
 -------------
 
