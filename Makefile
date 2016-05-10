@@ -16,10 +16,10 @@ doctor: build
 
 build: includes
 	@echo -- Building
-	$(jekyll) build --lsi --trace
+	$(jekyll) build --trace
 
 serve: includes
-	$(jekyll) serve --drafts --host 0.0.0.0 --lsi --watch
+	$(jekyll) serve --drafts --host 0.0.0.0 --watch
 
 _includes/css/all.css: _includes/css/normalize.css _includes/css/skeleton.css _includes/css/customized.css _includes/css/font.css
 	cat $^ > $@
