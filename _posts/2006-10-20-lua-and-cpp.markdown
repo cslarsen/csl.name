@@ -3,7 +3,7 @@ layout: post
 title:  "Using Lua with C++"
 subtitle: "A short tutorial"
 date:     2006-10-20 21:42:24 +02:00
-updated:  2013-12-01 01:26:00 +01:00
+updated:  2016-05-11 00:14:00 +00:00
 categories: Lua
 tags: Lua C++
 description: "Tutorial on creating Lua host programs in C++"
@@ -11,322 +11,269 @@ keywords: "Lua C++ Tutorial script programming language C"
 disqus: true
 ---
 
-Using Lua is easy! In this short tutorial we'll show how to write a fully
-working host program in C++ with Lua callbacks.
+In this short tutorial I'll show how to write a host program in C++ that can
+execute Lua programs that call back into C++.
 
-Since the static Lua libraries are written in C, you must import them as
-such:
+**Update:** The code has been updated for Lua 5.2.4. I haven't checked if the
+Lua 5.3 C API is backwards-compatible with 5.2. The code for this tutorial is
+available <a href="https://github.com/cslarsen/lua-cpp">on GitHub</a>.
 
-{% highlight c++ %}
-extern "C" {
-#include "lua.h"
-}
+We'll write the first program to work on both C and C++ compilers. The two need
+to include different files, so we'll start off by checking which compiler we're
+using. We do that by checking for the existence of the `__cplusplus` macro.
 
-int main()
-{
-  lua_State *L = lua_open();
-  lua_close(L);
-  return 0;
-}
-{% endhighlight %}
+    #ifdef __cplusplus
+    # include <lua5.2/lua.hpp>
+    #else
+    # include <lua5.2/lua.h>
+    # include <lua5.2/lualib.h>
+    # include <lua5.2/lauxlib.h>
+    #endif
 
-It has been reported that on some systems you need to
-include the headers `lualib.h` and `lauxlib.h` to compile the above example:
-
-{% highlight c++ %}
-extern "C" {
-#include "lualib.h"
-#include "lauxlib.h"
-}
-{% endhighlight %}
-
-
-Compiling and linking with GNU g++:
-
-    $ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua
-
-Including lualib.h and lauxlib.h makes it easy to write a fully working host:
-
-{% highlight c++ %}
-#include <iostream>
-
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
-
-void report_errors(lua_State *L, int status)
-{
-  if ( status!=0 ) {
-    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-    lua_pop(L, 1); // remove error message
-  }
-}
-
-int main(int argc, char** argv)
-{
-  for ( int n=1; n<argc; ++n ) {
-    const char* file = argv[n];
-
-    lua_State *L = lua_open();
-
-    luaopen_io(L); // provides io.*
-    luaopen_base(L);
-    luaopen_table(L);
-    luaopen_string(L);
-    luaopen_math(L);
-    luaopen_loadlib(L);
-
-    std::cerr << "-- Loading file: " << file << std::endl;
-
-    int s = luaL_loadfile(L, file);
-
-    if ( s==0 ) {
-      // execute Lua program
-      s = lua_pcall(L, 0, LUA_MULTRET, 0);
+    int main()
+    {
+      lua_State *state = luaL_newstate();
+      lua_close(state);
+      return 0;
     }
 
-    report_errors(L, s);
-    lua_close(L);
-    std::cerr << std::endl;
-  }
+The program doesn't really do anything. Its purpose is to make sure that you
+can compile, link and run a simple program without errors. When you can do
+that, we can proceed with the real example.
 
-  return 0;
-}
-{% endhighlight %}
+To compile it, you must find out where on your system the `lua5.2` directory is
+located. It's typically in `/usr/local/include`. It must contain the include
+files `lua.hpp`, `lua.h`, `lualib.h` and `lauxlib.h`. Pass this location with
+the `-I` flag to gcc or llvm.
 
-Compilation and linking:
+You must also find out which directory `liblua.so` is located (for OS X, it's
+called `liblua.dylib`). This will typically be in `/usr/local/lib`, and you
+must pass this location with the `-L` flag.
 
-    $ g++ host.cpp -o host -Ilua-5.0.2/include/ -Llua-5.0.2/lib/ -llua -llualib
+Given the above example locations, you can compile the first program with
+
+    $ g++ -W -Wall -g -o first first.cpp \
+        -I/usr/local/include -L/usr/local/lib -llua
+
+You can also swap out `g++` with `llvm-g++` if you're using that. If you're
+using a C compiler, compile with `gcc` and `llvm-gcc` — but remember to rename
+the file to `first.c`.
+
+Now try to run the program. If it doesn't crash, then everything works as it
+should:
+
+    $ ./first
+    $ echo $?
+    0
+
+Executing Lua programs from a host
+----------------------------------
+
+The next step is to execute Lua programs from your C or C++ code. We'll create
+the Lua state object as above, load a file from disk and execute it.
+
+Put this into `runlua.cpp` or `runlua.c`:
+
+    #include <stdio.h>
+
+    #ifdef __cplusplus
+    # include <lua5.2/lua.hpp>
+    #else
+    # include <lua5.2/lua.h>
+    # include <lua5.2/lualib.h>
+    # include <lua5.2/lauxlib.h>
+    #endif
+
+    void print_error(lua_State* state) {
+      // The error message is on top of the stack. Fetch it, print it and then pop
+      // it off the stack.
+      const char* message = lua_tostring(state, -1);
+      puts(message);
+      lua_pop(state, 1);
+    }
+
+    void execute(const char* filename)
+    {
+      lua_State *state = luaL_newstate();
+
+      // Make standard libraries available in the Lua state
+      luaL_openlibs(state);
+
+      int result;
+
+      // Load the program; this supports both source code and bytecode files.
+      result = luaL_loadfile(state, filename);
+      if ( result != LUA_OK ) {
+        print_error(state);
+        return;
+      }
+
+      // Finally, execute the program by calling into it. You may have to change
+      // the lua_pcall arguments if you're not running vanilla Lua code.
+      result = lua_pcall(state, 0, LUA_MULTRET, 0);
+      if ( result != LUA_OK ) {
+        print_error(state);
+        return;
+      }
+    }
+
+    int main(int argc, char** argv)
+    {
+      if ( argc <= 1 ) {
+        puts("Usage: runlua file(s)");
+        puts("Loads and executes Lua programs.");
+        return 1;
+      }
+
+      // Execute all programs on the command line
+      for ( int n=1; n<argc; ++n ) {
+        execute(argv[n]);
+      }
+
+      return 0;
+    }
+
+You can reuse the compilation arguments from above:
+
+    $ g++ -W -Wall -g -I/usr/local/include \
+        -L/usr/local/lib -llua runlua.cpp -o runlua
+
+or
+
+    $ gcc -W -Wall -g -I/usr/local/include \
+        -L/usr/local/lib -llua runlua.c -o runlua
 
 Running Lua programs
 --------------------
 
-Let's test this with some Lua programs.  The files here are from the
-distribution, `hello.lua` is simply:
+Let's test this with some Lua programs. The first one prints the Lua version
+and exits.
 
-{% highlight lua %}
--- the first program in every language
-io.write("Hello world, from ",_VERSION,"!\n")
-{% endhighlight %}
+    io.write(string.format("Hello from %s\n", _VERSION))
 
-Executing a couple of Lua programs with our host program produces:
+You may want to double-check that it works by running `lua hello.lua`. It may
+not be important for this trivial program, but can become important when you
+try more advanced ones.
 
-    $ ./host test/hello.lua test/printf.lua
-    -- Loading file: test/hello.lua
-    Hello world, from Lua 5.0.2!
+    $ lua lua/hello.lua
+    Hello from Lua 5.2
 
-    -- Loading file: test/printf.lua
-    Hello csl from Lua 5.0.2 on Wed Mar  2 13:13:05 2005
+Now try it with `runlua`:
+
+    $ ./runlua lua/hello.lua
+    Hello from Lua 5.2
+
+You can even run bytecode-compiled programs:
+
+    $ luac -o lua/hello.luac lua/hello.lua
+    $ ./runlua lua/hello.luac
+    Hello from Lua 5.2
+
+We should also check that the error handling works. Put some garbage in a file
+called `error.lua`, for example
+
+    This file is not a Lua program.
+
+Running it produces
+
+    $ ./runlua lua/error.lua
+    lua/error.lua:1: syntax error near 'is'
 
 Calling C functions from Lua
 ----------------------------
 
-It gets very interesting when Lua programs call your own functions.  In the
-following program, we define a function `my_function()` and register it with
-the Lua environment using `lua_register()`.  Our function prints its arguments
-as strings and returns the integer value of `123`.
+It gets very interesting when Lua programs call back to your C or C++
+functions. We'll create a function called `howdy` that prints its input
+arguments and returns the integer 123.
 
-{% highlight c++ %}
-#include <iostream>
+To be on the safe side, we'll declare C linkage for the function in the C++
+version of the program. This has to do with <a
+href="https://en.wikipedia.org/wiki/Name_mangling#C.2B.2B">name mangling</a>,
+but in this case, it really doesn't matter: Lua just receives a pointer to a
+function, and that's that. But if you start using dynamic loading of shared
+libraries through `dlopen` and `dlsym`, this will be an issue. So let's do it
+correct from the start.
 
-extern "C"{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
+Copy the above program into a file called `callback.cpp` and add the `howdy`
+function.
 
-int my_function(lua_State *L)
-{
-  int argc = lua_gettop(L);
+    #ifdef __cplusplus
+    extern "C"
+    #endif
+    int howdy(lua_State* state)
+    {
+      // The number of function arguments will be on top of the stack.
+      int args = lua_gettop(state);
 
-  std::cerr << "-- my_function() called with " << argc
-    << " arguments:" << std::endl;
+      printf("howdy() was called with %d arguments:\n", args);
 
-  for ( int n=1; n<=argc; ++n ) {
-    std::cerr << "-- argument " << n << ": "
-      << lua_tostring(L, n) << std::endl;
-  }
+      for ( int n=1; n<=args; ++n) {
+        printf("  argument %d: '%s'\n", n, lua_tostring(state, n));
+      }
 
-  lua_pushnumber(L, 123); // return value
-  return 1; // number of return values
-}
+      // Push the return value on top of the stack. NOTE: We haven't popped the
+      // input arguments to our function. To be honest, I haven't checked if we
+      // must, but at least in stack machines like the JVM, the stack will be
+      // cleaned between each function call.
 
-void report_errors(lua_State *L, int status)
-{
-  if ( status!=0 ) {
-    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-    lua_pop(L, 1); // remove error message
-  }
-}
+      lua_pushnumber(state, 123);
 
-int main(int argc, char** argv)
-{
-  for ( int n=1; n<argc; ++n ) {
-    const char* file = argv[n];
-
-    lua_State *L = lua_open();
-
-    luaopen_io(L); // provides io.*
-    luaopen_base(L);
-    luaopen_table(L);
-    luaopen_string(L);
-    luaopen_math(L);
-    luaopen_loadlib(L);
-
-    // make my_function() available to Lua programs
-    lua_register(L, "my_function", my_function);
-
-    std::cerr << "-- Loading file: " << file << std::endl;
-
-    int s = luaL_loadfile(L, file);
-
-    if ( s==0 ) {
-      // execute Lua program
-      s = lua_pcall(L, 0, LUA_MULTRET, 0);
+      // Let Lua know how many return values we've passed
+      return 1;
     }
 
-    report_errors(L, s);
-    lua_close(L);
-    std::cerr << std::endl;
-  }
+We have to pass the address of this function to Lua along with the name it will
+have in Lua programs. Do that after calling `lua_newstate` and before loading
+the file:
 
-  return 0;
-}
-{% endhighlight %}
+    // Make howd() available to Lua programs under the same name.
+    lua_register(state, "howdy", howdy);
 
-Let's write a small Lua program `test.lua` to call `my_function()`:
+Create a test program called `callback.lua`
 
-{% highlight lua %}
-io.write("Running ", _VERSION, "\n")
-a = my_function(1, 2, 3, "abc", "def")
-io.write("my_function() returned ", a, "\n")
-{% endhighlight %}
+    io.write("Calling howdy() ...\n")
+    local value = howdy("First", "Second", 112233)
+    io.write(string.format("howdy() returned: %s\n", tostring(value)))
 
-With the new host program above, running `test.lua` produces:
+Compile and test it
 
-    $ ./host test.lua
-    -- Loading file: test.lua
-    Running Lua 5.0.2
-    -- my_function() called with 5 arguments:
-    -- argument 1: 1
-    -- argument 2: 2
-    -- argument 3: 3
-    -- argument 4: abc
-    -- argument 5: def
-    my_function() returned 123
+    $ g++ -W -Wall -g -I/usr/local/include -L/usr/local/lib \
+        -llua  callback.cpp -o callback
+    $ ./callback lua/callback.lua
+    Calling howdy() ...
+    howdy() was called with 3 arguments:
+      argument 1: 'First'
+      argument 2: 'Second'
+      argument 3: '112233'
+    howdy() returned: 123
 
-Loading and running bytecode
-----------------------------
+I told you it was easy!
 
-The `luaL_loadfile()` function loads both source programs as well as compiled
-bytecode, so the following works as a charm:
-
-    $ ./bin/luac -s -o test.bytecode test.lua
-    $ ls -lka test.bytecode
-    -rw-r--r--    1 csl csl   307 mar  2 13:46 test.bytecode
-    $ ./host test.bytecode
-    -- Loading file: test.bytecode
-    Running Lua 5.0.2
-    -- my_function() called with 5 arguments:
-    -- argument 1: 1
-    -- argument 2: 2
-    -- argument 3: 3
-    -- argument 4: abc
-    -- argument 5: def
-    my_function() returned 123
-
-Omitting our host program's log-messages produces clean output:
-
-    $ ./main test.bytecode 2>/dev/null
-    Running Lua 5.0.2
-    my_function() returned 123
-
-Next steps
+What next?
 ----------
 
-Suggestions for next steps would be to investigate how to have Lua's
-closures integrate neatly with your host program.
+Read the <a href="https://www.lua.org/manual/5.2/manual.html#4">Lua C API
+Reference</a>. You've learned enough now to get going with it. Did you see my
+note about clearing the stack in `howdy`? You may want to investigate that.
 
-If you're writing programs without consoles, then you'd probably want to
-trap `io.write()`.  I did that by copying the code from lualib.c and changing
-`io_write` to point to my own function.  This can be useful for game
-programming or plain X/Windows applications where you want to catch output.
+Find out how to integrate Lua closures with your C functions.
 
-Using RAII
-----------
+If you want to hide or catch console output from Lua, you need to figure that
+out as well. I once did it by trapping `io.write()`; I copied its code from
+`lualib.c` and changed `io_write` to point to my own function. There is
+probably a better way to do it, though. Doing so is useful for things like game
+programming.
 
-Also I'd recommend using the resource-acquisition-is-initialization (RAII)
-technique in which resources are allocated in a constructor and freed in the
-destructor.  Using operator overloading, we can elegantly hide the details:
+Use <a
+href="https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization">RAII</a>
+or smart pointers to manage resources like `lua_State`.
 
-{% highlight c++ %}
-#include <iostream>
+I also strongly recommend to try out <a href="http://luajit.org">LuaJIT</a>.
+Calling into your functions there is even easier, using LuaJIT's foreign
+function library. I'll write a blog post on how to do that as well. In short,
+just create ordinary C functions, compile as a shared libraries, copy their
+signatures into pure Lua source code and hook them up with <a
+href="http://luajit.org/ext_ffi_tutorial.html">LuaJIT's FFI library</a>.
 
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
-
-class Lua_State
-{
-  lua_State *L;
-public:
-  Lua_State() : L(lua_open()) { }
-
-  ~Lua_State() {
-    lua_close(L);
-  }
-
-  // implicitly act as a lua_State pointer
-  inline operator lua_State*() {
-    return L;
-  }
-};
-
-static void open_libs(lua_State *L)
-{
-  luaopen_io(L);
-  luaopen_base(L);
-  luaopen_table(L);
-  luaopen_string(L);
-  luaopen_math(L);
-  luaopen_loadlib(L);
-}
-
-static int execute_program(lua_State *L)
-{
-  // make a short function to make program behaviour more clear
-  return lua_pcall(L, 0, LUA_MULTRET, 0);
-}
-
-static void report_errors(lua_State *L, const int status)
-{
-  if ( status!=0 ) {
-    std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-    lua_pop(L, 1); // remove error message
-  }
-}
-
-int main(int argc, char** argv)
-{
-  for ( int n=1; n<argc; ++n ) {
-
-    Lua_State L;
-    open_libs(L);
-
-    int s = luaL_loadfile(L, argv[n]);
-
-    if ( s==0 )
-      s = execute_program(L);
-
-    report_errors(L, s);
-
-    // lua_close(L) automatically called here
-  }
-
-  return 0;
-}
-{% endhighlight %}
+LuaJIT runs between 10-20 and up to 135 times faster than interpreted Lua, so
+it's definitely worth it.
