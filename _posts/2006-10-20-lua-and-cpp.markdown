@@ -274,7 +274,7 @@ or smart pointers to manage resources like `lua_State`.
 I also strongly recommend to try out <a href="http://luajit.org">LuaJIT</a>.
 Calling into your functions there is even easier, using LuaJIT's foreign
 function library. I'll write a blog post on how to do that as well. In short,
-just create ordinary C functions, compile as a shared libraries, copy their
+just create ordinary C functions, compile as a shared library, copy their
 signatures into pure Lua source code and hook them up with <a
 href="http://luajit.org/ext_ffi_tutorial.html">LuaJIT's FFI library</a>.
 
