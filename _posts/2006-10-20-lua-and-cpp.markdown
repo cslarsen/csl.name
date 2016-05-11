@@ -11,16 +11,17 @@ keywords: "Lua C++ Tutorial script programming language C"
 disqus: true
 ---
 
-In this short tutorial I'll show how to write a host program in C++ that can
-execute Lua programs that call back into C++.
+In this short tutorial I'll show how to create a C or C++ program that exposes
+functions to Lua.
 
-**Update:** The code has been updated for Lua 5.2.4. I haven't checked if the
-Lua 5.3 C API is backwards-compatible with 5.2. The code for this tutorial is
-available <a href="https://github.com/cslarsen/lua-cpp">on GitHub</a>.
+**Update:** The code in this post has been updated for Lua 5.2.4. I haven't
+checked if the Lua 5.3 C API is backwards-compatible with 5.2. All the code
+here is available <a href="https://github.com/cslarsen/lua-cpp">on GitHub</a>.
 
-We'll write the first program to work on both C and C++ compilers. The two need
-to include different files, so we'll start off by checking which compiler we're
-using. We do that by checking for the existence of the `__cplusplus` macro.
+The first program will just create a Lua state object and exit. It will be a
+hybrid between C and C++. Since the two languages must include different files,
+we need to discern between them by checking for the existence of the
+`__cplusplus` macro.
 
     #ifdef __cplusplus
     # include <lua5.2/lua.hpp>
@@ -37,27 +38,25 @@ using. We do that by checking for the existence of the `__cplusplus` macro.
       return 0;
     }
 
-The program doesn't really do anything. Its purpose is to make sure that you
-can compile, link and run a simple program without errors. When you can do
-that, we can proceed with the real example.
+Notice that I'm being explicit about which version of Lua I'm using in the
+code. If you trust the Lua developers care about compatibility, you can just
+`#include <lua.hpp>` etc. directly.
 
-To compile it, you must find out where on your system the `lua5.2` directory is
-located. It's typically in `/usr/local/include`. It must contain the include
-files `lua.hpp`, `lua.h`, `lualib.h` and `lauxlib.h`. Pass this location with
-the `-I` flag to gcc or llvm.
+The purpose of the program is just to make sure that we can compile, link and
+run it without errors.
 
-You must also find out which directory `liblua.so` is located (for OS X, it's
-called `liblua.dylib`). This will typically be in `/usr/local/lib`, and you
-must pass this location with the `-L` flag.
-
-Given the above example locations, you can compile the first program with
+You need to let the compiler know where it can find the include files and the
+Lua shared library. The include files are usually located in
+`/usr/local/include`, and the library files in `/usr/local/lib`. But you may
+have to search your system directories. To compile the above program, you pass
+those directories with `-I` and `-L`:
 
     $ g++ -W -Wall -g -o first first.cpp \
         -I/usr/local/include -L/usr/local/lib -llua
 
-You can also swap out `g++` with `llvm-g++` if you're using that. If you're
-using a C compiler, compile with `gcc` and `llvm-gcc` — but remember to rename
-the file to `first.c`.
+You may swap out `g++` with `llvm-g++` or just `c++`, depending on your
+compiler. If you're using a C compiler, compile with `gcc` and `llvm-gcc` — but
+remember to rename the file to `first.c`.
 
 Now try to run the program. If it doesn't crash, then everything works as it
 should:
