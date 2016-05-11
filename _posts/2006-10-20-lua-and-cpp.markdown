@@ -226,7 +226,7 @@ We have to pass the address of this function to Lua along with the name it will
 have in Lua programs. Do that after calling `lua_newstate` and before loading
 the file:
 
-    // Make howd() available to Lua programs under the same name.
+    // Make howdy() available to Lua programs under the same name.
     lua_register(state, "howdy", howdy);
 
 Create a test program called `callback.lua`
