@@ -225,9 +225,9 @@ function.
       return 1;
     }
 
-We have to pass the address of this function to Lua along with the name it will
-have in Lua programs. Do that after calling `lua_newstate` and before loading
-the file:
+We have to pass the address of this function to Lua along a name. Put the
+following line somewhere between the call to `lua_newstate` and
+`luaL_loadfile`:
 
     // Make howdy() available to Lua programs under the same name.
     lua_register(state, "howdy", howdy);
