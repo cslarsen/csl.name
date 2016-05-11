@@ -39,31 +39,32 @@ we need to discern between them by checking for the existence of the
     }
 
 Notice that I'm being explicit about which version of Lua I'm using in the
-code. If you trust the Lua developers care about compatibility, you can just
-`#include <lua.hpp>` etc. directly.
+code. If you trust that the Lua developers care about compatibility, you can
+just `#include <lua.hpp>` and so on directly.
 
 The purpose of the program is just to make sure that we can compile, link and
 run it without errors.
 
 You need to let the compiler know where it can find the include files and the
 Lua shared library. The include files are usually located in
-`/usr/local/include`, and the library files in `/usr/local/lib`. But you may
-have to search your system directories. To compile the above program, you pass
-those directories with `-I` and `-L`:
+`/usr/local/include` and the library files in `/usr/local/lib`. Search your
+system directories if needed.  To compile the above program, pass the
+directories with `-I` and `-L`, respectively.
 
     $ g++ -W -Wall -g -o first first.cpp \
         -I/usr/local/include -L/usr/local/lib -llua
 
-You may swap out `g++` with `llvm-g++` or just `c++`, depending on your
-compiler. If you're using a C compiler, compile with `gcc` and `llvm-gcc` — but
+You may swap out `g++` with `llvm-g++`, or just `c++`, depending on your
+compiler. If you're using a C compiler, use `gcc` or `llvm-gcc` — but
 remember to rename the file to `first.c`.
 
-Now try to run the program. If it doesn't crash, then everything works as it
-should:
+Now try to run the program to make sure it doesn't segfault:
 
     $ ./first
     $ echo $?
     0
+
+This one worked just fine.
 
 Executing Lua programs from a host
 ----------------------------------
