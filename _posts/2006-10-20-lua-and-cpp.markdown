@@ -11,8 +11,8 @@ keywords: "Lua C++ Tutorial script programming language C"
 disqus: true
 ---
 
-In this short tutorial I'll show how to create a C or C++ program that exposes
-functions to Lua.
+In this short tutorial I'll show how to run Lua programs from C and C++ and how
+to expose functions to them. It's easy!
 
 **Update:** The code in this post has been updated for Lua 5.2.4. I haven't
 checked if the Lua 5.3 C API is backwards-compatible with 5.2. All the code
