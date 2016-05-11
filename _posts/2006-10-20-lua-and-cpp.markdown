@@ -225,7 +225,7 @@ function.
       return 1;
     }
 
-We have to pass the address of this function to Lua along a name. Put the
+We have to pass the address of this function to Lua along with a name. Put the
 following line somewhere between the call to `lua_newstate` and
 `luaL_loadfile`:
 
