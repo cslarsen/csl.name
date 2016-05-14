@@ -5,8 +5,9 @@ This repo contains the source code for https://csl.name, which is (mostly) a
 static site. When publishing, the makefile will compress and minify everything
 before rsyncing.
 
-The `make dist` target scores very high on Google's PageSpeed index for both
-mobile and desktop. You need to install several tools to make it work.
+The `make -j dist` target scores very high on Google's PageSpeed index for both
+mobile and desktop. You need to install several tools to make it work — see in
+the Makefile.
 
 Prerequisites
 -------------
@@ -18,9 +19,9 @@ You also need tools like `yuicompressor`, perl and so on.
 Building
 --------
 
-  * `make` builds the site locally in `_site`
-  * `make serve` builds and serves HTTP on localhost:4000
-  * `make dist` builds and publishes to the web
+  * `make -j` builds the site locally in `_site`
+  * `make -j serve` builds and serves HTTP on localhost:4000
+  * `make -j dist` builds and publishes to the web
 
 License
 -------
