@@ -9,12 +9,18 @@ The `make -j dist` target scores very high on Google's PageSpeed index for both
 mobile and desktop. You need to install several tools to make it work — see in
 the Makefile.
 
-Prerequisites
--------------
+Requirements
+------------
 
-You need Jekyll; basically you need everything in `Gemfile`.
-
-You also need tools like `yuicompressor`, perl and so on.
+  * Everything in the Gemfile
+  * GNU parallel
+  * Jekyll
+  * chibi-scheme
+  * optipng
+  * perl
+  * pngfix
+  * python
+  * yuicompressor
 
 Building
 --------
