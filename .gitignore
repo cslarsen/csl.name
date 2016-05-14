@@ -1,5 +1,8 @@
 *.out
 *.pyc
+GPATH
+GRTAGS
+GTAGS
 Gemfile.lock
 _site
 all.css
