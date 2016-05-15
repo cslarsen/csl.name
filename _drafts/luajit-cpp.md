@@ -1,8 +1,7 @@
 ---
 layout: post
 title: "Writing a shared C++ library and loading it in LuaJIT"
-date: 2016-05-14 19:35:47 +0200
-updated: 2016-05-14 19:35:47 +0200
+date: 2016-05-15 05:25:47 +0000
 categories: lua programming
 disqus: true
 tags: lua jit c
@@ -13,7 +12,9 @@ load it in <a href="http://luajit.org">LuaJIT</a> using its foreign-function int
 The code here is <a href="https://github.com/cslarsen/luajit-cpp">available on GitHub</a>.
 
 There are obvious upsides to using LuaJIT: It's considerably faster than plain
-Lua, and it comes with a really nice way of loading shared libraries.
+Lua — up to <a href="http://luajit.org/performance.html">a hundred times
+faster</a> —  and it comes with a really nice way of loading shared libraries
+through its FFI library.
 
 First, let's start off by creating a <a
 href="http://www.oracle.com/technetwork/articles/servers-storage-dev/mixingcandcpluspluscode-305840.html">hybrid
@@ -91,6 +92,11 @@ with `pypy`, which offers similar functionality (unlike `ctypes`, which doesn't
 parse C signatures automatically). Many other languages have it too. Chicken
 Scheme also parses C code. The difference is in how advanced the C parsers are.
 
+But why would you interface with C? I think it's very obvious. Most interesting
+platform specific functions will be available in C. Having a good FFI library
+means you can easily access these in LuaJIT. It's also easy to interface with
+libraries such as <a href="http://www.libsdl.org">SDL</a>.
+
 Using C++ objects in LuaJIT
 ---------------------------
 
@@ -140,28 +146,27 @@ The C interface will look like this:
       return strdup(p->name.c_str());
     }
 
-Because we may be using different heaps between the host program and the shared
-library, we better provide a way to free strings from the heap. This is kinda
-tricky, because one would assume we could simply load the C library from LuaJIT
-and call `free`. However, that doesn't always work.
+Note that the `strdup` function in `name` is not guaranteed to exist on your
+system. You can roll your own with something like
 
-    extern "C" free_ptr(void* p)
+    static char* strdup(const char* in)
     {
-      assert(p != NULL);
-      free(p);
+      assert(s != NULL);
+      char *out = (char*) malloc(strlen(in)+1);
+      return strcpy(out, in);
     }
 
-On the LuaJIT side, we'll get void pointers for the Person class. To keep some
-type safety on that side, we'll tell LuaJIT that they are `struct Person`
-pointers. It doesn't matter, they are just pointers anyway.
+We need to tell LuaJIT's FFI library what the function signatures are.
 
     ffi.cdef[[
+      /* From our library */
       typedef struct Person Person;
-
       Person* new_person(const char* name, const int age);
       char* name(const Person* p);
       int age(const Person* p);
-      void free_ptr(void* ptr);
+
+      /* From the C library */
+      void free(void*);
     ]]
 
 We'll wrap this up in an <a
@@ -180,12 +185,16 @@ structure using a trick</a>.
 Notice that we pass the pointer to `ffi.gc`, which makes sure to call
 `foo.delete_person` on the pointer reclaiming it.
 
-The other functions are similar, except the `name` method calls `foo.free_ptr`
-instead of `C.free`.
+For the `name` function, we get a newly allocated string using `malloc`, so we
+need to use `C.free` to remove it from the heap again. To load the C library,
+
+    C = ffi.C
+
+We can now implement the wrappers for `name` and `age`.
 
     function PersonWrapper.name(self)
       local name = foo.name(self.super)
-      ffi.gc(name, foo.free_ptr)
+      ffi.gc(name, C.free)
       return ffi.string(name)
     end
 
@@ -207,5 +216,6 @@ Finally, let's try it out:
 
 Running it produces
 
+    $ luajit foo.lua
     'Mark Twain' is 74 years old
 
