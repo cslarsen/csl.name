@@ -2,7 +2,7 @@
 layout: post
 title: "Writing a shared C++ library and loading it in LuaJIT"
 date: 2016-05-15 05:25:47 +0000
-updated: 2016-05-15 05:25:47 +0000
+updated: 2016-05-15 05:35:47 +0000
 categories: lua programming
 disqus: true
 tags: lua jit c

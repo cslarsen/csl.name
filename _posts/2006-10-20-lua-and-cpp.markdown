@@ -3,7 +3,7 @@ layout: post
 title:  "Using Lua with C++"
 subtitle: "A short tutorial"
 date:     2006-10-20 21:42:24 +02:00
-updated:  2016-05-11 00:14:00 +00:00
+updated:  2016-05-15 05:30:00 +00:00
 categories: Lua
 tags: Lua C++
 description: "Tutorial on creating Lua host programs in C++"
@@ -273,10 +273,11 @@ or smart pointers to manage resources like `lua_State`.
 
 I also strongly recommend to try out <a href="http://luajit.org">LuaJIT</a>.
 Calling into your functions there is even easier, using LuaJIT's foreign
-function library. I'll write a blog post on how to do that as well. In short,
-just create ordinary C functions, compile as a shared library, copy their
-signatures into pure Lua source code and hook them up with <a
-href="http://luajit.org/ext_ffi_tutorial.html">LuaJIT's FFI library</a>.
+function library. <a href="/post/luajit-cpp">I'll write a blog post on how to
+do that as well</a>. In short, just create ordinary C functions, compile as a
+shared library, copy their signatures into pure Lua source code and hook them
+up with <a href="http://luajit.org/ext_ffi_tutorial.html">LuaJIT's FFI
+library</a>.
 
 LuaJIT runs between 10-20 and up to 135 times faster than interpreted Lua, so
 it's definitely worth it.
