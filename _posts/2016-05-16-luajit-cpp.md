@@ -62,9 +62,9 @@ can use `objdump`.
     libfirst.so:     file format elf64-x86-64
 
     DYNAMIC SYMBOL TABLE:
-    0000000000000420 l    d  .init  0000000000000000              .init
+    00000000000004b8 l    d  .init  0000000000000000              .init
     ...
-    0000000000200808 g    D  .bss   0000000000000000  Base        _end
+    00000000000005ba g    DF .text  0000000000000015  Base        add
     ...
 
 We also know the signature of the function `add`, namely
