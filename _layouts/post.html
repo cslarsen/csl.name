@@ -18,7 +18,9 @@ layout: default
       <p class="sans-serif author">
         <b>By <a href="/" style="background-color:transparent;">Christian Stigen Larsen</a></b>
         <br/>
-        {% if page.date < page.updated %}
+        {% capture pdate %}{{ page.date | date: "%Y-%m-%d" }}{% endcapture %}
+        {% capture udate %}{{ page.updated | date: "%Y-%m-%d" }}{% endcapture %}
+        {% if pdate < udate %}
           Posted {{ page.date | date_to_string }} &mdash; updated {{ page.updated | date_to_string }}
         {% else %}
           {{ page.date | date_to_string }}
