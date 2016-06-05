@@ -100,10 +100,11 @@ It does the *exact* same for the straight-forward version,
       return x + y*320;
     }
 
-For 32-bit targets, the assembly will be structurally equivalent.
+and 32-bit targets are structurally equivalent.
 
-But what about GCC? It goes even further! Compiling the original shift-and-add
-code with
+But what about GCC? It goes even further!
+
+Compiling the original shift-and-add code with
 
     $ gcc-5 -mtune=native -march=native -m64 -Ofast -S foo.c
 
@@ -113,13 +114,15 @@ produces
     addl  %edi, %eax
     ret
 
-Simply `return x + y*320`.
+It's simply `return x + y*320`.
 
 So which one is faster? According to some an <a
 href="https://gist.github.com/cslarsen/2896137">old experiment I made</a>,
 the GCC version is the fastest — **but** I'll need to rerun them and compile
 from assembly, to make sure that the optimizer doesn't optimize away the loop.
-I'll post results at a later time.
+
+I'll post results at a later time. Also, I'll dig up links to the GCC source
+code where this detection is done. It ought to be quite interesting.
 
 Versions used
 -------------
