@@ -116,12 +116,15 @@ produces
 
 It's simply `return x + y*320`.
 
-Performing the tests
+Testing performance
 --------------------
 
-Let's put the functions to the test. We'll use <a
-href="http://www.nasm.us">NASM</a> to assemble the two versions above, and GCC
-5 to compile a test driver. We'll turn off optimizations where needed.
+When it comes to performance testing, there's nothing like actually running
+real code. So let's put the functions to the test. 
+
+We'll use <a href="http://www.nasm.us">NASM</a> to assemble the two versions
+above, and GCC 5 to compile a test driver. We'll turn off optimizations where
+needed.
 
 The assembly code for the imul and shift + add functions are placed in
 `offset.asm`. I'm on OSX right now, so we'll need to use the correct alignment,
@@ -252,10 +255,54 @@ Clearly, the `imul` function is the fastest. But only by a small amount.
 However, the point here was to show how GCC will fix bad hand-optimizations.
 And clearly, it did that correctly!
 
-(What's interesting is that GCC 5 obviously didn't optimize the `correct`
+What's interesting is that GCC 5 obviously didn't optimize the `correct`
 function as well as either of `offset_imul` of `offset_shift_add` in this
 program. You can take a look at the disassembly by doing `objdump -d
-test-offset` and see for yourself.)
+test-offset` and see for yourself. 
+
+Obviously, the first mistake for the
+`correct` function is that it creates a stack frame. If you recompile with
+`-fomit-frame-pointer`, GCC quickly rectifies that, and we get the shift + add
+version (but *not* the imul one!):
+
+    0000000100000c00 <_correct>:
+       100000c00: 8d 04 b6              lea    (%rsi,%rsi,4),%eax
+       100000c03: c1 e0 06              shl    $0x6,%eax
+       100000c06: 01 f8                 add    %edi,%eax
+       100000c08: c3                    retq
+       100000c09: 0f 1f 80 00 00 00 00  nopl   0x0(%rax)
+
+Rerunning the tests, I got these results:
+
+correct 3.357759s, shift+add 3.311668s, imul 3.159475s
+correct 3.228023s, shift+add 3.311668s, imul 3.159475s
+...
+correct 3.228023s, shift+add 3.244624s, imul 3.159475s
+
+Note that `correct` and `shift+add` should actually get the exact same timings,
+but they don't! That's most likely because of <a
+href="https://en.wikipedia.org/wiki/Preemption_(computing)">preemption
+noise</a> by the OS.  I didn't bother trying to run this in single user mode,
+with `nice -10` and so on. If you try this out yourself, particularly if you're
+on another OS, let me know your results in the comments!
+
+Another question is why LLVM doesn't perform the same optimization. GCC is
+supposedly somewhat faster than LLVM, but I haven't checked if this is still
+true. Also, what we haven't looked at is any side-effects on the code. I'm
+thinking about the cascading CPU pipeline and stuff like that. I don't expect
+to see anything interesting here, though, because we're only accesing values on
+the stack, and so on. Let me know in the comments if you have two cents to
+spare!
+
+I also tried adding `-m64 -march=native -mtune=native`, and the results I got
+then was
+
+correct 3.404448s, shift+add 3.271211s, imul 3.217215s
+correct 3.269317s, shift+add 3.243117s, imul 3.173220s
+correct 3.269317s, shift+add 3.243117s, imul 3.123939s
+...
+
+Each run is a little bit different, though.
 
 Versions used
 -------------
