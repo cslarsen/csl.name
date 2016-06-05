@@ -35,10 +35,12 @@ pixels, and often used by games and demos. This gives
 
 However, the multiplication was quite expensive in those days, and with many
 *individual* pixels being drawn, an optimization would be to replace it with
-faster instructions. Noticing that 320 = 2<sup>6</sup> + 2<sup>8</sup>, the
-above expression can be optimized to
+instructions taking less cycles. Noticing that 320 = 2<sup>6</sup> +
+2<sup>8</sup>, the above expression can be transformed to
 
     size_t offset = x + (y << 6) + (y << 8);
+
+We've replaced a multiplication and add with two shifts and two adds.
 
 This was a tried-and-true technique, part of every programmer's bag of tricks.
 I typed it out by reflex <a
