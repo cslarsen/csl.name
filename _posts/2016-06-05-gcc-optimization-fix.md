@@ -8,8 +8,8 @@ disqus: true
 tags: c++ llvm optimization assembly gcc c
 ---
 
-The GCC and LLVM optimizers contains a <a
-href="http://www.fefe.de/source-code-optimization.pdf">trove of arcane and
+The GCC and LLVM optimizers contain <a
+href="http://www.fefe.de/source-code-optimization.pdf">troves of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
 surprisingly, it will even transform sub-optimal, "clever" code that does more
 harm than good.
