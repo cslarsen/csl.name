@@ -116,8 +116,8 @@ produces
 
 It's simply `return x + y*320`.
 
-So which one is faster? According to some an <a
-href="https://gist.github.com/cslarsen/2896137">old experiment I made</a>,
+So which one is faster? According to an <a
+href="https://gist.github.com/cslarsen/2896137">old experiment of mine</a>,
 the GCC version is the fastest — **but** I'll need to rerun them and compile
 from assembly, to make sure that the optimizer doesn't optimize away the loop.
 
