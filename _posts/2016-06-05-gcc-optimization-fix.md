@@ -299,10 +299,10 @@ spare!
 I also tried adding `-m64 -march=native -mtune=native`, and the results I got
 then was
 
-correct 3.404448s, shift+add 3.271211s, imul 3.217215s
-correct 3.269317s, shift+add 3.243117s, imul 3.173220s
-correct 3.269317s, shift+add 3.243117s, imul 3.123939s
-...
+    correct 3.404448s, shift+add 3.271211s, imul 3.217215s
+    correct 3.269317s, shift+add 3.243117s, imul 3.173220s
+    correct 3.269317s, shift+add 3.243117s, imul 3.123939s
+    ...
 
 Each run is a little bit different, though.
 
