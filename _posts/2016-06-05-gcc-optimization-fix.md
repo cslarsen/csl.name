@@ -8,7 +8,7 @@ disqus: true
 tags: c++ llvm optimization
 ---
 
-The GCC (and LLVM) optimizer contains a <a
+The GCC and LLVM optimizers contains a <a
 href="http://www.fefe.de/source-code-optimization.pdf">trove of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
 surprisingly, it will even transform sub-optimal, "clever" code that does more
