@@ -5,7 +5,7 @@ date: 2016-06-05 01:00:24 +0200
 updated: 2016-06-05 01:00:24 +0200
 categories: programming
 disqus: true
-tags: c++ llvm optimization
+tags: c++ llvm optimization assembly
 ---
 
 The GCC and LLVM optimizers contains a <a
@@ -26,14 +26,14 @@ offset:
     size_t offset = (x + y*width) * component_size;
 
 Here, `component_size` is the size of each pixel. For 8-bit RGBA values, it
-will be four bytes. In nineties, graphics modes used color palettes, so
-the component would be a single one-byte index. <a
+will be four bytes. In the nineties, graphics modes used color palettes, so
+the component would be a one-byte index. <a
 href="https://en.wikipedia.org/wiki/Mode_13h">Mode 13h</a> was 320 by 200
 pixels, and often used by games and demos. This gives
 
     size_t offset = x + y*320;
 
-However, the multiplication was quite expensive on those days, and with many
+However, the multiplication was quite expensive in those days, and with many
 *individual* pixels being drawn, an optimization would be to replace it with
 faster instructions. Noticing that 320 = 2<sup>6</sup> + 2<sup>8</sup>, the
 above expression can be optimized to
@@ -41,7 +41,7 @@ above expression can be optimized to
     size_t offset = x + (y << 6) + (y << 8);
 
 This was a tried-and-true technique, part of every programmer's bag of tricks.
-For years, I typed it out reflexively <a
+I typed it out by reflex <a
 href="https://news.ycombinator.com/item?id=4083414">for years</a>. However, on
 modern CPUs in plain, non-vectorized code, those shifts and additions are
 somewhat modified. The cool thing is that GCC picks up those false
