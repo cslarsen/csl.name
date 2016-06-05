@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How llvm fixes bad hand-optimizations"
+title: "How GCC fixes bad hand-optimizations"
 date: 2016-06-05 01:00:24 +0200
 updated: 2016-06-05 01:00:24 +0200
 categories: programming
@@ -8,14 +8,11 @@ disqus: true
 tags: c++ llvm optimization
 ---
 
-The LLVM optimizer contains a <a
+The GCC (and LLVM) optimizer contains a <a
 href="http://www.fefe.de/source-code-optimization.pdf">trove of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
 surprisingly, it will even transform sub-optimal, "clever" code that does more
 harm than good.
-
-**NOTE**: Although I use `gcc` here, it's actually using LLVM's back end. I'll
-update the post with actual `gcc` outputs later.
 
 One such piece of code is using shifts and additions in place of
 multiplications. In the olden days, this was a reliable way to speed up your
@@ -57,7 +54,7 @@ optimizations and fixes it for you. Consider
 
 Compile that without optimizations, 
 
-    $ gcc -m64 -march=native -mtune=native -O0 -S foo.c
+    $ llvm-gcc -m64 -march=native -mtune=native -O0 -S foo.c
 
 and look at its assembly. First it loads `x` and `y` into `esi` and `edi`,
 respectively:
@@ -78,7 +75,7 @@ and then `x += (y << 8)`
 
 Turning on optimizations,
 
-    $ gcc -m64 -march=native -mtune=native -O3 -S foo.c
+    $ llvm-gcc -m64 -march=native -mtune=native -O3 -S foo.c
 
 it will change slightly to
 
@@ -104,3 +101,36 @@ It does the *exact* same for the straight-forward version,
     }
 
 For 32-bit targets, the assembly will be structurally equivalent.
+
+But what about GCC? It goes even further! Compiling the original shift-and-add
+code with
+
+    $ gcc-5 -mtune=native -march=native -m64 -Ofast -S foo.c
+
+produces
+
+    imull $320, %esi, %eax
+    addl  %edi, %eax
+    ret
+
+Simply `return x + y*320`.
+
+So which one is faster? According to some an <a
+href="https://gist.github.com/cslarsen/2896137">old experiment I made</a>,
+the GCC version is the fastest — **but** I'll need to rerun them and compile
+from assembly, to make sure that the optimizer doesn't optimize away the loop.
+I'll post results at a later time.
+
+Versions used
+-------------
+
+    $ gcc-5 --version
+    gcc-5 (Homebrew gcc 5.3.0 --without-multilib --with-jit) 5.3.0
+    Copyright (C) 2015 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    $ llvm-gcc --version
+    Apple LLVM version 7.0.2 (clang-700.1.81)
+    Target: x86_64-apple-darwin15.5.0
+    Thread model: posix
