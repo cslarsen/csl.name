@@ -2,10 +2,10 @@
 layout: post
 title: "How GCC fixes bad hand-optimizations"
 date: 2016-06-05 01:00:24 +0200
-updated: 2016-06-05 01:00:24 +0200
+updated: 2016-06-05 23:05:43 +0200
 categories: programming
 disqus: true
-tags: c++ llvm optimization assembly
+tags: c++ llvm optimization assembly gcc c
 ---
 
 The GCC and LLVM optimizers contains a <a
@@ -116,13 +116,146 @@ produces
 
 It's simply `return x + y*320`.
 
-So which one is faster? According to an <a
-href="https://gist.github.com/cslarsen/2896137">old experiment of mine</a>,
-the GCC version is the fastest — **but** I'll need to rerun them and compile
-from assembly, to make sure that the optimizer doesn't optimize away the loop.
+Performing the tests
+--------------------
 
-I'll post results at a later time. Also, I'll dig up links to the GCC source
-code where this detection is done. It ought to be quite interesting.
+Let's put the functions to the test. We'll use <a
+href="http://www.nasm.us">NASM</a> to assemble the two versions above, and GCC
+5 to compile a test driver. We'll turn off optimizations where needed.
+
+The assembly code for the imul and shift + add functions are placed in
+`offset.asm`. I'm on OSX right now, so we'll need to use the correct alignment,
+otherwise the linker won't be able to find the functions. The file looks like
+this:
+
+    ; OSX 64-bit, requires special alignment
+    bits 64
+    align 16
+
+    ; For the symbol table
+    global _offset_imul
+    global _offset_shift_add
+
+    section .text
+
+    ; Takes x and y, returs x + y*320
+    _offset_imul:
+      imul eax, esi, 320
+      add eax, edi
+      ret
+
+    ; The same, but with shifts and adds
+    _offset_shift_add:
+      lea eax, [rsi, rsi*4]
+      shl eax, 6
+      add eax, edi
+      ret
+
+Compile this with
+
+    $ nasm -fmacho64 offset.asm -ooffset.o
+
+The test driver program, called `test-offset.c`, uses <a
+href="https://developer.apple.com/library/ios/documentation/System/Conceptual/ManPages_iPhoneOS/man2/getrusage.2.html">getrusage</a>
+to find the CPU time spent by each function. To compare the performance of each
+function, we'll run one billion iterations of them each, then keep the *best*
+time so far. That's the approach Facebook uses in their profiling code in <a
+href="https://github.com/facebook/folly/blob/master/folly/Benchmark.cpp#L171">Folly</a> (apparently they went back to this after testing some statistical modelling).
+For code like this, we don't want to measure nonsense things like average
+running time and so on: The best run gives the most correct measurement of how
+well the function performs.
+
+    #include <assert.h>
+    #include <stdio.h>
+    #include <sys/resource.h>
+
+    static unsigned correct_result = 0;
+    typedef unsigned (*func_t)(unsigned, unsigned);
+
+    /* Our assembly functions */
+    extern unsigned __attribute__((optimize("O0")))
+      offset_imul(unsigned x, unsigned y);
+    extern unsigned __attribute__((optimize("O0")))
+      offset_shift_add(unsigned x, unsigned y);
+
+    /* To make sure that the functions actually work */
+    static unsigned correct(const unsigned x, const unsigned y)
+    {
+      return x + y*320;
+    }
+
+    static double rusage()
+    {
+      struct rusage ru;
+      getrusage(RUSAGE_SELF, &ru);
+      return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
+    }
+
+    /* We'll disable optimizations for this one */
+    static unsigned __attribute__((optimize("O0")))
+      calc(const size_t its, func_t func)
+    {
+      unsigned check = 0xaaaaaaaa;
+
+      for ( size_t n=0; n<its; ++n )
+        check ^= func(n, n+1);
+
+      return check;
+    }
+
+    static void
+      __attribute__((optimize("O0")))
+      best(const size_t its, double* best, func_t func)
+    {
+      const double start = rusage();
+      const unsigned result = calc(its, func);
+      assert(result == correct_result);
+      const double secs = rusage() - start;
+
+      if ( secs < *best )
+        *best = secs;
+    }
+
+    int main()
+    {
+      double tc=9999, ti=9999, ts=9999;
+
+      const size_t its = 1000000000;
+      correct_result = calc(its, correct);
+
+      /* Loop forever and print the running best results */
+      for (;;) {
+        best(its, &tc, correct);
+        best(its, &ts, offset_shift_add);
+        best(its, &ti, offset_imul);
+        printf("correct %fs, shift+add %fs, imul %fs\n", tc, ts, ti);
+      }
+    }
+
+Compile this with
+
+    $ gcc-5 -W -Wall -Ofast offset.o test-offset.c -otest-offset
+
+Results
+-------
+
+We're finally ready to party (according to some definition of "party"):
+
+    $ ./test-offset
+    correct 3.448534s, shift+add 3.301471s, imul 3.164973s
+    correct 3.304378s, shift+add 3.281795s, imul 3.161455s
+    correct 3.285387s, shift+add 3.254211s, imul 3.161455s
+    ...
+    correct 3.267140s, shift+add 3.254211s, imul 3.161455s
+
+Clearly, the `imul` function is the fastest. But only by a small amount.
+However, the point here was to show how GCC will fix bad hand-optimizations.
+And clearly, it did that correctly!
+
+(What's interesting is that GCC 5 obviously didn't optimize the `correct`
+function as well as either of `offset_imul` of `offset_shift_add` in this
+program. You can take a look at the disassembly by doing `objdump -d
+test-offset` and see for yourself.)
 
 Versions used
 -------------
@@ -137,3 +270,6 @@ Versions used
     Apple LLVM version 7.0.2 (clang-700.1.81)
     Target: x86_64-apple-darwin15.5.0
     Thread model: posix
+
+    $ nasm -v
+    NASM version 2.12.01 compiled on Mar 23 2016
