@@ -54,12 +54,12 @@ optimizations and fixes it for you. Consider
       return x + (y << 6) + (y << 8);
     }
 
-Compile that without optimizations, 
+Compile that with LLVM without optimizations,
 
     $ llvm-gcc -m64 -march=native -mtune=native -O0 -S foo.c
 
-and look at its assembly. First it loads `x` and `y` into `esi` and `edi`,
-respectively:
+and look at its assembly. This was done on an i7 on OS X.  First it loads `x`
+and `y` into `esi` and `edi`, respectively:
 
     movl    -4(%rbp), %esi
     movl    -8(%rbp), %edi
@@ -85,7 +85,8 @@ it will change slightly to
     shll    $6, %eax
     addl    %edi, %eax
 
-It still does add and shifts, but in a different way. The above code first does
+It still does add and shifts, but in a different way. Excluding the function
+prologue and epilogue, the above code does
 
     eax = y + y*4
     eax = eax << 6
@@ -95,16 +96,15 @@ or
 
     return x + ((y+y*4) <<6 )
 
-It does the *exact* same for the straight-forward version,
+LLVM will do the *exact* same for the straight-forward version,
 
     unsigned offset(unsigned x, unsigned y)
     {
       return x + y*320;
     }
 
-and 32-bit targets are structurally equivalent.
-
-But what about GCC? It goes even further!
+and 32-bit targets are structurally equivalent.  But what about **GCC**? It
+goes even further!
 
 Compiling the original shift-and-add code with
 
@@ -116,13 +116,13 @@ produces
     addl  %edi, %eax
     ret
 
-It's simply `return x + y*320`.
+It's simply `return x + y*320`. But is it faster? Yes, it is!
 
 Testing performance
 --------------------
 
 When it comes to performance testing, there's nothing like actually running
-real code. So let's put the functions to the test. 
+real code. So let's put the functions to the test.
 
 We'll use <a href="http://www.nasm.us">NASM</a> to assemble the two versions
 above, and GCC 5 to compile a test driver. We'll turn off optimizations where
@@ -143,7 +143,7 @@ this:
 
     section .text
 
-    ; Takes x and y, returs x + y*320
+    ; Takes x and y, returns x + y*320
     _offset_imul:
       imul eax, esi, 320
       add eax, edi
