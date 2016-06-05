@@ -1,18 +1,21 @@
 ---
 layout: post
-title: "How gcc fixes bad hand-optimizations"
+title: "How llvm fixes bad hand-optimizations"
 date: 2016-06-05 01:00:24 +0200
 updated: 2016-06-05 01:00:24 +0200
 categories: programming
 disqus: true
-tags: c++ gcc optimization
+tags: c++ llvm optimization
 ---
 
-The GCC optimizer is a <a
+The LLVM optimizer is a <a
 href="http://www.fefe.de/source-code-optimization.pdf">trove of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
 surprisingly, it will even transform sub-optimal, "clever" code that does more
 harm than good.
+
+**NOTE**: Although I use `gcc` here, it's actually using LLVM's backend. I'll
+update the post with actual `gcc` outputs later.
 
 One such piece of code is using shifts and additions in place of
 multiplications. In the olden days, this was a reliable way to speed up your
