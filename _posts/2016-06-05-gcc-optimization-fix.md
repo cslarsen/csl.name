@@ -8,13 +8,13 @@ disqus: true
 tags: c++ llvm optimization
 ---
 
-The LLVM optimizer is a <a
+The LLVM optimizer contains a <a
 href="http://www.fefe.de/source-code-optimization.pdf">trove of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
 surprisingly, it will even transform sub-optimal, "clever" code that does more
 harm than good.
 
-**NOTE**: Although I use `gcc` here, it's actually using LLVM's backend. I'll
+**NOTE**: Although I use `gcc` here, it's actually using LLVM's back end. I'll
 update the post with actual `gcc` outputs later.
 
 One such piece of code is using shifts and additions in place of
