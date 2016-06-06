@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Sending raw Ethernet packets from Python"
-date: 2016-06-07 00:16:30 +0200
-updated: 2016-06-07 00:16:30 +0200
+title: "Sending raw Ethernet frames from Python"
+date: 2016-06-07 00:30:30 +0200
+updated: 2016-06-07 00:30:30 +0200
 categories: networking
 disqus: true
 tags: python networking sdn openflow ethernet
