@@ -2,7 +2,7 @@
 layout: post
 title: "How GCC fixes bad hand-optimizations"
 date: 2016-06-05 01:00:24 +0200
-updated: 2016-06-05 23:05:43 +0200
+updated: 2016-06-06 18:10:43 +0200
 categories: programming
 disqus: true
 tags: c++ llvm optimization assembly gcc c
@@ -11,8 +11,7 @@ tags: c++ llvm optimization assembly gcc c
 The GCC and LLVM optimizers contain <a
 href="http://www.fefe.de/source-code-optimization.pdf">troves of arcane and
 esoteric tricks</a> to speed up code on your particular system. Rather
-surprisingly, it will even transform sub-optimal, "clever" code that does more
-harm than good.
+surprisingly, GCC will even correct bad hand-optimizations.
 
 One such piece of code is using shifts and additions in place of
 multiplications. In the olden days, this was a reliable way to speed up your
@@ -42,12 +41,10 @@ instructions taking less cycles. Noticing that 320 = 2<sup>6</sup> +
 
 We've replaced a multiplication and add with two shifts and two adds.
 
-This was a tried-and-true technique, part of every programmer's bag of tricks.
-I typed it out by reflex <a
-href="https://news.ycombinator.com/item?id=4083414">for years</a>. However, on
-modern CPUs in plain, non-vectorized code, those shifts and additions are
-somewhat modified. The cool thing is that GCC picks up those false
-optimizations and fixes it for you. Consider
+This was a tried-and-true technique, part of every graphics programmer's bag of
+tricks.  I typed it out by reflex <a
+href="https://news.ycombinator.com/item?id=4083414">for years</a>. 
+However, on modern CPUs, such code is no longer optimal.  Consider
 
     unsigned offset(unsigned x, unsigned y)
     {
@@ -276,10 +273,10 @@ version (but *not* the imul one!):
 
 Rerunning the tests, I got these results:
 
-correct 3.357759s, shift+add 3.311668s, imul 3.159475s
-correct 3.228023s, shift+add 3.311668s, imul 3.159475s
-...
-correct 3.228023s, shift+add 3.244624s, imul 3.159475s
+    correct 3.357759s, shift+add 3.311668s, imul 3.159475s
+    correct 3.228023s, shift+add 3.311668s, imul 3.159475s
+    ...
+    correct 3.228023s, shift+add 3.244624s, imul 3.159475s
 
 Note that `correct` and `shift+add` should actually get the exact same timings,
 but they don't! That's most likely because of <a
