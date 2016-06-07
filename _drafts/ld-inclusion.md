@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Embedding binary data in your C and C++ executables"
-date: 2016-06-06 19:49:36 +0200
-updated: 2016-06-06 19:49:36 +0200
-categories: 
+title: "Embedding binary data in executables"
+date: 2016-06-08 01:09:40 +0200
+updated: 2016-06-08 01:09:40 +0200
+categories: programming
 disqus: true
-tags: linker
+tags: linker assembly nasm gcc c c++
 ---
 
 Applications usually load resources like images from disk. But, in some
@@ -83,6 +83,27 @@ or use another value for the format `-f`, and link with your program exactly as
 before:
 
     $ gcc cat.o program.c -o program
+
+Using `objcopy`
+---------------
+
+You can also use `objcopy` from the GNU binutils package. However, I wasn't
+able to get it working completely on OS X, and as it's not really a
+cross-platform way to do it, I won't write much more about it.
+
+But, you *can* start by doing
+
+    $ objcopy -I binary -O mach-o-x86_64 \
+      --rename-section .data=.const [...] cat.png cat.o
+
+but the linker didn't like the resulting file very much. More on this later, if
+I find a way. On Linux, it *should* be pretty straight forward.
+
+What about other languages?
+---------------------------
+
+Most statically compiled languages will let you link in object files. I haven't
+tried, but I guess you could very easily do the same for Swift, Rust and so on.
 
 What would you use it for?
 --------------------------
