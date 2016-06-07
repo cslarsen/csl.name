@@ -18,8 +18,8 @@ the executable is to convert it to a character array:
     const char data[] = {0x00, 0x01, ...};
 
 While there's nothing wrong with that approach, it requires a tool to convert
-binary data to code. A much more elegant solution is to have the linker perform
-those operations for you. I'll present several way to solve this problem.
+binary data to code (for example, `xxd -i`). Besides, I find it a bit
+inelegant, and I'll present some alternatives for you.
 
 Using the GNU linker `ld`
 -------------------------
@@ -83,3 +83,4 @@ or use another value for the format `-f`, and link with your program exactly as
 before:
 
     $ gcc cat.o program.c -o program
+
