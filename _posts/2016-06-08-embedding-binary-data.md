@@ -21,11 +21,11 @@ While there's nothing wrong with that approach, it requires a tool to convert
 binary data to code (for example, `xxd -i`). Besides, I find it a bit
 inelegant, and I'll present some alternatives for you.
 
-Using the GNU linker `ld`
--------------------------
+Using the GNU linker
+--------------------
 
-This is by far the easiest solution, but does not work on Mac OS X, because GNU
-ld doesn't fully support it.
+This is by far the easiest solution — but, unfortunately, doesn't work on Mac
+OS X. It does for Linux, though!
 
 Let's say you have an image `cat.png` and want to embed it into your
 application. You can create an object file with
@@ -38,6 +38,9 @@ The object file will have three symbols in it,
     _cat_start
     _cat_end
     _cat_size
+
+(That's not actual output, but gives you an idea on how to see the symbols. You
+can also use `objdump -x cat.o`).
 
 To use them from C, declare some extern variables
 
@@ -56,12 +59,12 @@ If you have a function `display_png_image`, you can simply call
 Using assembly
 --------------
 
-If you don't have GNU ld, or it's not supported fully on your system (like on
-OS X) — or, if you want complete control — then you can use an assembler like
-<a href="http://www.nasm.us">nasm</a> to create an object file.
+If you don't have a working GNU `ld` — or, if you want utterly and complete
+control — you can use an assembler like <a href="http://www.nasm.us">nasm</a>
+to embed data.
 
-To do that, simply create some symbols and use the `incbin` directive. With
-`nasm`, you can even use a macro to calculate the size of the binary data:
+Just embed the data with the `incbin` directive. Add some helper symbols for
+the end of the data, and use a macro to calculate the byte length:
 
     bits 64
 
@@ -75,12 +78,11 @@ To do that, simply create some symbols and use the `incbin` directive. With
     _cat_end:
     _cat_size:    dd $-_cat_start
 
-Compile for OS X with
+Compile with `nasm -f<format> cat.asm -o cat.o`. On OS X, that's
 
     $ nasm -fmacho64 cat.asm -o cat.o
 
-or use another value for the format `-f`, and link with your program exactly as
-before:
+Finally, link your program exactly as before:
 
     $ gcc cat.o program.c -o program
 
