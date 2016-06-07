@@ -59,12 +59,11 @@ If you have a function `display_png_image`, you can simply call
 Using assembly
 --------------
 
-If you don't have a working GNU `ld` — or, if you want utterly and complete
-control — you can use an assembler like <a href="http://www.nasm.us">nasm</a>
-to embed data.
+If you don't have a working GNU `ld` — or, if you want utter and complete
+control — you can use an assembler like <a href="http://www.nasm.us">nasm</a>.
 
-Just embed the data with the `incbin` directive. Add some helper symbols for
-the end of the data, and use a macro to calculate the byte length:
+Just use the `incbin` directive to include the data. Add some helper symbols
+for the end of the data, and use a macro to calculate the byte length:
 
     bits 64
 
@@ -87,24 +86,24 @@ Finally, link your program exactly as before:
     $ gcc cat.o program.c -o program
 
 So what's so good about this approach? It lets you put the binary data in the
-read-only data section. It means that the data will be truly read-only.
-If you used `ld -r -b binary` instead, you'd have to use `objcopy
---rename-section .data=.rodata,...` instead.
+read-only data section, meaning it will be truly read-only. If you used `ld`
+instead, you'd have to use `objcopy` to move the symbols to the `.rodata`
+section.
 
 Using `objcopy`
 ---------------
 
 You can also use `objcopy` from the GNU binutils package. However, I wasn't
-able to get it working completely on OS X, and as it's not really a
-cross-platform way to do it, I won't write much more about it.
+able to get it working completely on OS X. Meaning, there isn't an easy,
+cross-platform way to use it, so I won't write much about it.
 
-But, you *can* start by doing
+But, you *can* start by doing something like
 
     $ objcopy -I binary -O mach-o-x86_64 \
       --rename-section .data=.const [...] cat.png cat.o
 
-but the linker didn't like the resulting file very much. More on this later, if
-I find a way. On Linux, it *should* be pretty straight forward.
+On my system, the linker didn't like the resulting object file. I'll post an
+update if I get it working. On Linux, it should be straight-forward.
 
 What about other languages?
 ---------------------------
@@ -123,8 +122,8 @@ are other cool uses as well.
 Mike Pall, the original author of <a href="http://luajit.org">LuaJIT</a>, gives
 an example where he <a
 href="http://stackoverflow.com/a/11318414/21028">compiles Lua programs to
-bytecode and wraps them up in an archive file</a>. He then proceeds to link a
-host program in C with them, so the scripts can be executed without loading
+object files and wrap them up in an archive file</a>. He then proceeds to link
+a host program in C with them, so the scripts can be executed without loading
 anything from disk.
 
 I'm sure there are many other use cases as well.
