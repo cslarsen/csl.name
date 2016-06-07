@@ -1,8 +1,8 @@
 ---
 layout: post
 title: "Embedding binary data in executables"
-date: 2016-06-08 01:09:40 +0200
-updated: 2016-06-08 01:09:40 +0200
+date: 2016-06-08 01:45:40 +0200
+updated: 2016-06-08 01:45:40 +0200
 categories: programming
 disqus: true
 tags: linker assembly nasm gcc c c++
