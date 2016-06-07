@@ -84,3 +84,18 @@ before:
 
     $ gcc cat.o program.c -o program
 
+What would you use it for?
+--------------------------
+
+Of course, you can embed stuff like images and music into your application. For
+desktop applications, this may be an advantage in certain situations. But there
+are other cool uses as well.
+
+Mike Pall, the original author of <a href="http://luajit.org">LuaJIT</a>, gives
+an example where he <a
+href="http://stackoverflow.com/a/11318414/21028">compiles Lua programs to
+bytecode and wraps them up in an archive file</a>. He then proceeds to link a
+host program in C with them, so the scripts can be executed without loading
+anything from disk.
+
+I'm sure there are many other use cases as well.
