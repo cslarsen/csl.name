@@ -2,7 +2,7 @@
 layout: post
 title: "How GCC fixes bad hand-optimizations"
 date: 2016-06-05 01:00:24 +0200
-updated: 2016-06-06 18:10:43 +0200
+updated: 2016-06-07 18:22:43 +0200
 categories: programming
 disqus: true
 tags: c++ llvm optimization assembly gcc c
@@ -10,53 +10,56 @@ tags: c++ llvm optimization assembly gcc c
 
 The GCC and LLVM optimizers contain <a
 href="http://www.fefe.de/source-code-optimization.pdf">troves of arcane and
-esoteric tricks</a> to speed up code on your particular system. Rather
-surprisingly, GCC will even correct bad hand-optimizations.
+esoteric tricks</a> to speed up code on different systems. Rather surprisingly,
+GCC will even correct bad hand-optimizations!
 
-One such piece of code is using shifts and additions in place of
-multiplications. In the olden days, this was a reliable way to speed up your
-code, especially for game and demo programming. It's even mentioned in <a
-href="http://www.fefe.de/source-code-optimization.pdf">Hacker's Delight</a>
-(which I highly recommend for bit fiddlers).
+One such example is using shifts instead of multiplication.
+In the olden days, this was a reliable way to speed up your
+code, especially for game and demo programming. It's mentioned in <a
+href="http://www.fefe.de/source-code-optimization.pdf">Hacker's Delight</a>,
+which I highly recommend for bit fiddlers.
 
-To draw a pixel at given x and y positions, you must calculate the screen
-offset:
+To draw a single pixel at given x and y positions, you must calculate the
+screen offset:
 
-    size_t offset = (x + y*width) * component_size;
+    size_t offset = (x + y*width) * components_size;
 
-Here, `component_size` is the size of each pixel. For 8-bit RGBA values, it
+Here, `components_size` is the size of each pixel. For 8-bit RGBA values, it
 will be four bytes. In the nineties, graphics modes used color palettes, so
-the component would be a one-byte index. <a
-href="https://en.wikipedia.org/wiki/Mode_13h">Mode 13h</a> was 320 by 200
-pixels, and often used by games and demos. This gives
+the component would be a one-byte index. Games and demos often used <a
+href="https://en.wikipedia.org/wiki/Mode_13h">mode 13h</a>, which is 320 by 200
+pixels. That gives
 
     size_t offset = x + y*320;
 
-However, the multiplication was quite expensive in those days, and with many
-*individual* pixels being drawn, an optimization would be to replace it with
+However, multiplication was quite expensive in those days, and with many
+individual pixels being drawn (as opposed to image blocks, or scanning the
+screen buffer a pixel at a time), an optimization would be to replace it with
 instructions taking less cycles. Noticing that 320 = 2<sup>6</sup> +
-2<sup>8</sup>, the above expression can be transformed to
+2<sup>8</sup>, the expression can be transformed to
 
     size_t offset = x + (y << 6) + (y << 8);
 
-We've replaced a multiplication and add with two shifts and two adds.
+On a CPU like the Intel 386, that would take up less cycles in total.
 
 This was a tried-and-true technique, part of every graphics programmer's bag of
 tricks.  I typed it out by reflex <a
 href="https://news.ycombinator.com/item?id=4083414">for years</a>. 
-However, on modern CPUs, such code is no longer optimal.  Consider
+However, on modern CPUs, such code is no longer optimal. Let's see the assembly
+code for the function
 
     unsigned offset(unsigned x, unsigned y)
     {
       return x + (y << 6) + (y << 8);
     }
 
-Compile that with LLVM without optimizations,
+Using LLVM, we can compile the code using native 64-bit instructions with no
+optimizations:
 
     $ llvm-gcc -m64 -march=native -mtune=native -O0 -S foo.c
 
-and look at its assembly. This was done on an i7 on OS X.  First it loads `x`
-and `y` into `esi` and `edi`, respectively:
+The below code is from an Intel i7 on OS X.  First it loads `x` and `y` into
+`esi` and `edi`, respectively, from the stack frame:
 
     movl    -4(%rbp), %esi
     movl    -8(%rbp), %edi
@@ -72,7 +75,7 @@ and then `x += (y << 8)`
     shll    $8, %edi
     addl    %edi, %esi
 
-Turning on optimizations,
+But turning on optimizations,
 
     $ llvm-gcc -m64 -march=native -mtune=native -O3 -S foo.c
 
@@ -82,8 +85,8 @@ it will change slightly to
     shll    $6, %eax
     addl    %edi, %eax
 
-It still does add and shifts, but in a different way. Excluding the function
-prologue and epilogue, the above code does
+While it still performs adds and shifts, it uses less cycles. We've excluded
+the function prologue and epilogue. In pseudo-code, it does this:
 
     eax = y + y*4
     eax = eax << 6
@@ -93,7 +96,7 @@ or
 
     return x + ((y+y*4) <<6 )
 
-LLVM will do the *exact* same for the straight-forward version,
+LLVM will do compile to the *exact* same code with this version
 
     unsigned offset(unsigned x, unsigned y)
     {
