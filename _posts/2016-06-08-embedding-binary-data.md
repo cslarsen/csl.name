@@ -86,6 +86,11 @@ Finally, link your program exactly as before:
 
     $ gcc cat.o program.c -o program
 
+So what's so good about this approach? It lets you put the binary data in the
+read-only data section. It means that the data will be truly read-only.
+If you used `ld -r -b binary` instead, you'd have to use `objcopy
+--rename-section .data=.rodata,...` instead.
+
 Using `objcopy`
 ---------------
 
@@ -105,7 +110,8 @@ What about other languages?
 ---------------------------
 
 Most statically compiled languages will let you link in object files. I haven't
-tried, but I guess you could very easily do the same for Swift, Rust and so on.
+tried, but I guess you could easily do it in languages like Swift, Rust and so
+on.
 
 What would you use it for?
 --------------------------
