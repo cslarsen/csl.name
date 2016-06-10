@@ -87,7 +87,7 @@ Here's an example in pseudo-code that, unintentionally, looks like JavaScript:
     }
 
     // At this point, label is still null and cannot be jumped to. The first
-    // time we call print_person, make_label will be called, giving label some
+    // time we call print_person, set_label will be called, giving label some
     // imaginary value.
 
     print_person("John Doe", 123); // prints "John Doe is 123 years old."
