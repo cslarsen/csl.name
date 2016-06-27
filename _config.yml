@@ -28,6 +28,7 @@ speakerdeck: "http://speakerdeck.com/csl"
 
 # Google adsense
 adsense_tracking_id: UA-831752-4
+adsense: false
 
 # Disqus
 disqus_user: christianstigenlarsen
