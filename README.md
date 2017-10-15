@@ -30,9 +30,10 @@ Install packages with
     $ gem install bundler
     $ bundle install
 
-If you have problems installing nokogiri on macOS, just try
+On macOS, I suggest you skip the brew version of ruby and use the system one:
 
-    $ gem install nokogiri
+    $ sudo -H /usr/bin/gem install bundle
+    $ bundle install
 
 Then build everything with
 
