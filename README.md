@@ -25,6 +25,13 @@ Requirements
 Building
 --------
 
+Install packages with
+
+    $ gem install bundler
+    $ bundle install
+
+Then build everything with
+
   * `make -j` builds the site locally in `_site`
   * `make -j serve` builds and serves HTTP on localhost:4000
   * `make -j dist` builds and publishes to the web
