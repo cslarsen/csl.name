@@ -30,6 +30,10 @@ Install packages with
     $ gem install bundler
     $ bundle install
 
+If you have problems installing nokogiri on macOS, just try
+
+    $ gem install nokogiri
+
 Then build everything with
 
   * `make -j` builds the site locally in `_site`
