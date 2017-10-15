@@ -28,6 +28,7 @@ speakerdeck: "http://speakerdeck.com/csl"
 
 # Google adsense
 adsense_tracking_id: UA-831752-4
+# Disable Google adsense because Google page speed drops way down when I use it
 adsense: false
 
 # Disqus
