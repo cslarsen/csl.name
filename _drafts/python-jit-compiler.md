@@ -150,7 +150,36 @@ specializing a piece of machine code here, even if it is a weak one.
 
 The code contains a *lot* of superfluous stuff like a function prologue for
 setting up the stack and so on. We don't really need all of that, but I just
-copied the entire thing from a C routine that I disassembled with `objdump`.
+copied the entire thing from a C routine that I disassembled. You can do it
+by putting the following in `multiply.c`:
+
+    int multiply(int n)
+    {
+      return n*113;
+    }
+
+Compile with something like
+
+    $ gcc -O3 multiply.c -fPIC -shared -olibmultiply.so
+
+Then dump the machine code
+
+    $ objdump -d libmultiply.so 
+
+    libmultiply.so:     file format mach-o-x86-64
+
+    ...
+
+    0000000000000fa0 <_multiply>:
+     fa0:	55                   	push   %rbp
+     fa1:	48 89 e5             	mov    %rsp,%rbp
+     fa4:	6b c7 71             	imul   $0x71,%edi,%eax
+     fa7:	5d                   	pop    %rbp
+     fa8:	c3                   	retq   
+
+    ...
+
+We'll use a slightly different bit of machine code.
 
     def make_multiplier(block, multiplier):
       # Prologue
@@ -263,10 +292,23 @@ it, we get
 Closing remarks
 ---------------
 
+Let me know if anything is unclear. I admit I wrote this quickly, so some parts
+may be quite obscure if you're just starting out.
+
 Before you start writing huge applications using this, check out the
 [PeachPy][peachpy] project. It goes way beyond this and includes a disassembler
 and supports seemingly the entire x86-64 instruction set right up to AVX.
 
+Finally, don't expect small JIT-ed functions to perform well in Python. There
+is quite some overhead involved with ctypes. I haven't looked into the details
+of ctypes, but if it does use libffi, there is indeed a lot of overhead.
+
+If you want to continue writing things yourself, you may soon need a
+disassembler. While you can use gdb to break into Python and disassemble your
+JIT-ed code, it's probably better to use a Python package for that. For
+example [Capstone][capstone].
+
+[capstone]: http://www.capstone-engine.org/lang_python.html
 [cffi.github]: https://github.com/cffi/cffi
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [github]: https://github.com/cslarsen/minijit
