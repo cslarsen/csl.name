@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A basic x86-64 JIT compiler in Python"
+title: "A basic x86 JIT compiler from scratch in Python"
 date: 2017-11-06 20:05:41 +0100
 updated: 2017-11-06 20:05:41 +0100
 categories: Python
@@ -165,24 +165,18 @@ Compile with something like
 Then dump the machine code
 
     $ objdump -d libmultiply.so 
-
-    libmultiply.so:     file format mach-o-x86-64
-
     ...
-
     0000000000000fa0 <_multiply>:
      fa0:	55                   	push   %rbp
      fa1:	48 89 e5             	mov    %rsp,%rbp
      fa4:	6b c7 71             	imul   $0x71,%edi,%eax
      fa7:	5d                   	pop    %rbp
-     fa8:	c3                   	retq   
-
-    ...
+     fa8:	c3                   	retq
 
 We'll use a slightly different bit of machine code.
 
     def make_multiplier(block, multiplier):
-      # Prologue
+      ### Prologue ###
 
       # push rbp
       block[0] = 0x55
@@ -197,7 +191,8 @@ We'll use a slightly different bit of machine code.
       block[5] = 0x7d
       block[6] = 0xfc
 
-      # get argument into eax :D mov eax, dword ptr [rbp-0x4]
+      # get argument into eax :D
+      # mov eax, dword ptr [rbp-0x4]
       block[7] = 0x8b
       block[8] = 0x45
       block[9] = 0xfc
@@ -205,7 +200,7 @@ We'll use a slightly different bit of machine code.
       # mov edx, immediate 32-bit value
       block[10] = 0xba
 
-      # little-endian
+      # Encode constant number in little-endian format
       block[11] = (multiplier & 0x000000ff)
       block[12] = (multiplier & 0x0000ff00) >> 8
       block[13] = (multiplier & 0x00ff0000) >> (4*4)
@@ -216,7 +211,9 @@ We'll use a slightly different bit of machine code.
       block[16] = 0xaf
       block[17] = 0xc2
 
-      # Epilogue: pop rbp
+      ### Epilogue ###
+
+      # pop rbp
       block[18] = 0x5d
 
       # retq
