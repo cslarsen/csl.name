@@ -264,7 +264,7 @@ will push the current 64-bit address on the stack before jumping. So at this
 last point in our code, it will — most likely — contain the return address of
 the caller. Of course, assembly is all about convention, so it you write an
 entire program yourself, you could put anything you'd like there. Perhaps
-you're using continuation-passing style, whatever.
+you're using [continuation-passing style][cps], whatever.
 
 The last thing to note is that the the constant `0xdeadbeefed` is encoded in
 little-endian format. So that means, as we patch up this piece of code, we need
@@ -472,6 +472,7 @@ disassembly listings of the same code for RETQ and MOVABSQ.
 [brainfuck.wiki]: https://en.wikipedia.org/wiki/Brainfuck
 [capstone]: http://www.capstone-engine.org/lang_python.html
 [cffi.github]: https://github.com/cffi/cffi
+[cps]: https://en.wikipedia.org/wiki/Continuation-passing_style
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [deadbeef]: https://en.wikipedia.org/wiki/Magic_number_(programming)
 [forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
