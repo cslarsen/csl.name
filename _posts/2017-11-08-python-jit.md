@@ -23,12 +23,12 @@ execute it.
     48 0f af c7           imul   %rdi,%rax
     c3                    retq
 
-We will mainly deal with the left hand side — the byte sequence `48 b8 ed` and
-so on.  Those fifteen machine code bytes comprise an x86-64 function that
-multiplies its argument with the constant `0xdeadbeefed`. The JIT-compilation
-will simply create new versions of this function with a different constant.
-While being a contrived form of [specialization][specialization.wiki], it will
-illuminate the basic mechanics of JIT-compilation.
+We will mainly deal with the left hand side — the byte sequence `48 b8 ed ...`
+and so on.  Those fifteen machine code bytes comprise an x86-64 function that
+multiplies its argument with the constant [`0xdeadbeefed`][deadbeef]. The JIT
+step will create functions with different such constants.  While being a
+contrived form of [specialization][specialization.wiki], it will illuminate the
+basic mechanics of just-in-time compilation.
 
 Our general strategy is to rely on the built-in [`ctypes`][ctypes.doc] module
 to load the C standard library. From there, we can access system functions to
@@ -446,7 +446,7 @@ different opcode than an ordinary RET, because it operates on 64-bit values.
 This is something that may not be important when doing assembly programming,
 because it's a detail that may not always matter, but it's worth being aware of
 the difference. I saw that gcc, lldb and objdump gave slightly different
-disassembly listings of the same code.
+disassembly listings of the same code for RETQ and MOVABSQ.
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
@@ -455,6 +455,7 @@ disassembly listings of the same code.
 [capstone]: http://www.capstone-engine.org/lang_python.html
 [cffi.github]: https://github.com/cffi/cffi
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
+[deadbeef]: https://en.wikipedia.org/wiki/Magic_number_(programming)
 [github]: https://github.com/cslarsen/minijit
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
 [mmap.man]: http://man7.org/linux/man-pages/man2/mmap.2.html
