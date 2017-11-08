@@ -24,22 +24,24 @@ execute it.
     c3                    retq
 
 We will mainly deal with the left hand side — the byte sequence `48 b8 ed ...`
-and so on.  Those fifteen machine code bytes comprise an x86-64 function that
-multiplies its argument with the constant [`0xdeadbeefed`][deadbeef]. The JIT
-step will create functions with different such constants.  While being a
-contrived form of [specialization][specialization.wiki], it will illuminate the
-basic mechanics of just-in-time compilation.
+and so on.  Those fifteen [machine code bytes][machine.code.wiki] comprise an
+x86-64 function that multiplies its argument with the constant
+[`0xdeadbeefed`][deadbeef]. The JIT step will create functions with different
+such constants.  While being a contrived form of
+[specialization][specialization.wiki], it illuminates the basic mechanics of
+just-in-time compilation.
 
-Our general strategy is to rely on the built-in [`ctypes`][ctypes.doc] module
-to load the C standard library. From there, we can access system functions to
-interface with the virtual memory manager. We'll use [`mmap`][mmap.man] to fetch a
-page-aligned block of memory. To be on the safe side, we'll fetch exactly one
-page of memory. The alignment requirement is why we can't simply use `malloc`,
-because we never know if it returns memory that spans page boundaries.
+Our general strategy is to rely on the built-in [`ctypes`][ctypes.doc] Python
+module to load the C standard library. From there, we can access system
+functions to interface with the virtual memory manager. We'll use
+[`mmap`][mmap.man] to fetch a page-aligned block of memory. It needs to be
+aligned for it to become executable. That's the reason why we can't simply use
+the usual C function `malloc`, because it may return memory that spans page
+boundaries.
 
-The function [`mprotect`][mprotect.man] can be used to mark the memory block as
-read-only and executable. From there, we can call into the block through
-ctypes.
+The function [`mprotect`][mprotect.man] will be used to mark the memory block as
+read-only and executable. After that, we should be able to call into our
+freshly compiled block of code through ctypes.
 
 The boiler-plate part
 ---------------------
@@ -54,19 +56,27 @@ Before we can do anything, we need to load the standard C library.
     elif sys.platform.startswith("linux"):
         libc = ctypes.cdll.LoadLibrary("libc.so.6")
         # ...
+    else:
+        raise RuntimeError("Unsupported platform")
 
-To find the page size, we'll call `sysconf(_SC_PAGESIZE)`. The `_SC_PAGESIZE`
-constant is 29 on macOS and 30 on Linux. We'll just hard-code those in our
-program. You can find those numbers by digging into system header files
-or by writing a simple C program that prints them out. A more robust and
-elegant solution would be to use the [`cffi` module][cffi.github] instead of
-ctypes. It can automatically parse header files. However, I wanted to stick to
-the default Python distribution, so we'll stick to ctypes in this post.
+There are other ways to achieve this, for example
 
-We need a few additional constants for `mmap` and `mprotect`. I've just written
-them out below. Note that if you want to run this code on other UNIX
-distributions, you may have to look up the constants again (for all I know,
-they may even change between kernel versions).
+    >>> import ctypes
+    >>> import ctypes.util
+    >>> libc = ctypes.CDLL(ctypes.util.find_library("c"))
+    >>> libc
+    <CDLL '/usr/lib/libc.dylib', handle 110d466f0 at 103725ad0>
+
+To find the page size, we'll call [`sysconf(_SC_PAGESIZE)`][sysconf.man]. The
+`_SC_PAGESIZE` constant is 29 on macOS but 30 on Linux. We'll just hard-code
+those in our program. You can find them by digging into system header files or
+writing a simple C program that print them out. A more robust and elegant
+solution would be to use the [`cffi` module][cffi.github] instead of ctypes,
+because it can automatically parse header files. However, since I wanted to
+stick to the default CPython distribution, we'll continue using ctypes.
+
+We need a few additional constants for `mmap` and friends. They're just written
+out below. You may have to look them up for other UNIX variants.
 
     import ctypes
 
@@ -90,6 +100,8 @@ they may even change between kernel versions).
         PROT_READ = 0x01
         PROT_WRITE = 0x02
         MAP_FAILED = -1 # voidptr actually
+    else:
+        raise RuntimeError("Unsupported platform")
 
 Although not strictly required, it is very useful to tell ctypes the signature
 of the functions we'll use. That way, we'll get exceptions if we mix invalid
@@ -103,7 +115,7 @@ types. For example
 tells ctypes that `sysconf` is a function that takes a single integer and
 produces a long integer. After this, we can get the current page size with
 
-    PAGESIZE = sysconf(_SC_PAGESIZE)
+    pagesize = sysconf(_SC_PAGESIZE)
 
 The machine code we are going to generate will be interpreted as unsigned 8-bit
 bytes, so we need to declare a new pointer type:
@@ -424,20 +436,25 @@ some code generation of your own. An interesting note on the Brainfuck project
 is that if you just JIT-compile each Brainfuck instruction one-by-one, you
 won't get much of a speed boost, even if you run native code. The entire speed
 boost is done in the _code optimization_ stage, where you can bulk up integer
-operations into one or a few x86 instructions.
+operations into one or a few x86 instructions. Another candidate for such
+compilation would be the [Forth language][jonesforth].
 
 Also, before you get serious about expanding this JIT-compiler, take a look at
 the [Peachpy project][peachpy]. It goes way beyond this and includes a
 disassembler and supports seemingly the entire x86-64 instruction set right up
 to [AVX][avx.wiki].
 
-Closing remarks
----------------
-
 As mentioned, there is a good deal of overhad when using ctypes to call into
 functions. You can use the `cffi` module to overcome some of this, but the fact
 remains that if you want to call very small JIT-ed functions a large number of
 times, it's usually faster to just use pure Python.
+
+What other cool uses are there? I've seen some math libraries in Python that
+switch to vector operations for higher performance. But I can imagine other fun
+things as well. For example, tools to compress and decompress native code,
+access virtualization primitives, sign code and so on. I do know that some
+[BPF][bpf.wiki] tools and regex modules JIT-compile queries for faster
+processing.
 
 What I think is fun about this exercise is to get into deeper territory than
 pure assembly. One thing that comes to mind is how different instructions are
@@ -450,14 +467,18 @@ disassembly listings of the same code for RETQ and MOVABSQ.
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
+[bpf.wiki]: https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
 [brainfuck.github]: https://github.com/cslarsen/brainfuck-jit
 [brainfuck.wiki]: https://en.wikipedia.org/wiki/Brainfuck
 [capstone]: http://www.capstone-engine.org/lang_python.html
 [cffi.github]: https://github.com/cffi/cffi
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [deadbeef]: https://en.wikipedia.org/wiki/Magic_number_(programming)
+[forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
 [github]: https://github.com/cslarsen/minijit
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
+[jonesforth]: https://github.com/nornagon/jonesforth/blob/master/jonesforth.S
+[machine.code.wiki]: https://en.wikipedia.org/wiki/Machine_code
 [mmap.man]: http://man7.org/linux/man-pages/man2/mmap.2.html
 [mprotect.man]: http://man7.org/linux/man-pages/man2/mprotect.2.html
 [munmap.man]: http://man7.org/linux/man-pages/man3/munmap.3p.html
@@ -465,4 +486,5 @@ disassembly listings of the same code for RETQ and MOVABSQ.
 [speakerdeck]: https://speakerdeck.com/csl/how-to-make-a-simple-virtual-machine
 [specialization.wiki]: https://en.wikipedia.org/wiki/Run-time_algorithm_specialisation
 [strerror.man]: http://man7.org/linux/man-pages/man3/strerror.3.html
+[sysconf.man]: http://man7.org/linux/man-pages/man3/sysconf.3.html
 [wx.wiki]: https://en.wikipedia.org/wiki/W%5EX
