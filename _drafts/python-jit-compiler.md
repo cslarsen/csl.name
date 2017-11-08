@@ -234,10 +234,10 @@ machine code. In other words, it's an embedded argument for the `movabs`
 instruction. So RAX now holds the constant `0xdeadbeefed` (the constant is a
 bland play on one of the MACH file format magic numbers on macOS systems).
 
-Next, the `imul` instruction multiplies the numbers in the RDI and RAX
-registers, and places the result in RAX. Per the AMD x84-64 specification, the
-first argument of a function is placed in RDI. So RDI will hold the number the
 called passed in. Also, it is the convention that return values are passed in
+first argument of a function is placed in RDI. So RDI will hold the number the
+Next, the `imul` instruction multiplies the numbers in the RDI and RAX
+registers, and places the result in RAX. Per the [AMD64 ABI][amd64.abi] the
 the RAX register, so we can just return from the function with `retq`.
 
 RETQ means that it will pop the current 64-bit value on the stack and jump to
@@ -442,6 +442,7 @@ because it's a detail that may not always matter, but it's worth being aware of
 the difference. I saw that gcc, lldb and objdump gave slightly different
 disassembly listings of the same code.
 
+[amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
 [brainfuck.github]: https://github.com/cslarsen/brainfuck-jit
 [brainfuck.wiki]: https://en.wikipedia.org/wiki/Brainfuck
