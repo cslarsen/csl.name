@@ -250,29 +250,17 @@ In case you are not familiar with assembly, I'll let you know how this function
 works. First, the `movabs` function just puts an _immediate_ number in the RAX
 register. _Immediate_ is assembly-jargon for encoding something right in the
 machine code. In other words, it's an embedded argument for the `movabs`
-instruction. So RAX now holds the constant `0xdeadbeefed` (the constant is a
-bland play on one of the MACH file format magic numbers on macOS systems).
+instruction. So RAX now holds the constant `0xdeadbeefed`.
 
-called passed in. Also, it is the convention that return values are passed in
-first argument of a function is placed in RDI. So RDI will hold the number the
-Next, the `imul` instruction multiplies the numbers in the RDI and RAX
-registers, and places the result in RAX. Per the [AMD64 ABI][amd64.abi] the
-the RAX register, so we can just return from the function with `retq`.
+Also — by [AMD64][amd64.abi] convention — the first integer argument will be in RDI, and the return value in RAX.
+ So RDI will hold the number to multiply with. That's what `imul` does. It
+multiplies RAX and RDI and puts the result in RAX. Finally, we pop a 64-bit
+return address off the stack and jump to it with RETQ. At this level, it's easy
+to imagine how one could implement [continuation-passing style][cps].
 
-RETQ means that it will pop the current 64-bit value on the stack and jump to
-it. It is normal to use the CALLQ instruction to call subroutines, and CALLQ
-will push the current 64-bit address on the stack before jumping. So at this
-last point in our code, it will — most likely — contain the return address of
-the caller. Of course, assembly is all about convention, so it you write an
-entire program yourself, you could put anything you'd like there. Perhaps
-you're using [continuation-passing style][cps], whatever.
-
-The last thing to note is that the the constant `0xdeadbeefed` is encoded in
-little-endian format. So that means, as we patch up this piece of code, we need
-to encode our constant the same way. (A good mnemonic to remember the order is
-that little endian means "little-end first", meaning the smallest part of the
-number comes first as you traverse memory).  The whole operation we're doing is
-actually a simple form of [specialization][specialization.wiki].
+Note that the the constant `0xdeadbeefed` is in little-endian format. We need
+to remember to do the same when we patch the code. (By the way, a good mnemonic
+for remembering the word order is that little endian means "little-end first").
 
 We are now ready to put everything in a Python function.
 
