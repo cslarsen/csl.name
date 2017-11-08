@@ -405,10 +405,10 @@ passed above.
 If you're not interested in debugging, but just want a disassembler, I
 recommend the [Capstone][capstone] module.
 
-What's next? Brainfuck
-----------------------
+What's next?
+------------
 
-A good exercise would be to JIT-compile [Brainfuck][brainfuck.wiki] programs to
+A good exercise would be to JIT-compile [Brainfuck programs][brainfuck.wiki] to
 native code. If you want to jump right in, I've made a GitHub repository at
 [https://github.com/cslarsen/brainfuck-jit][brainfuck.github]. I even have a
 [Speaker Deck presentation][speakerdeck] to go with it. It performs JIT-ing and
@@ -420,17 +420,27 @@ won't get much of a speed boost, even if you run native code. The entire speed
 boost is done in the _code optimization_ stage, where you can bulk up integer
 operations into one or a few x86 instructions.
 
-What's next? PeachPy
---------------------
-
 Also, before you get serious about expanding this JIT-compiler, take a look at
-the [Peachpy][peachpy] project. It goes way beyond this and includes a
+the [Peachpy project][peachpy]. It goes way beyond this and includes a
 disassembler and supports seemingly the entire x86-64 instruction set right up
 to [AVX][avx.wiki].
 
-Finally, don't expect small JIT-ed functions to perform well in Python. There
-is quite some overhead involved with ctypes. I haven't looked into the details
-of ctypes, but if it does use libffi, there is indeed a lot of overhead.
+Closing remarks
+---------------
+
+As mentioned, there is a good deal of overhad when using ctypes to call into
+functions. You can use the `cffi` module to overcome some of this, but the fact
+remains that if you want to call very small JIT-ed functions a large number of
+times, it's usually faster to just use pure Python.
+
+What I think is fun about this exercise is to get into deeper territory than
+pure assembly. One thing that comes to mind is how different instructions are
+disassembled to the same mnemonic. For example, the RETQ instruction has a
+different opcode than an ordinary RET, because it operates on 64-bit values.
+This is something that may not be important when doing assembly programming,
+because it's a detail that may not always matter, but it's worth being aware of
+the difference. I saw that gcc, lldb and objdump gave slightly different
+disassembly listings of the same code.
 
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
 [brainfuck.github]: https://github.com/cslarsen/brainfuck-jit
