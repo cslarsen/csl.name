@@ -84,8 +84,8 @@ pointer type for it:
     c_uint8_p = ctypes.POINTER(ctypes.c_uint8)
 
 Finally, we just dish out the signatures from the rest of the functions that we
-will use. These can be seen from the manual pages for `mmap`, `mprotect` and
-`strerror`.
+will use. These can be seen from the manual pages for `mmap`, `munmap`,
+`mprotect` and `strerror`.
 
     strerror = libc.strerror
     strerror.argtypes = [ctypes.c_int]
@@ -153,77 +153,64 @@ setting up the stack and so on. We don't really need all of that, but I just
 copied the entire thing from a C routine that I disassembled. You can do it
 by putting the following in `multiply.c`:
 
-    int multiply(int n)
+    #include <stdint.h>
+
+    uint64_t multiply(uint64_t n)
     {
-      return n*113;
+      return n*0xdeadbeefedULL;
     }
 
 Compile with something like
 
-    $ gcc -O3 multiply.c -fPIC -shared -olibmultiply.so
+    $ gcc -Os -fPIC -shared -fomit-frame-pointer multiply.c -olibmultiply.so
 
 Then dump the machine code
 
-    $ objdump -d libmultiply.so 
+    $ objdump -d libmultiply.so
     ...
-    0000000000000fa0 <_multiply>:
-     fa0:	55                   	push   %rbp
-     fa1:	48 89 e5             	mov    %rsp,%rbp
-     fa4:	6b c7 71             	imul   $0x71,%edi,%eax
-     fa7:	5d                   	pop    %rbp
-     fa8:	c3                   	retq
+    0000000000000f71 <_multiply>:
+     f71:	48 b8 ed ef be ad de 	movabs $0xdeadbeefed,%rax
+     f78:	00 00 00 
+     f7b:	48 0f af c7          	imul   %rdi,%rax
+     f7f:	c3                   	retq
 
-We'll use a slightly different bit of machine code.
+The only thing to notice here is that the constant `0xdeadbeefed` is encoded in
+little-endian format. We'll now create a function that multiplies with a
+constant that we choose from Python.
 
     def make_multiplier(block, multiplier):
-      ### Prologue ###
+        # Encoding of: movabs <multiplier>, rdx
+        block[0] = 0x48
+        block[1] = 0xba
 
-      # push rbp
-      block[0] = 0x55
+        # Little-endian encoding of multiplier
+        block[2] = (multiplier & 0x00000000000000ff) >>  0
+        block[3] = (multiplier & 0x000000000000ff00) >>  8
+        block[4] = (multiplier & 0x0000000000ff0000) >> 16
+        block[5] = (multiplier & 0x00000000ff000000) >> 24
+        block[6] = (multiplier & 0x000000ff00000000) >> 32
+        block[7] = (multiplier & 0x0000ff0000000000) >> 40
+        block[8] = (multiplier & 0x00ff000000000000) >> 48
+        block[9] = (multiplier & 0xff00000000000000) >> 56
 
-      # mov rbp, rsp
-      block[1] = 0x48
-      block[2] = 0x89
-      block[3] = 0xe5
+        # Encoding of: mov rdi, rax
+        block[10] = 0x48
+        block[11] = 0x89
+        block[12] = 0xf8
 
-      # put argument onto stack.. :)
-      block[4] = 0x89
-      block[5] = 0x7d
-      block[6] = 0xfc
+        # Encoding of: imul rdx, rax
+        block[13] = 0x48
+        block[14] = 0x0f
+        block[15] = 0xaf
+        block[16] = 0xc2
 
-      # get argument into eax :D
-      # mov eax, dword ptr [rbp-0x4]
-      block[7] = 0x8b
-      block[8] = 0x45
-      block[9] = 0xfc
+        # Encoding of: retq
+        block[17] = 0xc3
 
-      # mov edx, immediate 32-bit value
-      block[10] = 0xba
-
-      # Encode constant number in little-endian format
-      block[11] = (multiplier & 0x000000ff)
-      block[12] = (multiplier & 0x0000ff00) >> 8
-      block[13] = (multiplier & 0x00ff0000) >> (4*4)
-      block[14] = (multiplier & 0xff000000) >> (6*4)
-
-      # imul eax, edx
-      block[15] = 0x0f
-      block[16] = 0xaf
-      block[17] = 0xc2
-
-      ### Epilogue ###
-
-      # pop rbp
-      block[18] = 0x5d
-
-      # retq
-      block[19] = 0xc3
-
-      # Make a function out of this
-
-      function = ctypes.CFUNCTYPE(ctypes.c_int)
-      function.restype = ctypes.c_int
-      return function
+        # Return a ctypes function with the right prototype
+        function = ctypes.CFUNCTYPE(ctypes.c_int64)
+        function.restype = ctypes.c_int64
+        return function
 
 The most interesting part here is copying the constant to multiply with,
 starting at index 11. It needs to be encoded in little-endian order, so we do
