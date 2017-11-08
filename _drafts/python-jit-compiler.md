@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Writing a basic x86-64 JIT compiler from scratch in stock Python"
-date: 2017-11-06 20:05:41 +0100
-updated: 2017-11-06 20:05:41 +0100
-categories: Python
+date: 2017-11-08 22:03:00 +0100
+updated: 2017-11-08 22:03:00 +0100
+categories: Python assembly
 disqus: true
 tags: Python assembly
 ---
