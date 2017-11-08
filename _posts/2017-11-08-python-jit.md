@@ -9,40 +9,37 @@ tags: Python assembly
 ---
 
 In this post I'll show how to write a rudimentary, native x86-64 [just-in-time
-compiler (JIT)][jit.wiki] in Python, only with the default modules.
+compiler (JIT)][jit.wiki] in CPython, using only the built-in modules.
 
 The post targets the UNIX systems macOS and Linux, but should be easily
-translated to other systems, including Windows.  All the code in here can be
-found on [https://github.com/cslarsen/minijit][github].
+translated to other systems such as Windows. The complete code for this post
+can be found on [https://github.com/cslarsen/minijit][github].
 
-Our aim is simply to patch the following code with a constant, put it in a
-block of memory and execute it.
+**The goal** is to patch the below assembly code at runtime and execute it.
 
     48 b8 ed ef be ad de  movabs $0xdeadbeefed, %rax
     00 00 00
     48 0f af c7           imul   %rdi,%rax
     c3                    retq
 
-In other words, we will be dealing with the left hand side of the disassembly
-above — machine code. The fifteen bytes encode a function that multiplies its
-argument in the RDI register with the constant `0xdeadbeefed`. This is the
-constant that we'll replace. It will serve as a simple way to check that we are
-doing everything correctly.
+We will mainly deal with the left hand side — the byte sequence `48 b8 ed ...`. 
+Those fifteen machine code bytes 
+encode an x86-64 function that multiplies its argument with the
+constant `0xdeadbeefed`. The JIT-compilation consists simply of creating new
+functions with different constants. Being a contrived form of specialization,
+[specialization][specialization.wiki], it requires us to set up native code to
+be executed at runtime.
 
-To fetch a block of memory that we can later mark as executable, we must be
-sure that it is page-aligned. To simplify things, we'll just use
-[`mmap`][mmap.man] and allocate a whole memory page. That's usually 4096 bytes,
-depending on your system. After that, we use [`mprotect`][mprotect.man] to
-change it to executable memory.
+Our general strategy is to rely on the built-in [`ctypes`][ctypes.doc] module
+to load the C standard library. From there, we can access system functions to
+interface with the virtual memory manager. We'll use [`mmap`][mmap.man] to fetch a
+page-aligned block of memory. To be on the safe side, we'll fetch exactly one
+page of memory. The alignment requirement is why we can't simply use `malloc`,
+because we never know if it returns memory that spans page boundaries.
 
-We will use the [`ctypes`][ctypes.doc] module in Python to load the standard C
-library, so that we can call those functions. We'll also need a few
-system-dependent constants. I found those by digging into the header files. You
-can also construct a small C program to print them out. The only place they
-exist is in the header files. A more elegant solution would be to use a
-foreign-function interface like [`cffi`][cffi.github], because it is able to
-parse the header files directly. However, it is not in the default Python
-distribution, so we'll stick to ctypes.
+The function [`mprotect`][mprotect.man] can be used to mark the memory block as
+read-only and executable. From there, we can call into the block through
+ctypes.
 
 The boiler-plate part
 ---------------------
@@ -60,7 +57,16 @@ Before we can do anything, we need to load the standard C library.
 
 To find the page size, we'll call `sysconf(_SC_PAGESIZE)`. The `_SC_PAGESIZE`
 constant is 29 on macOS and 30 on Linux. We'll just hard-code those in our
-program. In addition, we'll define a few extra constants.
+program. You can find those numbers by digging into system header files
+or by writing a simple C program that prints them out. A more robust and
+elegant solution would be to use the [`cffi` module][cffi.github] instead of
+ctypes. It can automatically parse header files. However, I wanted to stick to
+the default Python distribution, so we'll stick to ctypes in this post.
+
+We need a few additional constants for `mmap` and `mprotect`. I've just written
+them out below. Note that if you want to run this code on other UNIX
+distributions, you may have to look up the constants again (for all I know,
+they may even change between kernel versions).
 
     import ctypes
 
