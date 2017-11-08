@@ -8,43 +8,59 @@ disqus: true
 tags: Python assembly
 ---
 
-In this post I'll show how to write a rudimentary, native x86-64 JIT-compiler
-on UNIX systems like Linux and macOS. All the code in here can be found on
-[https://github.com/cslarsen/minijit][github].
+In this post I'll show how to write a rudimentare, native x86-64 JIT-compiler
+in Python. It has been written for UNIX systems, and should work for Linux and
+macOS, but you should be able to transfer it quite easily to Windows as well.
+All the code in here can be found on [https://github.com/cslarsen/minijit][github].
 
-While this is normally done in a language like C, it can be done with any
-language with a foreign-function interface library (FFI). We'll be using the
-built-in module [`ctypes`][ctypes.doc]. An FFI module like
-[`cffi`][cffi.github] would make things a bit easier, but it's unfortunately
-not yet part of the standard distribution. Using Python means that we actually
-have to delve very close to the OS, meaning that we'll be exposed to its C
-interface.
+Our aim is simply to patch the following code with a constant, put it in a
+block of memory and execute it.
 
-Our strategy is simply to grab a piece of memory, write machine code to it,
-mark it as executable and then jump to it. We will use the [`mmap`][mmap.man] C
-function to fetch memory and [`mprotect`][mprotect.man] to change its execution
-bit.
+    48 b8 ed ef be ad de  movabs $0xdeadbeefed, %rax
+    00 00 00
+    48 0f af c7           imul   %rdi,%rax
+    c3                    retq
+
+In other words, we will be dealing with the left hand side of the disassembly
+above — in machine code. The fifteen bytes encode a function that multiplies
+its argument in the RDI register with the constant `0xdeadbeefed`. This is the
+constant that we'll specialize. It will serve as a simple way to check that we
+are doing everything correctly.
+
+To fetch a block of memory that we can later mark as executable, we must be
+sure that it is page-aligned. To simplify things, we'll just use
+[`mmap`][mmap.man] and allocate a whole memory page. That's usually 4096 bytes,
+depending on your system. After that, we use [`mprotect`][mprotect.man] to
+change it to executable memory.
+
+We will use the [`ctypes`][ctypes.doc] module in Python to load the standard C
+library, so that we can call those functions. We'll also need a few
+system-dependent constants. I found those by digging into the header files. You
+can also construct a small C program to print them out. The only place they
+exist is in the header files. A more elegant solution would be to use a
+foreign-function interface like [`cffi`][cffi.github], because it is able to
+parse the header files directly. However, it is not in the default Python
+distribution, so we'll stick to ctypes.
 
 Preliminary step
 ----------------
 
 Before we can do anything, we need to load the standard C library.
 
+    import ctypes
+
     if sys.platform.startswith("darwin"):
         libc = ctypes.cdll.LoadLibrary("libc.dylib")
+        # ...
     elif sys.platform.startswith("linux"):
         libc = ctypes.cdll.LoadLibrary("libc.so.6")
+        # ...
 
-To change the execution bit on a block of memory, the operating system requires
-that it is page-aligned. Because of that, we need to know the pagesize, so we
-can allocate exact multiples of the pagesize. We can do this with the `sysconf`
-function with `_SC_PAGESIZE` as argument.
+To find the pagesize, we'll call `sysconf(_SC_PAGESIZE)`. The `_SC_PAGESIZE`
+constant is 29 on macOS and 30 on Linux. We'll just hardcode those in our
+program. In addition, we'll define a few extra constants.
 
-`sys/mman.h` C header file, and its value is different across operating
-But what is the integral value of `_SC_PAGESIZE` ? This is defined in the
-define a few enumeration values that we are going to use.
-is able to parse C header files, while ctypes is not. Nevertheless, we need to
-systems. This is one of the spots where the [cffi][cffi.github] module makes life easier: It
+    import ctypes
 
     if sys.platform.startswith("darwin"):
         libc = ctypes.cdll.LoadLibrary("libc.dylib")
@@ -67,25 +83,30 @@ systems. This is one of the spots where the [cffi][cffi.github] module makes lif
         PROT_WRITE = 0x02
         MAP_FAILED = -1 # voidptr actually
 
-We can now proceed to set up the signatures for the C functions we will call:
+Although not strictly required, it is very useful to tell ctypes the signature
+of the functions we'll use. That way, we'll get exceptions if we mix invalid
+types.
 
     # Set up sysconf
     sysconf = libc.sysconf
     sysconf.argtypes = [ctypes.c_int]
     sysconf.restype = ctypes.c_long
 
-    # Get pagesize
+This tells ctypes that `sysconf` is a function that takes a single integer and
+produces a long integer. To actually fetch the page size, we can now just cal
+
     PAGESIZE = sysconf(_SC_PAGESIZE)
 
-Our block of code will be interpreted as unsigned 8-bit bytes, so declare a
-pointer type for it:
+The machine code will be interpreted as unsigned 8-bit bytes, so we need to
+declare a new ctypes pointer:
 
     # 8-bit unsigned pointer type
     c_uint8_p = ctypes.POINTER(ctypes.c_uint8)
 
-Finally, we just dish out the signatures from the rest of the functions that we
-will use. These can be seen from the manual pages for `mmap`, `munmap`,
-`mprotect` and `strerror`.
+Below we just dish out the remaining signatures for the functions that we'll
+use. For error reporting, it's good to have the `strerror` function available.
+We'll use `munmap` to destroy the machine code block after we're done with it.
+It lets the operating system reclaim that memory.
 
     strerror = libc.strerror
     strerror.argtypes = [ctypes.c_int]
@@ -110,9 +131,10 @@ will use. These can be seen from the manual pages for `mmap`, `munmap`,
     mprotect.restype = ctypes.c_int
 
 At this point, with all the boiler-plate code, I have to admit it's hard to
-justify writing this in Python rather than pure C. But down the line, it will
-enable us to experiment much more easily with JIT-compilation with the
-simplicity and fluidity of Python. Whatever.
+justify writing this in Python rather than pure C. We're working with a C
+library at the ABI-level, which can be quite flaky. Also, our code is larger
+than an equivalent C code up to this point. But down the line, Python will make
+it vastly simpler to experiment with JIT-compilation.
 
 Helper functions
 ----------------
@@ -128,13 +150,23 @@ Now we're ready to write the `mmap` wrapper.
 
         return ptr
 
+This fuction uses `mmap` to allocate page-aligned memory for us. We mark the
+memory region as readable and writable with the PROT flags, and we also mark it
+as private and anynomous. The [`mmap` manual page][mmap.man] covers the
+details. If the `mmap` call fails, we raise it as a Python error.
+
 To mark memory as executable,
 
     def make_executable(block, size):
         if mprotect(block, size, PROT_READ | PROT_EXEC) != 0:
             raise RuntimeError(strerror(ctypes.get_errno()))
 
-and to destroy a block of code
+With this `mprotect` call, we mark the memory region as readable and
+executable. We could also have made it writable as well, but some systems will
+deny executing code in memory that is writable. This is sometimes called the
+[W^X][wx.wiki].
+
+To destroy the memory block, we'll use
 
     def destroy_block(block, size):
         if munmap(block, size) == -1:
@@ -299,3 +331,4 @@ example [Capstone][capstone].
 [mmap.man]: http://man7.org/linux/man-pages/man2/mmap.2.html
 [mprotect.man]: http://man7.org/linux/man-pages/man2/mprotect.2.html
 [peachpy]: https://github.com/Maratyszcza/PeachPy
+[wx.wiki]: https://en.wikipedia.org/wiki/W%5EX
