@@ -454,6 +454,13 @@ because it's a detail that may not always matter, but it's worth being aware of
 the difference. I saw that gcc, lldb and objdump gave slightly different
 disassembly listings of the same code for RETQ and MOVABSQ.
 
+There's another takeaway. I've mentioned that the native Brainfuck compiler I
+made didn't initially produce very fast code. I had to optimize to get it fast.
+So things won't go fast just because you use AVX, Cuda or whatever. The cold
+truth is that gcc contains a vast database of optimizations that you cannot
+possibly replicate by hand. Felix von Letiner has a [classic talk about source
+code optimization][fefe] that I recommend for more on this.
+
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
 [bpf.wiki]: https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
@@ -464,6 +471,7 @@ disassembly listings of the same code for RETQ and MOVABSQ.
 [cps]: https://en.wikipedia.org/wiki/Continuation-passing_style
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [deadbeef]: https://en.wikipedia.org/wiki/Magic_number_(programming)
+[fefe]: http://www.fefe.de/source-code-optimization.pdf
 [forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
 [github]: https://github.com/cslarsen/minijit
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
