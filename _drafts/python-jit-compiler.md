@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A basic x86 JIT compiler from scratch in Python"
+title: "Writing a basic x86-64 JIT compiler from scratch in stock Python"
 date: 2017-11-06 20:05:41 +0100
 updated: 2017-11-06 20:05:41 +0100
 categories: Python
@@ -8,10 +8,12 @@ disqus: true
 tags: Python assembly
 ---
 
-In this post I'll show how to write a rudimentare, native x86-64 JIT-compiler
-in Python. It has been written for UNIX systems, and should work for Linux and
-macOS, but you should be able to transfer it quite easily to Windows as well.
-All the code in here can be found on [https://github.com/cslarsen/minijit][github].
+In this post I'll show how to write a rudimentare, native x86-64 [just-in-time
+compiler (JIT)][jit.wiki] in Python, only with the default modules.
+
+The post targets the UNIX systems macOS and Linux, but should be easily
+translated to other systems, including Windows.  All the code in here can be
+found on [https://github.com/cslarsen/minijit][github].
 
 Our aim is simply to patch the following code with a constant, put it in a
 block of memory and execute it.
@@ -22,10 +24,10 @@ block of memory and execute it.
     c3                    retq
 
 In other words, we will be dealing with the left hand side of the disassembly
-above — in machine code. The fifteen bytes encode a function that multiplies
-its argument in the RDI register with the constant `0xdeadbeefed`. This is the
-constant that we'll specialize. It will serve as a simple way to check that we
-are doing everything correctly.
+above — machine code. The fifteen bytes encode a function that multiplies its
+argument in the RDI register with the constant `0xdeadbeefed`. This is the
+constant that we'll replace. It will serve as a simple way to check that we are
+doing everything correctly.
 
 To fetch a block of memory that we can later mark as executable, we must be
 sure that it is page-aligned. To simplify things, we'll just use
@@ -42,8 +44,8 @@ foreign-function interface like [`cffi`][cffi.github], because it is able to
 parse the header files directly. However, it is not in the default Python
 distribution, so we'll stick to ctypes.
 
-Preliminary step
-----------------
+The boiler-plate part
+---------------------
 
 Before we can do anything, we need to load the standard C library.
 
@@ -85,28 +87,29 @@ program. In addition, we'll define a few extra constants.
 
 Although not strictly required, it is very useful to tell ctypes the signature
 of the functions we'll use. That way, we'll get exceptions if we mix invalid
-types.
+types. For example
 
     # Set up sysconf
     sysconf = libc.sysconf
     sysconf.argtypes = [ctypes.c_int]
     sysconf.restype = ctypes.c_long
 
-This tells ctypes that `sysconf` is a function that takes a single integer and
-produces a long integer. To actually fetch the page size, we can now just cal
+tells ctypes that `sysconf` is a function that takes a single integer and
+produces a long integer. After this, we can get the current page size with
 
     PAGESIZE = sysconf(_SC_PAGESIZE)
 
-The machine code will be interpreted as unsigned 8-bit bytes, so we need to
-declare a new ctypes pointer:
+The machine code we are going to generate will be interpreted as unsigned 8-bit
+bytes, so we need to declare a new pointer type:
 
     # 8-bit unsigned pointer type
     c_uint8_p = ctypes.POINTER(ctypes.c_uint8)
 
 Below we just dish out the remaining signatures for the functions that we'll
-use. For error reporting, it's good to have the `strerror` function available.
-We'll use `munmap` to destroy the machine code block after we're done with it.
-It lets the operating system reclaim that memory.
+use. For error reporting, it's good to have the [`strerror`][strerror.man]
+function available.  We'll use [`munmap`][munmap.man] to destroy the machine
+code block after we're done with it.  It lets the operating system reclaim that
+memory.
 
     strerror = libc.strerror
     strerror.argtypes = [ctypes.c_int]
@@ -130,14 +133,18 @@ It lets the operating system reclaim that memory.
     mprotect.argtypes = [ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int]
     mprotect.restype = ctypes.c_int
 
+At this point, it's hard to justify using Python rather than C. With C, we
+don't need any of the above boiler-plate code. But down the line, Python will
+allow us to experiment much more easily with JIT
+With all the boiler-plate code above, I have to admit it
 At this point, with all the boiler-plate code, I have to admit it's hard to
 justify writing this in Python rather than pure C. We're working with a C
 library at the ABI-level, which can be quite flaky. Also, our code is larger
 than an equivalent C code up to this point. But down the line, Python will make
 it vastly simpler to experiment with JIT-compilation.
 
-Helper functions
-----------------
+Memory management functions
+---------------------------
 
 Now we're ready to write the `mmap` wrapper.
 
@@ -176,14 +183,22 @@ To destroy the memory block, we'll use
 A machine code example
 ----------------------
 
-We're now ready to create an insanely simple piece of JIT code. It's a
-multiplier, but it hard-codes the number to multiply with. By definition, we're
-specializing a piece of machine code here, even if it is a weak one.
+We're now ready to create an insanely simple piece of JIT code. Recall the
+assembly listing at the top: It's a small function — without a local stack
+frame — that multiplies an input number with a constant. In Python, we'd write
+that as
 
-The code contains a *lot* of superfluous stuff like a function prologue for
-setting up the stack and so on. We don't really need all of that, but I just
-copied the entire thing from a C routine that I disassembled. You can do it
-by putting the following in `multiply.c`:
+    def create_multiplication_function(constant):
+        return lambda n: n * constant
+
+This is indeed a very contrived example, but qualifies a JIT. After all, we do
+create native code at runtime and execute it. It's easy to imagine more
+advanced examples such as JIT-compiling [Brainfuck][brainfuck.wiki] to x86-64
+machine code. Or accessing [AVX][avx.wiki] SIMD instructions for fast,
+vectorized mathematical operations.
+
+The disassembly at the top was generated by putting the following in a file
+`multiply.c`.
 
     #include <stdint.h>
 
@@ -192,11 +207,20 @@ by putting the following in `multiply.c`:
       return n*0xdeadbeefedULL;
     }
 
-Compile with something like
+I then compiled it to a shared library using gcc.
 
-    $ gcc -Os -fPIC -shared -fomit-frame-pointer multiply.c -olibmultiply.so
+    $ gcc -Os -fPIC -shared -fomit-frame-pointer \
+        -march=native multiply.c -olibmultiply.so
 
-Then dump the machine code
+Here I optimized for space (`-Os`) to generate as little machine code as
+possible, with position-independent code (`-fPIC`) to prevent using absolute
+jumps, without any call frame setup (`-fomit-frame-pointer`) so we won't get
+any superfluous stack setup (but that will be required for more advanced
+functions) and using the current CPU's instruction set (`-march=native`).
+
+We could also have passed `-S` to gcc to produce a disassembly listing, but
+we're actually interested in the machine code, so better to use a tool like
+`objdump`:
 
     $ objdump -d libmultiply.so
     ...
@@ -206,16 +230,42 @@ Then dump the machine code
      f7b:	48 0f af c7          	imul   %rdi,%rax
      f7f:	c3                   	retq
 
-The only thing to notice here is that the constant `0xdeadbeefed` is encoded in
-little-endian format. We'll now create a function that multiplies with a
-constant that we choose from Python.
+In case you are not familiar with assembly, I'll let you know how this function
+works. First, the `movabs` function just puts an _immediate_ number in the RAX
+register. _Immediate_ is assembly-jargon for encoding something right in the
+machine code. In other words, it's an embedded argument for the `movabs`
+instruction. So RAX now holds the constant `0xdeadbeefed` (the constant is a
+bland play on one of the MACH file format magic numbers on macOS systems).
+
+Next, the `imul` instruction multiplies the numbers in the RDI and RAX
+registers, and places the result in RAX. Per the AMD x84-64 specification, the
+first argument of a function is placed in RDI. So RDI will hold the number the
+called passed in. Also, it is the convention that return values are passed in
+the RAX register, so we can just return from the function with `retq`.
+
+RETQ means that it will pop the current 64-bit value on the stack and jump to
+it. It is normal to use the CALLQ instruction to call subroutines, and CALLQ
+will push the current 64-bit address on the stack before jumping. So at this
+last point in our code, it will — most likely — contain the return address of
+the caller. Of course, assembly is all about convention, so it you write an
+entire program yourself, you could put anything you'd like there. Perhaps
+you're using continuation-passing style, whatever.
+
+The last thing to note is that the the constant `0xdeadbeefed` is encoded in
+little-endian format. So that means, as we patch up this piece of code, we need
+to encode our constant the same way. (A good mnemonic to remember the order is
+that little endian means "little-end first", meaning the smallest part of the
+number comes first as you traverse memory).  The whole operation we're doing is
+actually a simple form of [specialization][specialization.wiki].
+
+We are now ready to put everything in a Python function.
 
     def make_multiplier(block, multiplier):
-        # Encoding of: movabs <multiplier>, rdx
+        # Encoding of: movabs <multiplier>, rax
         block[0] = 0x48
-        block[1] = 0xba
+        block[1] = 0xb8
 
-        # Little-endian encoding of multiplier
+        # Little-endian encoding of multiplication constant
         block[2] = (multiplier & 0x00000000000000ff) >>  0
         block[3] = (multiplier & 0x000000000000ff00) >>  8
         block[4] = (multiplier & 0x0000000000ff0000) >> 16
@@ -225,67 +275,79 @@ constant that we choose from Python.
         block[8] = (multiplier & 0x00ff000000000000) >> 48
         block[9] = (multiplier & 0xff00000000000000) >> 56
 
-        # Encoding of: mov rdi, rax
+        # Encoding of: imul rdi, rax
         block[10] = 0x48
-        block[11] = 0x89
-        block[12] = 0xf8
-
-        # Encoding of: imul rdx, rax
-        block[13] = 0x48
-        block[14] = 0x0f
-        block[15] = 0xaf
-        block[16] = 0xc2
+        block[11] = 0x0f
+        block[12] = 0xaf
+        block[13] = 0xc7
 
         # Encoding of: retq
-        block[17] = 0xc3
+        block[14] = 0xc3
 
         # Return a ctypes function with the right prototype
         function = ctypes.CFUNCTYPE(ctypes.c_int64)
         function.restype = ctypes.c_int64
         return function
 
-The most interesting part here is copying the constant to multiply with,
-starting at index 11. It needs to be encoded in little-endian order, so we do
-that here. The last part creates a ctypes function type that it returns.
+In the final part of the function, we create a ctypes function signature that
+can be used to call this function. It's somewhat arbitrarily placed, but I
+thought it was good to keep the signature close to the machine code.
 
-Startup code
-------------
+Mixing everything together
+--------------------------
 
-Now the rest is simply
+Now that we have the basic parts we can weave everything together. The first
+part is to allocate one page of memory:
 
-    def main():
-        if len(sys.argv) > 1:
-            arg = int(sys.argv[1])
-        else:
-            arg = 2
+    pagesize = sysconf(_SC_PAGESIZE)
+    block = create_block(pagesize)
 
-        print("Pagesize: %d" % PAGESIZE)
+Next, we generate the machine code. Let's pick the number 101 to use as a
+multiplier.
 
-        print("Allocating one page of memory")
-        block = create_block(PAGESIZE)
+    mul101_signature = make_multiplier(block, 101)
 
-        print("JIT-compiling a native mul-function w/arg %d" % arg)
-        function_type = make_multiplier(block, arg)
+We now mark the memory region as executable and read-only:
 
-        print("Making function block executable")
-        make_executable(block, PAGESIZE)
-        mul = function_type(ctypes.cast(block, ctypes.c_void_p).value)
+    make_executable(block, pagesize)
 
-        print("Testing function")
-        for i in range(10):
-            print("mul(%d) = %d" % (i, mul(i)))
+Take the address of the first byte in the memory block and cast it to a
+callable ctypes function with proper signature:
 
-        print("Deallocating function")
-        destroy_block(block, PAGESIZE)
-        del block
-        del mul
+    address = ctypes.cast(block, ctypes.c_void_p).value
+    mul101 = mul101_signature(address)
 
-    if __name__ == "__main__":
-        main()
+To get the memory address of the block, we use ctypes to cast it to a void
+pointer and extract its value. Finally, we instantiate an actual function from
+this address using the `mul101_signature` constructor.
 
-It lets you call everything from the command line, supplying the constant to
-multiply with. It contains a small loop to test that the code works. Running
-it, we get
+Voila! We now have a piece of _native_ code that we can call from Python. If
+you're in a REPL, you can try it directly:
+
+    >>> print(mul101(8))
+    808
+
+Note that this small multiplication function will run slower than a native
+Python calculation. That's mainly because ctypes, being a foreign-function
+library, has a lot of overhead: It needs to inspect what dynamic types you pass
+the function every time you call it, then unbox them, convert them and then do
+the same with the return value. So the trick is to either use assembly because
+you have to access some new Intel instruction, or because you compile something
+like Brainfuck to native code.
+
+Finally, if you want to, you can let the system reclaim the memory holding the
+function. Beware that after this, you will probably crash the process if you
+try calling the code again. So probably best to delete all references in
+Python as well:
+
+    destroy_block(block, pagesize)
+
+    del block
+    del mul101
+
+If you run the code in its complete form from the [GitHub][github] repository,
+you can run the `mj.py` program and put the multiplication constant on the
+command line:
 
 		$ python mj.py 11
 		Pagesize: 4096
@@ -305,15 +367,63 @@ it, we get
 		mul(9) = 99
 		Deallocating function
 
-Closing remarks
----------------
+Debugging JIT-code
+------------------
 
-Let me know if anything is unclear. I admit I wrote this quickly, so some parts
-may be quite obscure if you're just starting out.
+If you want to continue learning with this simple program, you'll quickly want
+to disassemble the machine code you generate. One option is to simply use gdb
+or lldb, but you need to know where to break. One trick is to just print the
+hex value of the `block` address and then wait for a keystroke:
 
-Before you start writing huge applications using this, check out the
-[PeachPy][peachpy] project. It goes way beyond this and includes a disassembler
-and supports seemingly the entire x86-64 instruction set right up to AVX.
+    print("address: 0x%x" % address)
+    print("Press enter to continue")
+    raw_input()
+
+Then you just run the program in the debugger, hit CTRL+C when the program
+pauses, and disassemble memory at that location. You can also step-debug
+through the machine code part if you need to find out what's going on. Here's
+an example lldb session:
+
+    $ lldb python
+    ...
+    (lldb) run mj.py 101
+    ...
+    (lldb) c
+    Process 19329 resuming
+    ...
+    address 0x1002fd000
+    Press ENTER to continue
+
+At this point, hit CTRL+C to break back into the debugger, then disassemble
+from the memory location:
+
+    (lldb) x/3i 0x1002fd000
+        0x1002fd000: 48 b8 65 00 00 00 00 00 00 00  movabsq $0x65, %rax
+        0x1002fd00a: 48 0f af c7                    imulq  %rdi, %rax
+        0x1002fd00e: c3                             retq
+
+Another option, if you just want disassembly, is to use the
+[Capstone][capstone] module for Python.
+
+What's next?
+------------
+
+A good exercise would be to JIT-compile [Brainfuck][brainfuck.wiki] programs to
+native code. If you want to jump right in, I've made a GitHub repository at
+[https://github.com/cslarsen/brainfuck-jit][brainfuck.github]. I even have a
+[Speaker Deck presentation][speakerdeck] to go with it. It performs JIT-ing and
+optimizations, but uses GNU Lightning to compile native code instead of this
+approach. It should be extremely simple to boot out GNU Lightning in favor or
+some code generation of your own. An interesting note on the Brainfuck project
+is that if you just JIT-compile each Brainfuck instruction one-by-one, you
+won't get much of a speed bost, even if you run native code. The entire speed
+boost is done in the _code optimization_ stage, where you can bulk up integer
+operations into one or a few x86 instructions.
+
+Also, before you get serious about expanding this JIT-compiler, take a look at
+the [Peachpy][peachpy] project. It goes way beyond this and includes a
+disassembler and supports seemingly the entire x86-64 instruction set right up
+to [AVX][avx.wiki].
 
 Finally, don't expect small JIT-ed functions to perform well in Python. There
 is quite some overhead involved with ctypes. I haven't looked into the details
@@ -324,11 +434,19 @@ disassembler. While you can use gdb to break into Python and disassemble your
 JIT-ed code, it's probably better to use a Python package for that. For
 example [Capstone][capstone].
 
+[avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
+[brainfuck.github]: https://github.com/cslarsen/brainfuck-jit
+[brainfuck.wiki]: https://en.wikipedia.org/wiki/Brainfuck
 [capstone]: http://www.capstone-engine.org/lang_python.html
 [cffi.github]: https://github.com/cffi/cffi
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [github]: https://github.com/cslarsen/minijit
+[jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
 [mmap.man]: http://man7.org/linux/man-pages/man2/mmap.2.html
 [mprotect.man]: http://man7.org/linux/man-pages/man2/mprotect.2.html
+[munmap.man]: http://man7.org/linux/man-pages/man3/munmap.3p.html
 [peachpy]: https://github.com/Maratyszcza/PeachPy
+[speakerdeck]: https://speakerdeck.com/csl/how-to-make-a-simple-virtual-machine
+[specialization.wiki]: https://en.wikipedia.org/wiki/Run-time_algorithm_specialisation
+[strerror.man]: http://man7.org/linux/man-pages/man3/strerror.3.html
 [wx.wiki]: https://en.wikipedia.org/wiki/W%5EX
