@@ -289,13 +289,13 @@ We are now ready to put everything in a Python function.
         block[14] = 0xc3
 
         # Return a ctypes function with the right prototype
-        function = ctypes.CFUNCTYPE(ctypes.c_int64)
-        function.restype = ctypes.c_int64
+        function = ctypes.CFUNCTYPE(ctypes.c_uint64)
+        function.restype = ctypes.c_uint64
         return function
 
-In the final part of the function, we create a ctypes function signature that
-can be used to call this function. It's somewhat arbitrarily placed, but I
-thought it was good to keep the signature close to the machine code.
+At the bottom, we return the ctypes function signature to be used with this
+code. It's somewhat arbitrarily placed, but I thought it was good to keep the
+signature close to the machine code.
 
 The final part
 --------------
