@@ -153,13 +153,7 @@ memory.
 
 At this point, it's hard to justify using Python rather than C. With C, we
 don't need any of the above boiler-plate code. But down the line, Python will
-allow us to experiment much more easily with JIT
-With all the boiler-plate code above, I have to admit it
-At this point, with all the boiler-plate code, I have to admit it's hard to
-justify writing this in Python rather than pure C. We're working with a C
-library at the ABI-level, which can be quite flaky. Also, our code is larger
-than an equivalent C code up to this point. But down the line, Python will make
-it vastly simpler to experiment with JIT-compilation.
+allow us to experiment much more easily.
 
 Now we're ready to write the `mmap` wrapper.
 
@@ -173,9 +167,11 @@ Now we're ready to write the `mmap` wrapper.
         return ptr
 
 This function uses `mmap` to allocate page-aligned memory for us. We mark the
-memory region as readable and writable with the PROT flags, and we also mark it
-as private and anonymous. The [`mmap` manual page][mmap.man] covers the
-details. If the `mmap` call fails, we raise it as a Python error.
+memory region as readable and writable with the `PROT` flags, and we also mark
+it as private and anonymous. The latter means the memory will not be visible
+from other processes and that it will not be file-backed. The [Linux `mmap`
+manual page][mmap.man] covers the details (but be sure to view the man page for
+your system). If the `mmap` call fails, we raise it as a Python error.
 
 To mark memory as executable,
 
@@ -183,10 +179,10 @@ To mark memory as executable,
         if mprotect(block, size, PROT_READ | PROT_EXEC) != 0:
             raise RuntimeError(strerror(ctypes.get_errno()))
 
-With this `mprotect` call, we mark the memory region as readable and
-executable. We could also have made it writable as well, but some systems will
-deny executing code in memory that is writable. This is sometimes called the
-[W^X][wx.wiki].
+With this `mprotect` call, we mark the region as readable and executable. If we
+wanted to, we could have made it writable as well, but some systems will refuse
+to execute writable memory.  This is sometimes called [the W^X security
+feature][wx.wiki].
 
 To destroy the memory block, we'll use
 
@@ -195,13 +191,18 @@ To destroy the memory block, we'll use
             raise RuntimeError(strerror(ctypes.get_errno()))
         del block
 
+The last `del` may be superfluous, or may not work as intended. To be honest, I
+haven't checked if it will work inside a function. The idea is to let Python
+decrement the reference count, rendering it unusable.
+
 The fun part
 ------------
 
-We're now ready to create an insanely simple piece of JIT code. Recall the
-assembly listing at the top: It's a small function — without a local stack
-frame — that multiplies an input number with a constant. In Python, we'd write
-that as
+Now we're finally ready to create an insanely simple piece of JIT code!
+
+Recall the assembly listing at the top: It's a small function — without a local
+stack frame — that multiplies an input number with a constant. In Python, we'd
+write that as
 
     def create_multiplication_function(constant):
         return lambda n: n * constant
