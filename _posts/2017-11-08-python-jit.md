@@ -11,24 +11,24 @@ tags: Python assembly
 In this post I'll show how to write a rudimentary, native x86-64 [just-in-time
 compiler (JIT)][jit.wiki] in CPython, using only the built-in modules.
 
-The post targets the UNIX systems macOS and Linux, but should be easily
-translated to other systems such as Windows. The complete code for this post
-can be found on [https://github.com/cslarsen/minijit][github].
+The code here specifically targets the UNIX systems macOS and Linux, but should
+be easily translated to other systems such as Windows. The complete code is
+available at [https://github.com/cslarsen/minijit][github].
 
-**The goal** is to patch the below assembly code at runtime and execute it.
+The goal is to generate new versions of the below assembly code at runtime and
+execute it.
 
     48 b8 ed ef be ad de  movabs $0xdeadbeefed, %rax
     00 00 00
     48 0f af c7           imul   %rdi,%rax
     c3                    retq
 
-We will mainly deal with the left hand side — the byte sequence `48 b8 ed ...`. 
-Those fifteen machine code bytes 
-encode an x86-64 function that multiplies its argument with the
-constant `0xdeadbeefed`. The JIT-compilation consists simply of creating new
-functions with different constants. Being a contrived form of specialization,
-[specialization][specialization.wiki], it requires us to set up native code to
-be executed at runtime.
+We will mainly deal with the left hand side — the byte sequence `48 b8 ed` and
+so on.  Those fifteen machine code bytes comprise an x86-64 function that
+multiplies its argument with the constant `0xdeadbeefed`. The JIT-compilation
+will simply create new versions of this function with a different constant.
+While being a contrived form of [specialization][specialization.wiki], it will
+illuminate the basic mechanics of JIT-compilation.
 
 Our general strategy is to rely on the built-in [`ctypes`][ctypes.doc] module
 to load the C standard library. From there, we can access system functions to
