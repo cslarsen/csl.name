@@ -77,7 +77,7 @@ for the end of the data, and use a macro to calculate the byte length:
     _cat_end:
     _cat_size:    dd $-_cat_start
 
-Compile with `nasm -f<format> cat.asm -o cat.o`. On OS X, that's
+On OS X, compile with
 
     $ nasm -fmacho64 cat.asm -o cat.o
 
