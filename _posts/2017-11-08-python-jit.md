@@ -416,7 +416,7 @@ What's next?
 
 A good exercise would be to JIT-compile [Brainfuck programs][brainfuck.wiki] to
 native code. If you want to jump right in, I've made a GitHub repository at
-[https://github.com/cslarsen/brainfuck-jit][brainfuck.github]. I even have a
+[github.com/cslarsen/brainfuck-jit][brainfuck.github]. I even have a
 [Speaker Deck presentation][speakerdeck] to go with it. It performs JIT-ing and
 optimizations, but uses GNU Lightning to compile native code instead of this
 approach. It should be extremely simple to boot out GNU Lightning in favor or
