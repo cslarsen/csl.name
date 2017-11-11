@@ -70,13 +70,13 @@ about this is that whenever you capture a continuation, you essentially set a
 label in the code that you can later jump back to. So it's almost like a GOTO
 or JUMP instruction, with the additional benefit of being able to pass along
 new values that will replace the value at the location where it jumps to.
-(Moreover, when you jump, the code will continue running from that location,
+Moreover, when you jump, the code will continue running from that location,
 returning to the correct functions that were active when you first captured the
-continuation.)
+continuation.
 
 So, if you have a function that computes some mathematical expression, you can
-surround one of the variables with such a label. Later on, you can back jump to this
-label, but with a new value for that variable.
+surround one of the variables with such a label. Later on, you can back jump to
+this label, but with a new value for that variable.
 
 Here's an example in pseudo-code that, unintentionally, looks like JavaScript:
 
@@ -378,7 +378,7 @@ can be invoked using a label and value, or only a label.
 
 The `goto-label` function uses `case-lambda`, which patterns matches on its
 invocation form. The first line matches calls to `(goto-label <label>)`, while
-the second matches `(goto-label <label> <value>)`.
+the second matches `(goto-label` `<label>` `<value>)`.
 
 The `set-label` macro also matches on the same two patterns. Here we use a
 single underscore instead of typing out the full name of the macro.
@@ -934,13 +934,11 @@ Usage
 Other things
 ============
 
-Object orientation as a library: Bryan's Object System (actually the guy who
-wrote "Real World Haskell", I think).
-
-Non-deterministic programming: http://c2.com/cgi/wiki?AmbSpecialForm
-Also: http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/
-
-Green threads: https://en.wikipedia.org/wiki/Continuation
+* Object orientation as a library: Bryan's Object System (actually the guy who
+wrote "Real World Haskell", I think)
+* [Non-deterministic programming](http://c2.com/cgi/wiki?AmbSpecialForm)
+* [Prorgramming with continuations](http://matt.might.net/articles/programming-with-continuations--exceptions-backtracking-search-threads-generators-coroutines/)
+* [Green threads](https://en.wikipedia.org/wiki/Continuation)
 
 What (R<sup>7</sup>RS) Scheme *doesn't* have
 ============================================
