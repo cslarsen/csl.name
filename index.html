@@ -9,20 +9,12 @@ disqus: false
     <div class="eight columns" style="margin-top: 15%;">
       <h1>Posts</h1>
       <table class="u-full-width">
-        <thead>
-          <tr>
-            <th class="text-center">Updated</th>
-            <th>Title</th>
-          </tr>
-        </thead>
         <tbody>
           {% assign sorted_posts = site.posts | sort: "updated" %}
           {% for post in sorted_posts reversed %}
           <tr>
-            <td class="text-center" style="white-space: nowrap; vertical-align:
-              top;">{{
-              post.updated | date: "%Y-%m-%d" }}</td>
-            <td><a href="{{ post.url }}">{{ post.title }}</a></td>
+            <td class="text-center plaintable hidesmall" style="white-space: nowrap;">{{ post.updated | date: "%Y-%m-%d" }}</td>
+            <td class="plaintable"><a href="{{ post.url }}">{{ post.title }}</a></td>
           </tr>
           {% endfor %}
         </tbody>
