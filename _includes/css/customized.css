@@ -93,6 +93,6 @@ p code {
     padding-left: 2em;
   }
   .hidesmall {
-    display: inline;
+    display: block;
   }
 }
