@@ -2,7 +2,7 @@
 layout: post
 title: "Writing a basic x86-64 JIT compiler from scratch in stock Python"
 date: 2017-11-08 22:03:00 +0100
-updated: 2017-11-08 22:03:00 +0100
+updated: 2017-11-11 07:25:00 +0100
 categories: Python assembly
 disqus: true
 tags: Python assembly
@@ -10,6 +10,8 @@ tags: Python assembly
 
 In this post I'll show how to write a rudimentary, native x86-64 [just-in-time
 compiler (JIT)][jit.wiki] in CPython, using only the built-in modules.
+
+Update: This post made the [front page of HN][hn].
 
 The code here specifically targets the UNIX systems macOS and Linux, but should
 be easily translated to other systems such as Windows. The complete code is
@@ -49,6 +51,7 @@ The boiler-plate part
 Before we can do anything, we need to load the standard C library.
 
     import ctypes
+    import sys
 
     if sys.platform.startswith("darwin"):
         libc = ctypes.cdll.LoadLibrary("libc.dylib")
@@ -79,6 +82,7 @@ We need a few additional constants for `mmap` and friends. They're just written
 out below. You may have to look them up for other UNIX variants.
 
     import ctypes
+    import sys
 
     if sys.platform.startswith("darwin"):
         libc = ctypes.cdll.LoadLibrary("libc.dylib")
@@ -189,11 +193,6 @@ To destroy the memory block, we'll use
     def destroy_block(block, size):
         if munmap(block, size) == -1:
             raise RuntimeError(strerror(ctypes.get_errno()))
-        del block
-
-The last `del` may be superfluous, or may not work as intended. To be honest, I
-haven't checked if it will work inside a function. The idea is to let Python
-decrement the reference count, rendering it unusable.
 
 The fun part
 ------------
@@ -474,6 +473,7 @@ code optimization][fefe] that I recommend for more on this.
 [fefe]: http://www.fefe.de/source-code-optimization.pdf
 [forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
 [github]: https://github.com/cslarsen/minijit
+[hn]: https://news.ycombinator.com/item?id=15665581
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
 [jonesforth]: https://github.com/nornagon/jonesforth/blob/master/jonesforth.S
 [machine.code.wiki]: https://en.wikipedia.org/wiki/Machine_code
