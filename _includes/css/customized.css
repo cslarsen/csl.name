@@ -66,6 +66,9 @@ p code {
     padding: 0;
     margin: 0;
   }
+  body {
+    text-align: left;
+  }
 }
 
 @media (min-width: 900px) {
