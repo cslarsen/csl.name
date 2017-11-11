@@ -15,7 +15,7 @@ Update: This post made the [front page of HN][hn].
 
 The code here specifically targets the UNIX systems macOS and Linux, but should
 be easily translated to other systems such as Windows. The complete code is
-available at [https://github.com/cslarsen/minijit][github].
+available on [github.com/cslarsen/minijit][github].
 
 The goal is to generate new versions of the below assembly code at runtime and
 execute it.
