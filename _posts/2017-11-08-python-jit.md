@@ -352,26 +352,25 @@ Python as well:
     del mul101
 
 If you run the code in its complete form from the [GitHub][github] repository,
-you can run the `mj.py` program and put the multiplication constant on the
-command line:
+you can put the multiplication constant on the command line:
 
-		$ python mj.py 11
-		Pagesize: 4096
-		Allocating one page of memory
-		JIT-compiling a native mul-function w/arg 11
-		Making function block executable
-		Testing function
-		mul(0) = 0
-		mul(1) = 11
-		mul(2) = 22
-		mul(3) = 33
-		mul(4) = 44
-		mul(5) = 55
-		mul(6) = 66
-		mul(7) = 77
-		mul(8) = 88
-		mul(9) = 99
-		Deallocating function
+    $ python mj.py 101
+    Pagesize: 4096
+    Allocating one page of memory
+    JIT-compiling a native mul-function w/arg 101
+    Making function block executable
+    Testing function
+    OK   mul(0) = 0
+    OK   mul(1) = 101
+    OK   mul(2) = 202
+    OK   mul(3) = 303
+    OK   mul(4) = 404
+    OK   mul(5) = 505
+    OK   mul(6) = 606
+    OK   mul(7) = 707
+    OK   mul(8) = 808
+    OK   mul(9) = 909
+    Deallocating function
 
 Debugging JIT-code
 ------------------
@@ -382,7 +381,7 @@ or lldb, but you need to know where to break. One trick is to just print the
 hex value of the `block` address and then wait for a keystroke:
 
     print("address: 0x%x" % address)
-    print("Press enter to continue")
+    print("Press ENTER to continue")
     raw_input()
 
 Then you just run the program in the debugger, break into the debugger while
@@ -411,8 +410,8 @@ from the memory location:
 Notice that 65 hex is 101 in decimal, which was the command line argument we
 passed above.
 
-If you're not interested in debugging, but just want a disassembler, I
-recommend the [Capstone][capstone] module.
+If you only want a disassembler inside Python, I recommend the
+[Capstone][capstone] module.
 
 What's next?
 ------------
