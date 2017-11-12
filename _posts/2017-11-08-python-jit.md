@@ -11,7 +11,8 @@ tags: Python assembly
 In this post I'll show how to write a rudimentary, native x86-64 [just-in-time
 compiler (JIT)][jit.wiki] in CPython, using only the built-in modules.
 
-Update: This post made the [front page of HN][hn].
+Update: This post made the [front page of HN][hn.front], and I've incorporated
+some of the [discussion feedback][hn].
 
 The code here specifically targets the UNIX systems macOS and Linux, but should
 be easily translated to other systems such as Windows. The complete code is
@@ -193,6 +194,8 @@ To destroy the memory block, we'll use
     def destroy_block(block, size):
         if munmap(block, size) == -1:
             raise RuntimeError(strerror(ctypes.get_errno()))
+
+I edited out a badly placed `del` in that function after the HN submission.
 
 The fun part
 ------------
@@ -460,6 +463,15 @@ truth is that gcc contains a vast database of optimizations that you cannot
 possibly replicate by hand. Felix von Letiner has a [classic talk about source
 code optimization][fefe] that I recommend for more on this.
 
+What about actual compilation?
+------------------------------
+
+A few people [commented][hn] that they had expected to see more about the
+actual compilation step. Fair point. As it stands, this is indeed a _very_
+restricted form of compilation, where we barely do anything with the code at
+runtime — we just patch in a constant. I _may_ write a follow-up post that
+focuses solely on the compilation stage. Stay tuned!
+
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [avx.wiki]: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions
 [bpf.wiki]: https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
@@ -474,6 +486,7 @@ code optimization][fefe] that I recommend for more on this.
 [forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
 [github]: https://github.com/cslarsen/minijit
 [hn]: https://news.ycombinator.com/item?id=15665581
+[hn.front]: https://news.ycombinator.com/front?day=2017-11-09
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
 [jonesforth]: https://github.com/nornagon/jonesforth/blob/master/jonesforth.S
 [machine.code.wiki]: https://en.wikipedia.org/wiki/Machine_code
