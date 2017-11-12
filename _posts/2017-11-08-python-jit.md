@@ -431,7 +431,7 @@ operations into one or a few x86 instructions. Another candidate for such
 compilation would be the [Forth language][jonesforth].
 
 Also, before you get serious about expanding this JIT-compiler, take a look at
-the [Peachpy project][peachpy]. It goes way beyond this and includes a
+the [PeachPy project][peachpy]. It goes way beyond this and includes a
 disassembler and supports seemingly the entire x86-64 instruction set right up
 to [AVX][avx.wiki].
 
