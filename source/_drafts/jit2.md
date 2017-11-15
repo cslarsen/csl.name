@@ -77,38 +77,44 @@ takes three bytes: One for the opcode (which instruction it is) and two for a
 16-bit argument. That argument is zero, referring to the first argument `a`. 
 
 CPython — like the JVM, CLR, Forth and many others – is implemented as a [stack
-machine][stack-machine]. All the bytecode instructions
-operate on a _stack_ of objects. For example, `LOAD_FAST` will push a reference
-to `a` on the stack, while `BINARY_MULTIPLY` will pop off two, multiply them
-together and put their product on the stack.
+machine][stack-machine]. All the bytecode instructions operate on a _stack_ of
+objects. For example, `LOAD_FAST` will _push_ a reference to the variable `a`
+on the stack, while `BINARY_MULTIPLY` will pop off two, multiply them together
+and put their product on the stack. (For our purposes, we will treat the stack
+as holding integer _values_.)
 
-If you happen to know [Reverse Polish Notation (RPN)][rpn.wiki], it is
-basically the same. A beautiful property of postfix systems is that
+A beautiful property of postfix systems is that
 subexpressions can be serialized into a linear list of operations. For example,
-in a typical infix mathematical operation such as
+in an infix mathematical expression such as
 
     2*2 - 3*3
 
-we would need to first compute the products before subtracting.  An _infix_
-expression can be mechanically converted to _postfix_ form with Djikstra's
-[Shunting-yard algorithm][shunting-yard.wiki]. Skipping the details, the
-expression can be written in postfix form for a stack machine as
+we would need to compute the products _before_ subtracting, jumping back and
+forth.  But in a _postfix_ system, we would only ever need to scan forwards.
+For example, the above expression can be translated to
+[Reverse Polish Notation (RPN)][rpn.wiki] using
+the [Shunting-yard algorithm][shunting-yard.wiki]:
 
     2 2 * 3 3 * -
 
-Reading from the left to right, we push the `2` and `2` onto the stack.
-At `*`, we pop the topmost two numbers, multiply them, and put `4` back on the
-stack. Continuing, we push `3` and `3`, pop them off and put their product `9`
-on the stack. The stack, from bottom-to-top, will now be `[4 9]`. The final `-`
-operation pops the two numbers `9` and `4` and push their difference `-5` on
-the stack.
+We now move from left to right: Push `2` and `2` on the stack. Pop two values
+off the stack and push their product `4`. Push `3` and `3`, pop them off and
+push their product `9`. The stack will now contain `9` on the top and `4` at
+the bottom. We pop them off, subtract `9` from `4`, pushing the sole result
+`-5` on the stack.
 
-With that, you can probably understand how most of the CPython interpreter
-works just by looking at the [list of opcodes][python.opcodes]. To delve into
-the details, you can even have a look at [CPython's interpreter
-loop][python.eval].
+Now, imagine that the expression was actually written as
 
-That's all we need for now.
+    sqrt(square(2) - square(3))
+
+Like before, we could encode that in postfix form with
+
+    push 2, square, push 3, square, subtract, sqrt
+
+Notice how the use of a stack makes it possible to execute instructions
+linearly. This is exactly how a stack machine operates. With that, you will
+probably understand most of the [CPython opcodes][python.opcodes] and its
+[interpreter loop][python.eval].
 
 Part two: Translating Python bytecode to IR
 -------------------------------------------
