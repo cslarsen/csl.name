@@ -1,8 +1,8 @@
 *.out
 *.pyc
+_site
+all.css
+Gemfile.lock
 GPATH
 GRTAGS
 GTAGS
-Gemfile.lock
-_site
-all.css

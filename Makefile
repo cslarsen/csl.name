@@ -14,7 +14,7 @@ bash:
 	docker run --rm -it csl.name /bin/bash
 
 build:
-	docker run --rm -it csl.name make -j -C /source
+	docker run --rm -it -v `pwd`/_site:/source/_site csl.name make -j -C /source
 
 serve:
 	docker run --rm -it -p 4000:4000 csl.name make -j -C /source serve
