@@ -110,6 +110,89 @@ works just by looking at the [list of opcodes][python.opcodes]. To delve into
 the details, you can even have a look at [CPython's interpreter
 loop][python.eval].
 
+That's all we need for now.
+
+Part two: Translating Python bytecode to IR
+-------------------------------------------
+
+Our [intermediate representation (IR)][ir.wiki] will be naive — we won't even
+be using [three-address codes (TAC)][tac.wiki], nor [single-static assignment
+(SSA)][ssa.wiki] or anything like that.
+
+Instead, our IR will just consist of pseudo-assembly instructions that we can
+easily translate to machine code. That means we have to decide now on how the
+bytecode will be implemented in machine code.
+
+**Function arguments and local variables:**
+By the [AMD64 x86-64 calling convention][amd64.abi], we can expect integer
+arguments to be passed in registers RDI, RSI, RDX, RCX and so on, in that
+order. Let's define a tuple for that.
+
+    ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
+
+We will reserve those registers for local variables. So when the bytecode
+refers to variable index `n`, we know it will be in register
+`ARGUMENT_ORDER[n]`.
+
+**The stack:** The CPU already has a stack, so we'll just use that to store
+64-bit signed integer values. 
+
+**Work registers:** We will reserve registers RAX and RBX as work registers for
+arithmetic operations. Although RBX is conventionally required to be restored
+by a functio before returning, we will simply ignore that. To be honest, I
+haven't dug into the details of this, but the code does seem to work nicely to
+thrash RBX. Perhaps `ctypes` pushes registers before calling into our function.
+
+With that, we are ready to encode Python bytecode instructions in our IR.
+
+We will implement a function `compile_ir` that takes Python bytecode along with
+a list of constants. The constants can be found in Python with
+
+    >>> def bar(n): return n*101
+    ...
+    >>> bar.func_code.co_consts
+    (None, 101)
+
+<table>
+  <thead>
+    <th>Instruction</th>
+    <th>IR</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>LOAD_FAST n</code></td>
+      <td><code>mov rax, ARGUMENT_ORDER[n]</code></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><code>push rax</code></td>
+    </tr>
+  </tbody>
+</table>
+
+    def compile_ir(bytecode, constants):
+        # AMD64 argument passing order for our purposes.
+        ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
+        out = []
+
+        while len(bytecode):
+            opcode = dis.opname[bytecode.pop(0)]
+
+            if opcode == "LOAD_FAST":
+                index = bytecode.pop(0)
+                if PRE36:
+                    index |= bytecode.pop(0) << 8
+                out.append(("push", ARGUMENT_ORDER[index]))
+
+            # ...
+
+            else:
+                raise NotImplementedError(opcode)
+
+        return out
+
+
+[amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [github]: https://github.com/cslarsen/minijit
@@ -126,3 +209,4 @@ loop][python.eval].
 [shunting-yard.wiki]: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 [stack-machine]: https://en.wikipedia.org/wiki/Stack_machine
 [stack-register.wiki]: https://en.wikipedia.org/wiki/Stack_register
+[tac.wiki]: https://en.wikipedia.org/wiki/Three-address_code
