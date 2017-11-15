@@ -1,22 +1,23 @@
 ---
 layout: post
 title: "JIT-compiling a tiny subset of Python to native x86-64 code"
-date: 2017-11-14 17:50:12 +0100
-updated: 2017-11-14 17:50:12 +0100
+date: 2017-11-15 23:20:12 +0100
+updated: 2017-11-15 23:20:12 +0100
 categories: Python assembly
 disqus: true
 tags: Python assembly
 ---
 
 In this post I'll show how to JIT-compile a tiny subset of Python into native
-x86-64 machine code. We will build directly on the techniques established in
-[Writing a basic x86-64 JIT compiler from scratch in stock
-Python][previous-post]. As before, we will restrict ourselves to using only
-built-in CPython modules. The code in this post is available at
-[github.com/cslarsen/minijit][minijit.github].
+x86-64 machine code.
 
-Our goal is to enable compilation of Python functions to native code, like
-this:
+We will build directly on the techniques established in [<b>Writing a basic x86-64
+JIT compiler from scratch in stock Python</b>][previous-post]. As before, we will
+restrict ourselves to using only built-in CPython modules. The code in this
+post is available at [github.com/cslarsen/minijit][minijit.github].
+
+Our goal is to enable compilation of Python functions to native
+code at runtime. I.e.,
 
     >>> def foo(a, b):
     ...   return a*a - b*b
@@ -26,16 +27,16 @@ this:
     -3
 
 To keep the scope manageable, we'll restrict ourselves to compiling branchless
-functions — functions without if-statements, loops or function calls — that
-operate on integer arithmetic.
+functions — that is, no if-statements, loops or function calls — that operate
+purely on integer arithmetic.
 
 Our strategy is to 
 
-  * Translate Python bytecode into a simple [intermediate representation (IR)][ir.wiki]
-  * Perform simple optimizations on the IR
+  * Translate Python bytecode into an [intermediate representation (IR)][ir.wiki]
+  * Perform optimizations on the IR
   * Translate IR to native x86-64 machine code
-  * Leverage code from [the previous post][previous-post] to bind the native code
-    to a callable Python function
+  * Leverage code from [the previous post][previous-post] to bind the machine
+    code to callable Python functions
 
 The first part will then be to understand how the Python bytecode works.
 
@@ -48,7 +49,7 @@ typing
     >>> foo.__code__.co_code
     b'|\x00|\x00\x14\x00|\x01|\x01\x14\x00\x18\x00S\x00'
 
-In Python 2.7, it would be
+In Python 2.7, that would be
 
     >>> foo.func_code.co_code
     '|\x00\x00|\x00\x00\x14|\x01\x00|\x01\x00\x14\x18S'
@@ -198,6 +199,7 @@ a list of constants. The constants can be found in Python with
 [github]: https://github.com/cslarsen/minijit
 [hn.front]: https://news.ycombinator.com/front?day=2017-11-09
 [hn]: https://news.ycombinator.com/item?id=15665581
+[ir.wiki]: https://en.wikipedia.org/wiki/Intermediate_representation
 [minijit.github]: https://github.com/cslarsen/minijit
 [mj.github]: https://github.com/cslarsen/minijit
 [nasm]: http://www.nasm.us
