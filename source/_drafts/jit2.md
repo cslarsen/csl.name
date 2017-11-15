@@ -33,10 +33,11 @@ Our strategy is to translate Python bytecode into a simple [intermediate
 representation][ir.wiki], perform obvious [peep-hole optimizations] on it and
 translate that directly to native x86-64 machine code. We'll leverage the code
 in the [previous post][previous-post] to bind the machine code to a callable
-Python function. But first we need to understand how Python bytecode works.
+Python function. The first part will then be to understand how the Python
+bytecode works.
 
-Part one: How Python bytecode works
------------------------------------
+Part one: How the Python bytecode works
+---------------------------------------
 
 You can see the raw bytecode for the `foo` function at the top in Python 3 by
 typing
@@ -74,9 +75,37 @@ a list of local variables. The variable `a` is obviously first in this list.
 The `LOAD_FAST` instructions at offsets 7 and 10 refer to the second variable
 `b`.
 
-Just like the JVM, CLR, Forth and many other successful languages, CPython is
-implemented as a [stack machine][stack-machine].
+Just like the JVM, CLR, Forth and many other languages, CPython is implemented
+as a [stack machine][stack-machine]. If you happen to know [Reverse Polish
+Notation (RPN)][rpn.wiki], this is basically the same. All instructions operate
+on a stack of objects. For example, the `LOAD_FAST` instruction will fetch a
+variable, and put it on this stack. For our purposes, we'll just imagine that
+the actual _values_ are poushed on the stack, rather than references.  An
+instruction like `BINARY_MULTIPLY` will then pop two values off the stack,
+multiply them together, and push the product back on the stack.
 
+A beautiful property of stack machines is that subexpressions can be serialized
+into a linear list of operations. A typical infix mathematical operation such as
+
+    2*2 - 3*3
+
+can be mechanically converted to _postfix_ form with Djikstra's
+[Shunting-yard algorithm][shunting-yard.wiki]. Skipping the details, the
+expression can be written in postfix form for a stack machine as
+
+    2 2 * 3 3 * -
+
+Reading from the left to right, we push the `2` and `2` onto the stack.
+At `*`, we pop the topmost two numbers, multiply them, and put `4` back on the
+stack. Continuing, we push `3` and `3`, pop them off and put their product `9`
+on the stack. The stack, from bottom-to-top, will now be `[4 9]`. The final `-`
+operation pops the two numbers `9` and `4` and push their difference `-5` on
+the stack.
+
+With that, you can probably understand how most of the CPython interpreter
+works just by looking at the [list of opcodes][python.opcodes]. To delve into
+the details, you can even have a look at [CPython's interpreter
+loop][python.eval].
 
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
@@ -87,6 +116,10 @@ implemented as a [stack machine][stack-machine].
 [mj.github]: https://github.com/cslarsen/minijit
 [nasm]: http://www.nasm.us
 [previous-post]: /post/python-jit/
+[python.eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
+[python.opcodes]: https://github.com/python/cpython/blob/master/Include/opcode.h
 [registers.wiki]: https://en.wikipedia.org/wiki/Processor_register
+[rpn.wiki]: https://en.wikipedia.org/wiki/Reverse_Polish_notation
+[shunting-yard.wiki]: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 [stack-machine]: https://en.wikipedia.org/wiki/Stack_machine
 [stack-register.wiki]: https://en.wikipedia.org/wiki/Stack_register
