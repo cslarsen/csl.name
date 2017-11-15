@@ -119,13 +119,13 @@ probably understand most of the [CPython opcodes][python.opcodes] and its
 Part two: Translating Python bytecode to IR
 -------------------------------------------
 
-Our [intermediate representation (IR)][ir.wiki] will be naive — we won't even
-be using [three-address codes (TAC)][tac.wiki], nor [single-static assignment
-(SSA)][ssa.wiki] or anything like that.
+Our [intermediate representation (IR)][ir.wiki] will be naive. We'll blissfully forego
+things like [three-address codes (TAC)][tac.wiki], [single-static assignment
+(SSA)][ssa.wiki] and [register allocation][register-allocation.wiki].
 
-Instead, our IR will just consist of pseudo-assembly instructions that we can
-easily translate to machine code. That means we have to decide now on how the
-bytecode will be implemented in machine code.
+Instead, our IR will be dead simple, consisting of pseudo-assembly instructions
+that we can easily translate to machine code.  But that means we have to decide
+now on how to implement things in machine code.
 
 **Function arguments and local variables:**
 By the [AMD64 x86-64 calling convention][amd64.abi], we can expect integer
@@ -209,9 +209,11 @@ a list of constants. The constants can be found in Python with
 [previous-post]: /post/python-jit/
 [python.eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [python.opcodes]: https://github.com/python/cpython/blob/master/Include/opcode.h
+[register-allocation.wiki]: https://en.wikipedia.org/wiki/Register_allocation
 [registers.wiki]: https://en.wikipedia.org/wiki/Processor_register
 [rpn.wiki]: https://en.wikipedia.org/wiki/Reverse_Polish_notation
 [shunting-yard.wiki]: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+[ssa.wiki]: https://en.wikipedia.org/wiki/Static_single_assignment_form
 [stack-machine]: https://en.wikipedia.org/wiki/Stack_machine
 [stack-register.wiki]: https://en.wikipedia.org/wiki/Stack_register
 [tac.wiki]: https://en.wikipedia.org/wiki/Three-address_code
