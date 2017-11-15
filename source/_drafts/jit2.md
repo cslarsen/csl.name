@@ -29,12 +29,15 @@ To keep the scope manageable, we'll restrict ourselves to compiling branchless
 functions — functions without if-statements, loops or function calls — that
 operate on integer arithmetic.
 
-Our strategy is to translate Python bytecode into a simple [intermediate
-representation][ir.wiki], perform obvious [peep-hole optimizations] on it and
-translate that directly to native x86-64 machine code. We'll leverage the code
-in the [previous post][previous-post] to bind the machine code to a callable
-Python function. The first part will then be to understand how the Python
-bytecode works.
+Our strategy is to 
+
+  * Translate Python bytecode into a simple [intermediate representation (IR)][ir.wiki]
+  * Perform simple optimizations on the IR
+  * Translate IR to native x86-64 machine code
+  * Leverage code from [the previous post][previous-post] to bind the native code
+    to a callable Python function
+
+The first part will then be to understand how the Python bytecode works.
 
 Part one: How the Python bytecode works
 ---------------------------------------
