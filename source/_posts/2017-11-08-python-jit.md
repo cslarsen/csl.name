@@ -260,8 +260,8 @@ multiplies RAX and RDI and puts the result in RAX. Finally, we pop a 64-bit
 return address off the stack and jump to it with RETQ. At this level, it's easy
 to imagine how one could implement [continuation-passing style][cps].
 
-Note that the the constant `0xdeadbeefed` is in little-endian format. We need
-to remember to do the same when we patch the code. (By the way, a good mnemonic
+Note that the constant `0xdeadbeefed` is in little-endian format. We need to
+remember to do the same when we patch the code. (By the way, a good mnemonic
 for remembering the word order is that little endian means "little-end first").
 
 We are now ready to put everything in a Python function.
