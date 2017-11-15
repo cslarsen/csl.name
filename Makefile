@@ -17,4 +17,4 @@ build:
 	docker run --rm -it csl.name make -j -C /source
 
 serve:
-	docker run --rm -it csl.name make -j -C /source serve
+	docker run --rm -it -p 4000:4000 csl.name make -j -C /source serve

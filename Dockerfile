@@ -29,3 +29,4 @@ RUN cd /source && chmod go+rw Gemfile && \
 #RUN gem update
 #RUN bundle update
 RUN chmod -R go+xrw /source
+EXPOSE 4000
