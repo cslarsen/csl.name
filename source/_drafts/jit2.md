@@ -54,46 +54,43 @@ In Python 2.7, that would be
     >>> foo.func_code.co_code
     '|\x00\x00|\x00\x00\x14|\x01\x00|\x01\x00\x14\x18S'
 
-Because the two bytecodes are nearly identical, it doesn't matter which one
-will be used to explain how they work. I've picked Python 2.7 for this post,
-but the [GitHub repository][minijit.github] supports both.
+Because the two bytecode sequences are near identical, it doesn't matter which
+one will be used for the explanation. I've picked Python 2.7 here, but the
+[GitHub code][minijit.github] supports both.
 
-Let's have a look at the disassembly.
+Let's have a look at the disassembly of `foo`.
 
     >>> import dis
-		>>> dis.dis(foo)
-			2           0 LOAD_FAST                0 (a)
-									3 LOAD_FAST                0 (a)
-									6 BINARY_MULTIPLY
-									7 LOAD_FAST                1 (b)
-								 10 LOAD_FAST                1 (b)
-								 13 BINARY_MULTIPLY
-								 14 BINARY_SUBTRACT
-								 15 RETURN_VALUE
+    >>> dis.dis(foo)
+      2           0 LOAD_FAST                0 (a)
+                  3 LOAD_FAST                0 (a)
+                  6 BINARY_MULTIPLY
+                  7 LOAD_FAST                1 (b)
+                 10 LOAD_FAST                1 (b)
+                 13 BINARY_MULTIPLY
+                 14 BINARY_SUBTRACT
+                 15 RETURN_VALUE
 
-The leftmost `2` is the source code line number. The numbers in the next column
-are the bytecode offsets: We can clearly see that the `LOAD_FAST` instruction
-takes three bytes. The first one is the instruction identifier, followed by a
-16-bit argument. For the `LOAD_FAST` instruction, the argument is an index into
-a list of local variables. The variable `a` is obviously first in this list.
-The `LOAD_FAST` instructions at offsets 7 and 10 refer to the second variable
-`b`.
+The leftmost number `2` is the Python source code line number. The next column
+contains the bytecode offsets.  We clearly see that the `LOAD_FAST` instruction
+takes three bytes: One for the opcode (which instruction it is) and two for a
+16-bit argument. That argument is zero, referring to the first argument `a`. 
 
-Just like the JVM, CLR, Forth and many other languages, CPython is implemented
-as a [stack machine][stack-machine]. If you happen to know [Reverse Polish
-Notation (RPN)][rpn.wiki], this is basically the same. All instructions operate
-on a stack of objects. For example, the `LOAD_FAST` instruction will fetch a
-variable, and put it on this stack. For our purposes, we'll just imagine that
-the actual _values_ are poushed on the stack, rather than references.  An
-instruction like `BINARY_MULTIPLY` will then pop two values off the stack,
-multiply them together, and push the product back on the stack.
+CPython — like the JVM, CLR, Forth and many others – is implemented as a [stack
+machine][stack-machine]. All the bytecode instructions
+operate on a _stack_ of objects. For example, `LOAD_FAST` will push a reference
+to `a` on the stack, while `BINARY_MULTIPLY` will pop off two, multiply them
+together and put their product on the stack.
 
-A beautiful property of stack machines is that subexpressions can be serialized
-into a linear list of operations. A typical infix mathematical operation such as
+If you happen to know [Reverse Polish Notation (RPN)][rpn.wiki], it is
+basically the same. A beautiful property of postfix systems is that
+subexpressions can be serialized into a linear list of operations. For example,
+in a typical infix mathematical operation such as
 
     2*2 - 3*3
 
-can be mechanically converted to _postfix_ form with Djikstra's
+we would need to first compute the products before subtracting.  An _infix_
+expression can be mechanically converted to _postfix_ form with Djikstra's
 [Shunting-yard algorithm][shunting-yard.wiki]. Skipping the details, the
 expression can be written in postfix form for a stack machine as
 
