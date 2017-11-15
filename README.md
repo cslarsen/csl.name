@@ -1,45 +1,24 @@
 Contains the sources for csl.name
 =================================
 
-This repo contains the source code for https://csl.name, which is (mostly) a
-static site. When publishing, the makefile will compress and minify everything
-before rsyncing.
+You can either build on your local machine from source/ (read the instructions
+there), or you can do use Docker.
 
-The `make -j dist` target scores very high on Google's PageSpeed index for both
-mobile and desktop. You need to install several tools to make it work — see in
-the Makefile.
+To build the image `csl.name`:
 
-Requirements
-------------
+    $ make docker-build
 
-  * Everything in the Gemfile
-  * GNU parallel
-  * Jekyll
-  * chibi-scheme
-  * optipng
-  * perl
-  * pngfix
-  * python
-  * yuicompressor
+To build the files:
 
-Building
---------
+    $ make docker-build
 
-Install packages with
+To serve them:
 
-    $ gem install bundler
-    $ bundle install
+    $ make docker-serve
 
-On macOS, I suggest you skip the brew version of ruby and use the system one:
+To open a shell:
 
-    $ sudo -H /usr/bin/gem install bundle
-    $ bundle install
-
-Then build everything with
-
-  * `make -j` builds the site locally in `_site`
-  * `make -j serve` builds and serves HTTP on localhost:4000
-  * `make -j dist` builds and publishes to the web
+    $ make docker-bash
 
 License
 -------
