@@ -134,9 +134,10 @@ order. Let's define a tuple for that.
 
     ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
 
-We will reserve those registers for local variables. So when the bytecode
-refers to variable index `n`, we know it will be in register
-`ARGUMENT_ORDER[n]`.
+We will reserve those registers for local variables and function arguments.
+When the bytecode refers to variable index `n`, we know it will be in register
+`ARGUMENT_ORDER[n]`. It also means that we support at most four locals. This is
+mostly because I want to leave out local stacks for simplicity.
 
 **The stack:** The CPU already has a stack, so we'll just use that to store
 64-bit signed integer values. 
