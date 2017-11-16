@@ -511,6 +511,126 @@ NP-complete.
 The final part: Translating IR to x86-64 machine code
 -----------------------------------------------------
 
+So, we have translated Python bytecode to IR and we have done some
+optimizations on it. We are finally ready to assemble it to machine code!
+
+Our approach will be to write an assembler class that emits instructions. If we
+use the same name for the emitter methods as in the IR code, and use the same
+signature for all, then we can just blindly assemble the whole IR in a short
+loop:
+
+    assembler = Assembler(mj.PAGESIZE)
+
+    for name, a, b in ir:
+        emit = getattr(assembler, name)
+        emit(a, b)
+
+If the instruction is `mov rax, rbx`, then `emit` will point to `assembler.mov`
+and the call will therefore be `assembler.mov("rax", "rbx")`.
+
+Let's write an assembler class. We incorporate the methods `address` and
+`little_endian` from the [code in the previous post][previous-post].
+
+    class Assembler(object):
+        def __init__(self, size):
+            self.block = mj.create_block(size)
+            self.index = 0
+            self.size = size
+
+        @property
+        def address(self):
+            """Returns address of block in memory."""
+            return ctypes.cast(self.block, ctypes.c_void_p).value
+
+        def little_endian(self, n):
+            """Converts 64-bit number to little-endian format."""
+            return [(n & (0xff << i*2)) >> i*8 for i in range(8)]
+
+        def emit(self, *args):
+            """Writes machine code to memory block."""
+            for code in args:
+                self.block[self.index] = code
+                self.index += 1
+
+        def ret(self, a, b):
+            self.emit(0xc3)
+
+So calling `assembler.ret(None, None)` will set the first machine code byte to
+0xc3. That's how `retq` is encoded. To find the encoding of other instructions,
+I mainly used the [NASM][nasm] assembler. Putting the following in a file
+`sandbox.asm`,
+
+    bits 64
+    section .text
+    mov rax, rcx
+    mov rax, rdx
+    mov rax, rbx
+    mov rax, rsp
+
+I assembled it with `nasm -felf64 sandbox.asm -osandbox.o` (`-fmacho64` for
+macOS) and dumped the machine code with
+
+    $ objdump -d sandbox.o
+
+    sandbox.o:     file format elf64-x86-64
+
+
+    Disassembly of section .text:
+
+    0000000000000000 <.text>:
+       0:   48 89 c8                mov    %rcx,%rax
+       3:   48 89 d0                mov    %rdx,%rax
+       6:   48 89 d8                mov    %rbx,%rax
+       9:   48 89 e0                mov    %rsp,%rax
+
+It seems like the 64-bit `movq` (which _we_ just call `mov`) is encoded with
+the prefix `0x48 0x89` with the source and destination registers stored in the
+last byte.  Digging into a few manuals, we see that they are encoded using
+three bits each.  We'll write a method for that.
+
+    def registers(self, a, b=None):
+        """Encodes one or two registers for machine code instructions."""
+        order = ("rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi")
+        enc = order.index(a)
+        if b is not None:
+            enc = enc << 3 | order.index(b)
+        return enc
+
+For the `movq` instruction, we can now write
+
+    def mov(self, a, b):
+        self.emit(0x48, 0x89, 0xc0 | self.registers(b, a))
+
+The rest of the instructions are done in a similar manner, except for moving
+immediate (i.e., constant) values into registers.
+
+    def ret(self, a, b):
+        self.emit(0xc3)
+
+    def push(self, a, _):
+        self.emit(0x50 | self.registers(a))
+
+    def pop(self, a, _):
+        self.emit(0x58 | self.registers(a))
+
+    def imul(self, a, b):
+        self.emit(0x48, 0x0f, 0xaf, 0xc0 | self.registers(a, b))
+
+    def add(self, a, b):
+        self.emit(0x48, 0x01, 0xc0 | self.registers(b, a))
+
+    def sub(self, a, b):
+        self.emit(0x48, 0x29, 0xc0 | self.registers(b, a))
+
+    def neg(self, a, _):
+        self.emit(0x48, 0xf7, 0xd8 | self.register(a))
+
+    def mov(self, a, b):
+        self.emit(0x48, 0x89, 0xc0 | self.registers(b, a))
+
+    def immediate(self, a, number):
+        self.emit(0x48, 0xb8 | self.registers(a), *self.little_endian(number))
+
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
