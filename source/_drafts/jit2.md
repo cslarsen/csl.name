@@ -11,10 +11,11 @@ tags: Python assembly
 In this post I'll show how to JIT-compile a tiny subset of Python into native
 x86-64 machine code.
 
-We will build directly on the techniques established in [<b>Writing a basic x86-64
-JIT compiler from scratch in stock Python</b>][previous-post]. As before, we will
-restrict ourselves to using only built-in CPython modules. The code in this
-post is available at [github.com/cslarsen/minijit][minijit.github].
+We will build directly on the techniques established in [<b>Writing a basic
+x86-64 JIT compiler from scratch in stock Python</b>][previous-post], although
+you can read this post on its own. As before, we will restrict ourselves to
+using only built-in CPython modules. The code in this post is available at
+[github.com/cslarsen/minijit][minijit.github].
 
 Our goal is to enable compilation of Python functions to native
 code at runtime. I.e.,
@@ -126,23 +127,35 @@ naive.  We will forego things like [three-address codes (TAC)][tac.wiki],
 [single-static assignment (SSA)][ssa.wiki] and [register
 allocation][register-allocation.wiki] for the sake of simplicity.
 
-Our IR will consist of pseud-assembly instructions in a list. For example
+Our IR will consist of pseudo-assembly instructions in a list. For example
 
     ir = [("mov", "rax", 101),
           ("push", "rax")]
 
 That will definitely make it easy to translate to machine code, but not so good
-for things like register allocation. But we now need to decide on how the
-bytecode should be implemented.
+for things like [register allocation][register-allocation.wiki]. We now
+need to decide on how the bytecode should be implemented.
 
-We reserve RAX and RBX as work registers to perform arithmetic. RAX must also
-hold the return value. The CPU already has a stack, so we'll use that as our
-data stack mechanism.
+We will reserve RAX and RBX as work registers for things likke arithmetic. RAX
+must also hold the return value. The CPU already has a stack, so we'll use that
+as our data stack mechanism.
 
-We will reserve the registers RDI, RSI, RDC and RCX for holding variables
-and arguments. Per [AMD64 convention][amd64.abi], we expect to see function
-arguments passed in those registers, in that order. We can then translate the
-`LOAD_FAST` instruction like this:
+Reigster RDI, RSI, RDC and RCX will be reserved for variables and arguments.
+Per [AMD64 convention][amd64.abi], we expect to see function arguments passed
+in those registers, in that order.
+
+Now we will implement a function `compile_ir` that takes Python bytecode, along
+with a list of constants found in the bytecode program. Those constants are
+readily available through `co_consts`:
+
+    >>> def bar(n): return n*101
+    ...
+    >>> bar.func_code.co_consts
+    (None, 101)
+
+The main part of `compile_ir` consists of a loop that pops off 
+We can then translate the `LOAD_FAST`
+instruction like this:
 
     ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
 
@@ -154,17 +167,22 @@ arguments passed in those registers, in that order. We can then translate the
         index = bytecode.pop(0) << 8 | bytecode.pop(0)
         out.append(("push", ARGUMENT_ORDER[index]))
 
+Above, we first define the argument passing order in `ARGUMENT_ORDER`. We then
+look up the name of the first opcode with `dis.opname`. For `LOAD_FAST`, we
+decode two additional bytes to get the argument value. It's an index into the
+list of local variables. If a program requests the zeroth local variable, we
+will translate that to
+
+    push rdi
+
 This also means that we will support max four variables and arguments. To
-support more, we'll need a stack frame. I don't think it that is merited in a
+support more, we'll need stack frames. I don't think that is merited in a
 tutorial.
 
 We will implement a function `compile_ir` that takes Python bytecode along with
-a list of constants. The constants can be found in Python with
+a list of constants found in the bytecode. Those constants are readily
+available through
 
-    >>> def bar(n): return n*101
-    ...
-    >>> bar.func_code.co_consts
-    (None, 101)
 
 <table align="center">
   <thead>
