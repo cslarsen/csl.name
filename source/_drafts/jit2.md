@@ -112,8 +112,8 @@ In postfix form, the order of evaluation becomes explicit:
     push 2, push 2, multiply, push 3, push 3, multiply, subtract
 
 The use of a stack makes it possible to execute instructions linearly, and this
-is exactly how stack machines operate. With that, you will probably understand
-most of the [CPython opcodes][python.opcodes] and its [interpreter
+is essentially how stack machines operate. With that, you will probably
+understand most of the [CPython opcodes][python.opcodes] and its [interpreter
 loop][python.eval].
 
 Part two: Translating Python bytecode to IR
