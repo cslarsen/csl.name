@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JIT compiling a tiny subset of Python to x86-64"
+title: "JIT compiling a tiny subset of Python to x86-64 from scratch — in Python"
 date: 2017-11-16 20:52:12 +0100
 updated: 2017-11-16 20:52:12 +0100
 categories: Python assembly
@@ -9,16 +9,16 @@ tags: Python assembly
 ---
 
 In this post I'll show how to JIT compile a tiny subset of Python into native
-x86-64 machine code.
+x86-64 machine code, using nothing but stock Python.
 
-We will build directly on the techniques established in [<b>Writing a basic
-x86-64 JIT compiler from scratch in stock Python</b>][previous-post], although
+We will build directly on the techniques established in [Writing a basic
+x86-64 JIT compiler from scratch in stock Python][previous-post], although
 you can read this post on its own. As before, we will restrict ourselves to
 using only built-in CPython modules. The code in this post is available at
 [github.com/cslarsen/minijit][minijit.github].
 
-Our goal is to enable compilation of Python functions to native
-code at runtime. I.e.,
+Our goal is to enable compilation of Python functions to native code at
+runtime. I.e.,
 
     >>> def foo(a, b):
     ...   return a*a - b*b
