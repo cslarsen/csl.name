@@ -57,8 +57,8 @@ In Python 2.7, that would be
 
 Because the two bytecode sequences are near identical, it doesn't matter which
 one will be used for the explanation. **I've picked Python 2.7 for the
-remainder of this post, but the [GitHub code][minijit.github] supports 2.7 and
-3.**
+remainder of this post**, but the [GitHub code][minijit.github] supports both
+2.7 and 3+.
 
 Let's have a look at the disassembly of `foo`.
 
