@@ -144,7 +144,7 @@ and popping.  RAX must also hold the return value, because that's the
 convention.  The CPU already has a stack, so we'll use that as our data stack
 mechanism.
 
-Reigsters RDI, RSI, RDC and RCX will be reserved for variables and arguments.
+Registers RDI, RSI, RDC and RCX will be reserved for variables and arguments.
 Per [AMD64 convention][amd64.abi], we expect to see function arguments passed
 in those registers, in that order. In real programs, the matter is a bit more
 involved.
@@ -446,7 +446,7 @@ optimization function is
 
 The IR code was
 
-		[('push', 'rdi', None),
+    [('push', 'rdi', None),
      ('push', 'rdi', None),
      ('pop', 'rax', None),
      ('pop', 'rbx', None),
