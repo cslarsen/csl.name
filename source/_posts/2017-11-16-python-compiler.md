@@ -711,10 +711,10 @@ You can try out different functions, for example
 
 turns into
 
-  0x7f07d16a7000:       mov     rbx, rdi
-  0x7f07d16a7003:       movabs  rax, 0x101
-  0x7f07d16a700d:       imul    rax, rbx
-  0x7f07d16a7011:       ret
+    0x7f07d16a7000:       mov     rbx, rdi
+    0x7f07d16a7003:       movabs  rax, 0x101
+    0x7f07d16a700d:       imul    rax, rbx
+    0x7f07d16a7011:       ret
 
 and
 
