@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JIT-compiling a tiny subset of Python to native x86-64 code"
+title: "JIT-compiling a tiny subset of Python to x86-64"
 date: 2017-11-15 23:20:12 +0100
 updated: 2017-11-15 23:20:12 +0100
 categories: Python assembly
@@ -130,98 +130,152 @@ allocation][register-allocation.wiki] for the sake of simplicity.
 Our IR will consist of pseudo-assembly instructions in a list. For example
 
     ir = [("mov", "rax", 101),
-          ("push", "rax")]
+          ("push", "rax", None)]
 
-That will definitely make it easy to translate to machine code, but not so good
-for things like [register allocation][register-allocation.wiki]. We now
-need to decide on how the bytecode should be implemented.
+This is actually a form of [three-address codes (TAC)][tac.wiki], but we have
+the operation first, then the destination and source registers. We put in
+`None` to indicate unused arguments. So `sub rax, rbx` would be written in TAC
+as `rax := rax - rbx`. It would also be a good idea to use abstract registers,
+and always new ones, like `reg1`, `reg2` and so on. Then we could
+[allocate][register-allocation.wiki] them actual CPU registers. We won't do
+that here, though.
 
-We will reserve RAX and RBX as work registers for things likke arithmetic. RAX
-must also hold the return value. The CPU already has a stack, so we'll use that
-as our data stack mechanism.
+We will reserve registers RAX and RBX for things like pushing, popping and
+arithmetic. RAX must also hold the return value, because that's the convention.
+The CPU already has a stack, so we'll use that as our data stack mechanism.
 
-Reigster RDI, RSI, RDC and RCX will be reserved for variables and arguments.
+Reigsters RDI, RSI, RDC and RCX will be reserved for variables and arguments.
 Per [AMD64 convention][amd64.abi], we expect to see function arguments passed
 in those registers, in that order.
 
-Now we will implement a function `compile_ir` that takes Python bytecode, along
-with a list of constants found in the bytecode program. Those constants are
-readily available through `co_consts`:
+Constants in the bytecode can be looked up with `co_consts`:
 
     >>> def bar(n): return n*101
     ...
     >>> bar.func_code.co_consts
     (None, 101)
 
-The main part of `compile_ir` consists of a loop that pops off 
-We can then translate the `LOAD_FAST`
-instruction like this:
+We can now build a compiler that translates Python bytecode to our intermediate
+representation. Its general form will be
 
-    ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
+    class Compiler(object):
+        """Compiles Python bytecode to intermediate representation (IR)."""
 
-    # ...
+        def __init__(self, bytecode, constants):
+            self.bytecode = bytecode
+            self.constants = constants
+            self.index = 0
 
-    opcode = dis.opname[bytecode.pop(0)]
+        def fetch(self):
+            byte = self.bytecode[self.index]
+            self.index += 1
+            return byte
 
-    if opcode == "LOAD_FAST":
-        index = bytecode.pop(0) << 8 | bytecode.pop(0)
-        out.append(("push", ARGUMENT_ORDER[index]))
+        def decode(self):
+            opcode = self.fetch()
+            opname = dis.opname[opcode]
 
-Above, we first define the argument passing order in `ARGUMENT_ORDER`. We then
-look up the name of the first opcode with `dis.opname`. For `LOAD_FAST`, we
-decode two additional bytes to get the argument value. It's an index into the
-list of local variables. If a program requests the zeroth local variable, we
-will translate that to
-
-    push rdi
-
-This also means that we will support max four variables and arguments. To
-support more, we'll need stack frames. I don't think that is merited in a
-tutorial.
-
-We will implement a function `compile_ir` that takes Python bytecode along with
-a list of constants found in the bytecode. Those constants are readily
-available through
-
-
-<table align="center">
-  <thead>
-    <th>Instruction</th>
-    <th>IR</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>LOAD_FAST n</code></td>
-      <td><code>mov rax, ARGUMENT_ORDER[n]</code></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><code>push rax</code></td>
-    </tr>
-  </tbody>
-</table>
-
-    def compile_ir(bytecode, constants):
-        # AMD64 argument passing order for our purposes.
-        ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
-        out = []
-
-        while len(bytecode):
-            opcode = dis.opname[bytecode.pop(0)]
-
-            if opcode == "LOAD_FAST":
-                index = bytecode.pop(0)
-                if PRE36:
-                    index |= bytecode.pop(0) << 8
-                out.append(("push", ARGUMENT_ORDER[index]))
-
-            # ...
-
+            if opname.startswith(("UNARY", "BINARY", "INPLACE", "RETURN")):
+                argument = None
             else:
-                raise NotImplementedError(opcode)
+                argument = self.fetch()
 
-        return out
+            return opname, argument
 
+        # ...
+
+It takes some bytecode and constants, and keeps a running index of the current
+bytecode position. It is wise to split the translation up into fetch and decode
+steps. The `fetch` method simply retrieves the next bytecode, while `decode`
+will fetch the opcode, look up its name and fetch any arguments.
+
+We need to look up which registers holds which variable:
+
+    def variable(self, number):
+        # AMD64 argument passing order for our purposes.
+        order = ("rdi", "rsi", "rdx", "rcx")
+        return order[number]
+
+The main method will look like
+
+
+    def compile(self):
+        while self.index < len(self.bytecode):
+            op, arg = self.decode()
+
+            if op == "LOAD_FAST":
+                yield "push", self.variable(arg), None
+            # ...
+            else:
+                raise NotImplementedError(op)
+
+Here you can already see how we translate `LOAD_FAST`. We just push the
+corresponding register onto the stack. So, if the function we are compiling has
+one argument, the bytecode will refer to the zeroth variable. Through the
+`variable` method, we see that this is register RDI. So it will output
+
+    ("push", "rdi", "None")
+
+The `STORE_FAST` instruction does the reverse. It pops a value off the stack
+and stores it in the argument register:
+
+        yield "pop", "rax", None
+        yield "mov", self.variable(arg), "rax"
+
+A binary instruction will pop two values off the stack. For example
+
+        elif op == "BINARY_MULTIPLY":
+            yield "pop", "rax", None
+            yield "pop", "rbx", None
+            yield "imul", "rax", "rbx"
+            yield "push", "rax", None
+
+That's just about it. `LOAD_CONST` will use a special instruction for storing
+immediate values (i.e., constant integers). Here is the entire method:
+
+    def compile(self):
+        while self.index < len(self.bytecode):
+            op, arg = self.decode()
+
+            if op == "LOAD_FAST":
+                yield "push", self.variable(arg), None
+
+            elif op == "STORE_FAST":
+                yield "pop", "rax", None
+                yield "mov", self.variable(arg), "rax"
+
+            elif op == "LOAD_CONST":
+                yield "immediate", "rax", self.constants[arg]
+                yield "push", "rax", None
+
+            elif op == "BINARY_MULTIPLY":
+                yield "pop", "rax", None
+                yield "pop", "rbx", None
+                yield "imul", "rax", "rbx"
+                yield "push", "rax", None
+
+            elif op in ("BINARY_ADD", "INPLACE_ADD"):
+                yield "pop", "rax", None
+                yield "pop", "rbx", None
+                yield "add", "rax", "rbx"
+                yield "push", "rax", None
+
+            elif op in ("BINARY_SUBTRACT", "INPLACE_SUBTRACT"):
+                yield "pop", "rbx", None
+                yield "pop", "rax", None
+                yield "sub", "rax", "rbx"
+                yield "push", "rax", None
+
+            elif op == "UNARY_NEGATIVE":
+                yield "pop", "rax", None
+                yield "neg", "rax", None
+                yield "push", "rax", None
+
+            elif op == "RETURN_VALUE":
+                yield "pop", "rax", None
+                yield "ret", None, None
+            else:
+                raise NotImplementedError(op)
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
