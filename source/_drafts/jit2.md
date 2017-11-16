@@ -309,14 +309,165 @@ We can now compile the `foo` function at the top to our IR.
      ('pop', 'rax', None),
      ('ret', None, None)]
 
-That's a lot of stack operations!
+Wow, that sure is a lot of stack operations!
 
 Part three: Writing a simple optimizer
 --------------------------------------
 
-With the above code, we can see how the optimizer works:
+We're going to perform [peep-hole optimizations][peephole.wiki] on our IR. Such
+optimizations work on only a few instructions at at time, and translate them
+equivalent but _better_ code. We will go for fewer instructions.
 
-    >>> pprint(optimize(ir))
+In the IR above, we see an obvious improvement. Instructions like
+
+    push rdi
+    pop rax
+
+can surely be translated to
+
+    mov rax, rdi
+
+Let's write a function for that. We'll also eliminate nonsensical instructions
+like `mov rax, rax`.
+
+    def optimize(ir):
+        def fetch(n):
+            if n < len(ir):
+                return ir[n]
+            else:
+                return None, None, None
+
+        index = 0
+        while index < len(ir):
+            op1, a1, b1 = fetch(index)
+            op2, a2, b2 = fetch(index + 1)
+            op3, a3, b3 = fetch(index + 2)
+            op4, a4, b4 = fetch(index + 3)
+
+            # Removed no-op movs
+            if op1 == "mov" and a1 == b1:
+                index += 1
+                continue
+
+            # Short-circuit push x/pop y
+            if op1 == "push" and op2 == "pop":
+                index += 2
+                yield "mov", a2, a1
+                continue
+
+            index += 1
+            yield op1, a1, b1
+
+Instead of showing that this actually works, we'll just throw in a few other
+optimizations. Just note that writing such optimizations are deceptively
+simple. It's very easy to do something that seem to make sense, only to see
+your program crash.
+
+A construct like
+
+    mov rsi, rax
+    mov rbx, rsi
+
+can surely be translated to
+
+    mov rbx, rax
+
+so we'll add that as well:
+
+    if op1 == op2 == "mov" and a1 == b2:
+        index += 2
+        yield "mov", a2, b1
+        continue
+
+Finally, the short-circuit of pop and push can be extended so that it works
+over one or several unrelated instructions. Take
+
+    push rax
+    mov rsi, rax
+    pop rbx
+
+Since RAX isn't modified in `mov rsi, rax`, we can just write
+
+    mov rsi, rax
+    mov rbx, rax
+
+We have to be careful that the middle instruction isn't a push, though.
+So we'll add
+
+    if op1 == "push" and op3 == "pop" and op2 not in ("push", "pop"):
+        if a2 != a3:
+            index += 3
+            yield "mov", a3, a1
+            yield op2, a2, b2
+            continue
+
+There is nothing wrong with supporting an indefinite amount of middle
+instructions, but we won't do that here.
+
+With these instructions, let's try to optimize the above IR. The complete
+optimization function is
+
+    def optimize(ir):
+        def fetch(n):
+            if n < len(ir):
+                return ir[n]
+            else:
+                return None, None, None
+
+        index = 0
+        while index < len(ir):
+            op1, a1, b1 = fetch(index)
+            op2, a2, b2 = fetch(index + 1)
+            op3, a3, b3 = fetch(index + 2)
+
+            if op1 == "mov" and a1 == b1:
+                index += 1
+                continue
+
+            if op1 == op2 == "mov" and a1 == b2:
+                index += 2
+                yield "mov", a2, b1
+                continue
+
+            if op1 == "push" and op2 == "pop":
+                index += 2
+                yield "mov", a2, a1
+                continue
+
+            if op1 == "push" and op3 == "pop" and op2 not in ("push", "pop"):
+                if a2 != a3:
+                    index += 3
+                    yield "mov", a3, a1
+                    yield op2, a2, b2
+                    continue
+
+            index += 1
+            yield op1, a1, b1
+
+The IR code was
+
+		[('push', 'rdi', None),
+     ('push', 'rdi', None),
+     ('pop', 'rax', None),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('push', 'rsi', None),
+     ('push', 'rsi', None),
+     ('pop', 'rax', None),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('pop', 'rbx', None),
+     ('pop', 'rax', None),
+     ('sub', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('pop', 'rax', None),
+     ('ret', None, None)]
+
+Running that through `optimize` yields
+
+    >>> pprint(list(optimize(ir)))
     [('push', 'rdi', None),
      ('mov', 'rax', 'rdi'),
      ('pop', 'rbx', None),
@@ -332,15 +483,10 @@ With the above code, we can see how the optimizer works:
      ('mov', 'rax', 'rax'),
      ('ret', None, None)]
 
-However, after one pass we have a few more situations that can be optimized.
-The first three functions, for example, should be possible to optimize into
+saving us four instructions. But we still got a few spots left. The first three
+instructions should be optimizable. Let's run two passes on the IR:
 
-    mov rax, rdi
-    mov rbx, rdi
-
-Indeed, running it twice, it produces
-
-    >>> pprint(optimize(optimize(ir)))
+    >>> pprint(list(optimize(list(optimize(ir)))))
     [('mov', 'rbx', 'rdi'),
      ('mov', 'rax', 'rdi'),
      ('imul', 'rax', 'rbx'),
@@ -353,13 +499,14 @@ Indeed, running it twice, it produces
      ('sub', 'rax', 'rbx'),
      ('ret', None, None)]
 
-After two passes, it won't be able to optimize further. An obvious way to fix
-that would be to expand the `push x; other; pop y` optimization to handle an
-arbitrary number of `other` instructions. We are also affected by our poor use
-of registers, since we only use RAX and RBX. A good register allocated is very
-important for good optimizations.
-
-We are now ready for the final part.
+We've now saved seven instructions. Our optimizer won't be able to improve this
+code any further. We could add more peep-hole optimizations, but another good
+technique would be to use a real register allocated so that we use the full
+spectrum of available registers. The IR compiler could then just assign values
+to unique registers like `reg1`, `reg2` and so on, then the allocator would
+choose how to populate the available registers properly. This is actually a hot
+topic for research, and especially for JIT compilation because the problem is
+NP-complete.
 
 The final part: Translating IR to x86-64 machine code
 -----------------------------------------------------
@@ -374,6 +521,7 @@ The final part: Translating IR to x86-64 machine code
 [minijit.github]: https://github.com/cslarsen/minijit
 [mj.github]: https://github.com/cslarsen/minijit
 [nasm]: http://www.nasm.us
+[peephole.wiki]: https://en.wikipedia.org/wiki/Peephole_optimization
 [previous-post]: /post/python-jit/
 [python.eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [python.opcodes]: https://github.com/python/cpython/blob/master/Include/opcode.h
