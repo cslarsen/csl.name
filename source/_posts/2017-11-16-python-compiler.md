@@ -1,8 +1,8 @@
 ---
 layout: post
 title: "JIT compiling a tiny subset of Python to x86-64"
-date: 2017-11-15 23:20:12 +0100
-updated: 2017-11-15 23:20:12 +0100
+date: 2017-11-16 20:52:12 +0100
+updated: 2017-11-16 20:52:12 +0100
 categories: Python assembly
 disqus: true
 tags: Python assembly
