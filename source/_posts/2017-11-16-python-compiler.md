@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JIT-compiling Python bytecode to x86-64"
+title: "JIT compiling a subset of Python to x86-64"
 date: 2017-11-16 20:52:12 +0100
 updated: 2017-11-16 20:52:12 +0100
 categories: Python assembly
