@@ -119,37 +119,44 @@ loop][python.eval].
 Part two: Translating Python bytecode to IR
 -------------------------------------------
 
-Our [intermediate representation (IR)][ir.wiki] will be naive. We'll blissfully forego
-things like [three-address codes (TAC)][tac.wiki], [single-static assignment
-(SSA)][ssa.wiki] and [register allocation][register-allocation.wiki].
+We will now translate each bytecode instructions to an [intermediate
+representation (IR)][ir.wiki]. That is, in a form suitable for performing
+things like analysis, translation and optimizations.  Ours will be blissfully
+naive.  We will forego things like [three-address codes (TAC)][tac.wiki],
+[single-static assignment (SSA)][ssa.wiki] and [register
+allocation][register-allocation.wiki] for the sake of simplicity.
 
-Instead, our IR will be dead simple, consisting of pseudo-assembly instructions
-that we can easily translate to machine code.  But that means we have to decide
-now on how to implement things in machine code.
+Our IR will consist of pseud-assembly instructions in a list. For example
+
+    ir = [("mov", "rax", 101),
+          ("push", "rax")]
+
+That will definitely make it easy to translate to machine code, but not so good
+for things like register allocation. But we now need to decide on how the
+bytecode should be implemented.
+
+We reserve RAX and RBX as work registers to perform arithmetic. RAX must also
+hold the return value. The CPU already has a stack, so we'll use that as our
+data stack mechanism.
 
 We will reserve the registers RDI, RSI, RDC and RCX for holding variables
 and arguments. Per [AMD64 convention][amd64.abi], we expect to see function
-arguments passed in those registers, in that order. When an instruction then
-refers to variable number `n`, we can just look the register up in the tuple
+arguments passed in those registers, in that order. We can then translate the
+`LOAD_FAST` instruction like this:
 
     ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
 
-This also means that we will support max four variables and arguments, since I
-don't want the added complexity of dealing with stack frames in this post.
+    # ...
 
-We reserve RAX and RBX to perform arithmetic. RAX also holds the return value.
+    opcode = dis.opname[bytecode.pop(0)]
 
-The work registers for performing arithmetic will 
-**The stack:** The CPU already has a stack, so we'll just use that to store
-64-bit signed integer values. 
+    if opcode == "LOAD_FAST":
+        index = bytecode.pop(0) << 8 | bytecode.pop(0)
+        out.append(("push", ARGUMENT_ORDER[index]))
 
-**Work registers:** We will reserve registers RAX and RBX as work registers for
-arithmetic operations. Although RBX is conventionally required to be restored
-by a functio before returning, we will simply ignore that. To be honest, I
-haven't dug into the details of this, but the code does seem to work nicely to
-thrash RBX. Perhaps `ctypes` pushes registers before calling into our function.
-
-With that, we are ready to encode Python bytecode instructions in our IR.
+This also means that we will support max four variables and arguments. To
+support more, we'll need a stack frame. I don't think it that is merited in a
+tutorial.
 
 We will implement a function `compile_ir` that takes Python bytecode along with
 a list of constants. The constants can be found in Python with
@@ -159,7 +166,7 @@ a list of constants. The constants can be found in Python with
     >>> bar.func_code.co_consts
     (None, 101)
 
-<table>
+<table align="center">
   <thead>
     <th>Instruction</th>
     <th>IR</th>
