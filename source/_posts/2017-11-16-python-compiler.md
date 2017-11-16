@@ -8,8 +8,8 @@ disqus: true
 tags: Python assembly
 ---
 
-This post shows how to JIT compile Python bytecode into machine code,
-using nothing but stock Python.
+This post shows how to write a basic JIT compiler for the Python bytecode,
+using nothing but stock Python modules.
 
 We will leverage the code written in [a previous post][previous-post] to bind
 native code to a callable Python function. The complete code is available at
