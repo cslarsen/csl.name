@@ -8,17 +8,14 @@ disqus: true
 tags: Python assembly
 ---
 
-In this post I'll show how to JIT compile a tiny subset of Python into native
-x86-64 machine code, using nothing but stock Python.
+This post shows how to JIT compile Python bytecode into machine code,
+using nothing but stock Python.
 
-We will build directly on the techniques established in [Writing a basic
-x86-64 JIT compiler from scratch in stock Python][previous-post], although
-you can read this post on its own. As before, we will restrict ourselves to
-using only built-in CPython modules. The code in this post is available at
+We will leverage the code written in [a previous post][previous-post] to bind
+native code to a callable Python function. The complete code is available at
 [github.com/cslarsen/minijit][minijit.github].
 
-Our goal is to enable compilation of Python functions to native code at
-runtime. I.e.,
+At the end of this post, we will be able to compile Python functions:
 
     >>> def foo(a, b):
     ...   return a*a - b*b
@@ -27,19 +24,13 @@ runtime. I.e.,
     >>> bar(1, 2)
     -3
 
-To keep the scope manageable, we'll restrict ourselves to compiling branchless
-functions — that is, no if-statements, loops or function calls — that operate
-purely on integer arithmetic.
+The `bar` function above will execute on bare metal. We will restrict ourselves
+to compiling branchless functions that operate on integer arithmetic.
 
-Our strategy is to 
-
-  * Translate Python bytecode into an [intermediate representation (IR)][ir.wiki]
-  * Perform optimizations on the IR
-  * Translate IR to native x86-64 machine code
-  * Leverage code from [the previous post][previous-post] to bind the machine
-    code to callable Python functions
-
-The first part will then be to understand how the Python bytecode works.
+Our strategy is to translate Python bytecode to an [intermediate
+representation][ir.wiki], which will then be optimized before being emitted as
+x86-64 machine code. So the first part will be to understand how the bytecode
+works.
 
 Part one: How the Python bytecode works
 ---------------------------------------
