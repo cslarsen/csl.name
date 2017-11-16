@@ -56,8 +56,9 @@ In Python 2.7, that would be
     '|\x00\x00|\x00\x00\x14|\x01\x00|\x01\x00\x14\x18S'
 
 Because the two bytecode sequences are near identical, it doesn't matter which
-one will be used for the explanation. I've picked Python 2.7 here, but the
-[GitHub code][minijit.github] supports both.
+one will be used for the explanation. **I've picked Python 2.7 for the
+remainder of this post, but the [GitHub code][minijit.github] supports 2.7 and
+3.**
 
 Let's have a look at the disassembly of `foo`.
 
@@ -308,7 +309,7 @@ We can now compile the `foo` function at the top to our IR.
      ('pop', 'rax', None),
      ('ret', None, None)]
 
-That's a lot of stack operations! We'd better write a simple optimizer.
+That's a lot of stack operations!
 
 Part three: Writing a simple optimizer
 --------------------------------------
