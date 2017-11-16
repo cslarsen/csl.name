@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JIT-compiling a tiny subset of Python to x86-64"
+title: "JIT compiling a tiny subset of Python to x86-64"
 date: 2017-11-15 23:20:12 +0100
 updated: 2017-11-15 23:20:12 +0100
 categories: Python assembly
@@ -8,7 +8,7 @@ disqus: true
 tags: Python assembly
 ---
 
-In this post I'll show how to JIT-compile a tiny subset of Python into native
+In this post I'll show how to JIT compile a tiny subset of Python into native
 x86-64 machine code.
 
 We will build directly on the techniques established in [<b>Writing a basic
@@ -276,6 +276,92 @@ immediate values (i.e., constant integers). Here is the entire method:
                 yield "ret", None, None
             else:
                 raise NotImplementedError(op)
+
+We can now compile the `foo` function at the top to our IR.
+
+    >>> def foo(a, b):
+    ...   return a*a - b*b
+    ...
+    >>> bytecode = map(ord, foo.func_code.co_code)
+    >>> constants = foo.func_code.co_consts
+    >>> ir = Compiler(bytecode, constants).compile()
+    >>> ir = list(ir)
+    >>>
+    >>> from pprint import pprint
+    >>> pprint(ir)
+    [('push', 'rdi', None),
+     ('push', 'rdi', None),
+     ('pop', 'rax', None),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('push', 'rsi', None),
+     ('push', 'rsi', None),
+     ('pop', 'rax', None),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('pop', 'rbx', None),
+     ('pop', 'rax', None),
+     ('sub', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('pop', 'rax', None),
+     ('ret', None, None)]
+
+That's a lot of stack operations! We'd better write a simple optimizer.
+
+Part three: Writing a simple optimizer
+--------------------------------------
+
+With the above code, we can see how the optimizer works:
+
+    >>> pprint(optimize(ir))
+    [('push', 'rdi', None),
+     ('mov', 'rax', 'rdi'),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('push', 'rsi', None),
+     ('mov', 'rax', 'rsi'),
+     ('pop', 'rbx', None),
+     ('imul', 'rax', 'rbx'),
+     ('mov', 'rbx', 'rax'),
+     ('pop', 'rax', None),
+     ('sub', 'rax', 'rbx'),
+     ('mov', 'rax', 'rax'),
+     ('ret', None, None)]
+
+However, after one pass we have a few more situations that can be optimized.
+The first three functions, for example, should be possible to optimize into
+
+    mov rax, rdi
+    mov rbx, rdi
+
+Indeed, running it twice, it produces
+
+    >>> pprint(optimize(optimize(ir)))
+    [('mov', 'rbx', 'rdi'),
+     ('mov', 'rax', 'rdi'),
+     ('imul', 'rax', 'rbx'),
+     ('push', 'rax', None),
+     ('mov', 'rbx', 'rsi'),
+     ('mov', 'rax', 'rsi'),
+     ('imul', 'rax', 'rbx'),
+     ('mov', 'rbx', 'rax'),
+     ('pop', 'rax', None),
+     ('sub', 'rax', 'rbx'),
+     ('ret', None, None)]
+
+After two passes, it won't be able to optimize further. An obvious way to fix
+that would be to expand the `push x; other; pop y` optimization to handle an
+arbitrary number of `other` instructions. We are also affected by our poor use
+of registers, since we only use RAX and RBX. A good register allocated is very
+important for good optimizations.
+
+We are now ready for the final part.
+
+The final part: Translating IR to x86-64 machine code
+-----------------------------------------------------
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
