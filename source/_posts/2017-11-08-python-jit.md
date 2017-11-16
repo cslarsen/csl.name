@@ -12,7 +12,8 @@ In this post I'll show how to write a rudimentary, native x86-64 [just-in-time
 compiler (JIT)][jit.wiki] in CPython, using only the built-in modules.
 
 Update: This post made the [front page of HN][hn.front], and I've incorporated
-some of the [discussion feedback][hn].
+some of the [discussion feedback][hn]. I've also written a [follow-up
+post][follow.up] that JITs Python bytecode to x86-64.
 
 The code here specifically targets the UNIX systems macOS and Linux, but should
 be easily translated to other systems such as Windows. The complete code is
@@ -482,10 +483,11 @@ focuses solely on the compilation stage. Stay tuned!
 [ctypes.doc]: https://docs.python.org/3/library/ctypes.html#module-ctypes
 [deadbeef]: https://en.wikipedia.org/wiki/Magic_number_(programming)
 [fefe]: http://www.fefe.de/source-code-optimization.pdf
+[follow.up]: /post/python-compiler/
 [forth.wiki]: https://en.wikipedia.org/wiki/Forth_(programming_language)
 [github]: https://github.com/cslarsen/minijit
-[hn]: https://news.ycombinator.com/item?id=15665581
 [hn.front]: https://news.ycombinator.com/front?day=2017-11-09
+[hn]: https://news.ycombinator.com/item?id=15665581
 [jit.wiki]: https://en.wikipedia.org/wiki/Just-in-time_compilation
 [jonesforth]: https://github.com/nornagon/jonesforth/blob/master/jonesforth.S
 [machine.code.wiki]: https://en.wikipedia.org/wiki/Machine_code
