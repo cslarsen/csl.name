@@ -767,6 +767,7 @@ technique is to use the `ast` module to traverse the abstract syntax tree. A
 guy [did that][pyast64].
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
+[capstone]: http://www.capstone-engine.org/lang_python.html
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [github]: https://github.com/cslarsen/minijit
