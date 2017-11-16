@@ -314,7 +314,7 @@ Wow, that sure is a lot of stack operations!
 Part three: Writing a simple optimizer
 --------------------------------------
 
-We're going to perform [peep-hole optimizations][peephole.wiki] on our IR. Such
+We're going to perform [peephole optimizations][peephole.wiki] on our IR. Such
 optimizations work on only a few instructions at at time, and translate them
 equivalent but _better_ code. We will go for fewer instructions.
 
@@ -500,7 +500,7 @@ instructions should be optimizable. Let's run two passes on the IR:
      ('ret', None, None)]
 
 We've now saved seven instructions. Our optimizer won't be able to improve this
-code any further. We could add more peep-hole optimizations, but another good
+code any further. We could add more peephole optimizations, but another good
 technique would be to use a real register allocated so that we use the full
 spectrum of available registers. The IR compiler could then just assign values
 to unique registers like `reg1`, `reg2` and so on, then the allocator would
@@ -755,7 +755,7 @@ What's next?
 ------------
 
 I believe this is good for learning, so play around a bit. Try to make a
-register allocator, for example. Create more peep-hole optimizations. Add
+register allocator, for example. Create more peephole optimizations. Add
 support for calling other functions, loops.
 
 With a decorator, you should be able to swap out class methods on the fly with
