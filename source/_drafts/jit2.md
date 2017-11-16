@@ -133,21 +133,21 @@ Our IR will consist of pseudo-assembly instructions in a list. For example
     ir = [("mov", "rax", 101),
           ("push", "rax", None)]
 
-This is actually a form of [three-address codes (TAC)][tac.wiki], but we have
-the operation first, then the destination and source registers. We put in
-`None` to indicate unused arguments. So `sub rax, rbx` would be written in TAC
-as `rax := rax - rbx`. It would also be a good idea to use abstract registers,
-and always new ones, like `reg1`, `reg2` and so on. Then we could
-[allocate][register-allocation.wiki] them actual CPU registers. We won't do
-that here, though.
+Contrary to TAC, we put operation first, followed by the destination and source
+registers.  We use `None` to indicate unused registers and arguments.  It would
+be a very good idea to use unique, abstract registers names like `reg1`, `reg2`
+and so on, because it facilitates [register
+allocation][register-allocation.wiki].  Out of scope.
 
-We will reserve registers RAX and RBX for things like pushing, popping and
-arithmetic. RAX must also hold the return value, because that's the convention.
-The CPU already has a stack, so we'll use that as our data stack mechanism.
+We will reserve registers RAX and RBX for menial work like arithmetic, pushing
+and popping.  RAX must also hold the return value, because that's the
+convention.  The CPU already has a stack, so we'll use that as our data stack
+mechanism.
 
 Reigsters RDI, RSI, RDC and RCX will be reserved for variables and arguments.
 Per [AMD64 convention][amd64.abi], we expect to see function arguments passed
-in those registers, in that order.
+in those registers, in that order. In real programs, the matter is a bit more
+involved.
 
 Constants in the bytecode can be looked up with `co_consts`:
 
