@@ -505,11 +505,11 @@ technique would be to use a real register allocated so that we use the full
 spectrum of available registers. The IR compiler could then just assign values
 to unique registers like `reg1`, `reg2` and so on, then the allocator would
 choose how to populate the available registers properly. This is actually a hot
-topic for research, and especially for JIT compilation because the problem is
-NP-complete.
+topic for research, and especially for JIT compilation because the general
+problem is NP-complete.
 
-The final part: Translating IR to x86-64 machine code
------------------------------------------------------
+Part four: Translating IR to x86-64 machine code
+------------------------------------------------
 
 So, we have translated Python bytecode to IR and we have done some
 optimizations on it. We are finally ready to assemble it to machine code!
@@ -528,8 +528,8 @@ loop:
 If the instruction is `mov rax, rbx`, then `emit` will point to `assembler.mov`
 and the call will therefore be `assembler.mov("rax", "rbx")`.
 
-Let's write an assembler class. We incorporate the methods `address` and
-`little_endian` from the [code in the previous post][previous-post].
+Let's write an assembler class. We copy the code for `address`, `little_endian`
+and import `create_block` from the [code in the previous post][previous-post].
 
     class Assembler(object):
         def __init__(self, size):
@@ -554,6 +554,8 @@ Let's write an assembler class. We incorporate the methods `address` and
 
         def ret(self, a, b):
             self.emit(0xc3)
+
+        # ...
 
 So calling `assembler.ret(None, None)` will set the first machine code byte to
 0xc3. That's how `retq` is encoded. To find the encoding of other instructions,
@@ -631,6 +633,139 @@ immediate (i.e., constant) values into registers.
     def immediate(self, a, number):
         self.emit(0x48, 0xb8 | self.registers(a), *self.little_endian(number))
 
+The only special thing about the last method is that we have to use a different
+prefix and encode the number in little-endian format.
+
+The final part
+--------------
+
+Finally, we can tie everything together. Given the function
+
+    def foo(a, b):
+      return a*a - b*b
+
+we first extract the Python bytecode, using `ord` to map bytes to integers, and
+any constants
+
+    bytecode = map(ord, foo.func_code.co_code)
+    constants = foo.func_code.co_consts
+
+Compiling to IR
+
+    ir = Compiler(bytecode, constants).compile()
+    ir = list(ir)
+
+Perform a few optimization passes:
+
+    ir = list(optimize(ir))
+    ir = list(optimize(ir))
+    ir = list(optimize(ir))
+
+Assemble to native code
+
+    assembler = Assembler(mj.PAGESIZE)
+    for name, a, b in ir:
+        emit = getattr(assembler, name)
+        emit(a, b)
+
+Make the memory block executable
+
+    mj.make_executable(assembler.block, assembler.size)
+
+We use `ctypes` to set the correct signature and cast the code to a callable
+Python function. We can get the number of arguments with `co_argcount`, and we
+treat input arguments as signed 64-bit integers.
+
+    argcount = foo.func_code.co_argcount
+    signature = ctypes.CFUNCTYPE(*[ctypes.c_int64] * argcount)
+    signature.restype = ctypes.c_int64
+
+Finally,
+
+    native_foo = signature(assembler.address)
+    print(native_foo(2, 3))
+
+It prints -5.
+
+To disassemble the code, we can use the [Capstone disassembler][capstone] right
+within Python. It's not a built-in module, so you need to install it yourself.
+Or you can break into the Python process with a debugger. Here is the
+disassembly for `native_foo`:
+
+		0x7f1133351000:       mov     rbx, rdi
+		0x7f1133351003:       mov     rax, rdi
+		0x7f1133351006:       imul    rax, rbx
+		0x7f113335100a:       push    rax
+		0x7f113335100b:       mov     rbx, rsi
+		0x7f113335100e:       mov     rax, rsi
+		0x7f1133351011:       imul    rax, rbx
+		0x7f1133351015:       mov     rbx, rax
+		0x7f1133351018:       pop     rax
+		0x7f1133351019:       sub     rax, rbx
+		0x7f113335101c:       ret
+
+You can try out different functions, for example
+
+		def bar(n):
+			return n * 0x101
+
+turns into
+
+  0x7f07d16a7000:       mov     rbx, rdi
+  0x7f07d16a7003:       movabs  rax, 0x101
+  0x7f07d16a700d:       imul    rax, rbx
+  0x7f07d16a7011:       ret
+
+and
+
+		def baz(a, b, c):
+			a -= 1
+			return a + 2*b -c
+
+becomes
+
+		0x7f13fba09000:       push    rdi
+		0x7f13fba09001:       movabs  rax, 1
+		0x7f13fba0900b:       mov     rbx, rax
+		0x7f13fba0900e:       pop     rax
+		0x7f13fba0900f:       sub     rax, rbx
+		0x7f13fba09012:       mov     rdi, rax
+		0x7f13fba09015:       push    rdi
+		0x7f13fba09016:       movabs  rax, 2
+		0x7f13fba09020:       mov     rbx, rax
+		0x7f13fba09023:       mov     rax, rsi
+		0x7f13fba09026:       imul    rax, rbx
+		0x7f13fba0902a:       pop     rbx
+		0x7f13fba0902b:       add     rax, rbx
+		0x7f13fba0902e:       mov     rbx, rdx
+		0x7f13fba09031:       sub     rax, rbx
+		0x7f13fba09034:       ret
+
+You may wonder how fast this runs. The answer is: Slow. The reason is: Because
+there is inherent overhead when calling into native code with `ctypes`. It
+needs to convert arguments and so on. I also believe (but haven't
+double-checked) that it saves some registers, because per the convention, we
+should have restored RBX before exiting.
+
+But it would be interesting to compile larger functions with native function
+calls, loops and so on, and compare that with Python. At that point, I believe
+you'll see the native code going much faster.
+
+What's next?
+------------
+
+I believe this is good for learning, so play around a bit. Try to make a
+register allocator, for example. Create more peep-hole optimizations. Add
+support for calling other functions, loops.
+
+With a decorator, you should be able to swap out class methods on the fly with
+compiled ones. That's exactly what  [Numba][numba] does, but ours is just a
+drop in the ocean compared to that.
+
+While we took the approach of translating Python bytecode, another good
+technique is to use the `ast` module to traverse the abstract syntax tree. A
+guy [did that][pyast64].
+
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [constant-folding]: https://en.wikipedia.org/wiki/Constant_folding
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
@@ -641,8 +776,10 @@ immediate (i.e., constant) values into registers.
 [minijit.github]: https://github.com/cslarsen/minijit
 [mj.github]: https://github.com/cslarsen/minijit
 [nasm]: http://www.nasm.us
+[numba]: https://numba.pydata.org/
 [peephole.wiki]: https://en.wikipedia.org/wiki/Peephole_optimization
 [previous-post]: /post/python-jit/
+[pyast64]: https://github.com/benhoyt/pyast64
 [python.eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [python.opcodes]: https://github.com/python/cpython/blob/master/Include/opcode.h
 [register-allocation.wiki]: https://en.wikipedia.org/wiki/Register_allocation
