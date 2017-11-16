@@ -89,7 +89,7 @@ operations can be serialized. For example, to compute an infix expression like
 
     2*2 - 3*3
 
-we would need to jump back and forth — calculting products before subtracting.
+we need to jump back and forth, calculating products before subtracting.
 But in a _postfix_ system, we only need to scan forward.  For example, the
 above expression can be translated to [Reverse Polish Notation (RPN)][rpn.wiki]
 using the [Shunting-yard algorithm][shunting-yard.wiki]:
