@@ -94,22 +94,22 @@ operations can be serialized. For example, to compute an infix expression like
 we need to jump back and forth, calculating products before subtracting.
 But in a _postfix_ system, we only need to scan forward.  For example, the
 above expression can be translated to [Reverse Polish Notation (RPN)][rpn.wiki]
-using the [Shunting-yard algorithm][shunting-yard.wiki]:
+using the [shunting-yard algorithm][shunting-yard.wiki]:
 
     2 2 * 3 3 * -
 
-Moving from left to right, we push 2 on the stack, then push 2, pop the two
-values off and put their product 4 on the stack. Push 3 and 3, pop them off and
-push their product 9. The stack will now contain 9 on the top and 4 at the
-bottom. For the final subtraction, we pop them off, perform the subtraction and
-push the result -5 on the stack.
+Moving from left to right, we push 2 on the stack, then another 2. The `*` pops
+them both off the stack and pushes the their product 4. Push 3 and 3, pop them
+off and push their product 9. The stack will now contain 9 on the top and 4 at
+the bottom. For the final subtraction, we pop them off, perform the subtraction
+and push the result -5 on the stack.
 
-Now, imagine that the expression was actually written in a programming language
-as
+Now, imagine that the expression was actually written in a programming
+language.
 
     subtract(multiply(2, 2), multiply(3, 3))
 
-In postfix form, the order of evaluation becomes explicit:
+The thing is, in postfix form, the order of evaluation becomes explicit:
 
     push 2, push 2, multiply, push 3, push 3, multiply, subtract
 
@@ -121,12 +121,12 @@ loop][python.eval].
 Part two: Translating Python bytecode to IR
 -------------------------------------------
 
-We will now translate each bytecode instructions to an [intermediate
+We will now translate the bytecode instructions to an [intermediate
 representation (IR)][ir.wiki]. That is, in a form suitable for performing
-things like analysis, translation and optimizations.  Ours will be blissfully
-naive.  We will forego things like [three-address codes (TAC)][tac.wiki],
-[single-static assignment (SSA)][ssa.wiki] and [register
-allocation][register-allocation.wiki] for the sake of simplicity.
+things like analysis, translation and optimization. Ours will be blissfully
+naive. We will forego things [single-static assignment (SSA)][ssa.wiki] and
+[register allocation][register-allocation.wiki] for the sake of simplicity, we
+will use something that resembles [three-address codes (TAC)][tac.wiki].
 
 Our IR will consist of pseudo-assembly instructions in a list. For example
 
