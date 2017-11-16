@@ -692,22 +692,22 @@ within Python. It's not a built-in module, so you need to install it yourself.
 Or you can break into the Python process with a debugger. Here is the
 disassembly for `native_foo`:
 
-		0x7f1133351000:       mov     rbx, rdi
-		0x7f1133351003:       mov     rax, rdi
-		0x7f1133351006:       imul    rax, rbx
-		0x7f113335100a:       push    rax
-		0x7f113335100b:       mov     rbx, rsi
-		0x7f113335100e:       mov     rax, rsi
-		0x7f1133351011:       imul    rax, rbx
-		0x7f1133351015:       mov     rbx, rax
-		0x7f1133351018:       pop     rax
-		0x7f1133351019:       sub     rax, rbx
-		0x7f113335101c:       ret
+    0x7f1133351000:       mov     rbx, rdi
+    0x7f1133351003:       mov     rax, rdi
+    0x7f1133351006:       imul    rax, rbx
+    0x7f113335100a:       push    rax
+    0x7f113335100b:       mov     rbx, rsi
+    0x7f113335100e:       mov     rax, rsi
+    0x7f1133351011:       imul    rax, rbx
+    0x7f1133351015:       mov     rbx, rax
+    0x7f1133351018:       pop     rax
+    0x7f1133351019:       sub     rax, rbx
+    0x7f113335101c:       ret
 
 You can try out different functions, for example
 
-		def bar(n):
-			return n * 0x101
+    def bar(n):
+      return n * 0x101
 
 turns into
 
@@ -718,28 +718,28 @@ turns into
 
 and
 
-		def baz(a, b, c):
-			a -= 1
-			return a + 2*b -c
+    def baz(a, b, c):
+      a -= 1
+      return a + 2*b -c
 
 becomes
 
-		0x7f13fba09000:       push    rdi
-		0x7f13fba09001:       movabs  rax, 1
-		0x7f13fba0900b:       mov     rbx, rax
-		0x7f13fba0900e:       pop     rax
-		0x7f13fba0900f:       sub     rax, rbx
-		0x7f13fba09012:       mov     rdi, rax
-		0x7f13fba09015:       push    rdi
-		0x7f13fba09016:       movabs  rax, 2
-		0x7f13fba09020:       mov     rbx, rax
-		0x7f13fba09023:       mov     rax, rsi
-		0x7f13fba09026:       imul    rax, rbx
-		0x7f13fba0902a:       pop     rbx
-		0x7f13fba0902b:       add     rax, rbx
-		0x7f13fba0902e:       mov     rbx, rdx
-		0x7f13fba09031:       sub     rax, rbx
-		0x7f13fba09034:       ret
+    0x7f13fba09000:       push    rdi
+    0x7f13fba09001:       movabs  rax, 1
+    0x7f13fba0900b:       mov     rbx, rax
+    0x7f13fba0900e:       pop     rax
+    0x7f13fba0900f:       sub     rax, rbx
+    0x7f13fba09012:       mov     rdi, rax
+    0x7f13fba09015:       push    rdi
+    0x7f13fba09016:       movabs  rax, 2
+    0x7f13fba09020:       mov     rbx, rax
+    0x7f13fba09023:       mov     rax, rsi
+    0x7f13fba09026:       imul    rax, rbx
+    0x7f13fba0902a:       pop     rbx
+    0x7f13fba0902b:       add     rax, rbx
+    0x7f13fba0902e:       mov     rbx, rdx
+    0x7f13fba09031:       sub     rax, rbx
+    0x7f13fba09034:       ret
 
 You may wonder how fast this runs. The answer is: Slow. The reason is: Because
 there is inherent overhead when calling into native code with `ctypes`. It
