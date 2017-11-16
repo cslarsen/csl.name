@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JIT compiling a tiny subset of Python to x86-64 from scratch — in Python"
+title: "JIT compiling a subset of Python in Python"
 date: 2017-11-16 20:52:12 +0100
 updated: 2017-11-16 20:52:12 +0100
 categories: Python assembly
