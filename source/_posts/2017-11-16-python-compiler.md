@@ -12,7 +12,7 @@ This post shows how to write a basic JIT compiler for the Python bytecode,
 using nothing but stock Python modules.
 
 We will leverage the code written in [a previous post][previous-post] to bind
-native code to a callable Python function. The complete code is available at
+native code to callable Python functions. The complete code is available at
 [github.com/cslarsen/minijit][minijit.github].
 
 At the end of this post, we will be able to compile Python functions:
