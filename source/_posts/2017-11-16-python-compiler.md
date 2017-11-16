@@ -569,8 +569,11 @@ I mainly used the [NASM][nasm] assembler. Putting the following in a file
     mov rax, rbx
     mov rax, rsp
 
-I assembled it with `nasm -felf64 sandbox.asm -osandbox.o` (`-fmacho64` for
-macOS) and dumped the machine code with
+I assembled it with
+
+    $ nasm -felf64 sandbox.asm -osandbox.o
+
+(`-fmacho64` for macOS) and dumped the machine code with
 
     $ objdump -d sandbox.o
 
