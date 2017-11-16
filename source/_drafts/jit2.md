@@ -127,18 +127,19 @@ Instead, our IR will be dead simple, consisting of pseudo-assembly instructions
 that we can easily translate to machine code.  But that means we have to decide
 now on how to implement things in machine code.
 
-**Function arguments and local variables:**
-By the [AMD64 x86-64 calling convention][amd64.abi], we can expect integer
-arguments to be passed in registers RDI, RSI, RDX, RCX and so on, in that
-order. Let's define a tuple for that.
+We will reserve the registers RDI, RSI, RDC and RCX for holding variables
+and arguments. Per [AMD64 convention][amd64.abi], we expect to see function
+arguments passed in those registers, in that order. When an instruction then
+refers to variable number `n`, we can just look the register up in the tuple
 
     ARGUMENT_ORDER = ("rdi", "rsi", "rdx", "rcx")
 
-We will reserve those registers for local variables and function arguments.
-When the bytecode refers to variable index `n`, we know it will be in register
-`ARGUMENT_ORDER[n]`. It also means that we support at most four locals. This is
-mostly because I want to leave out local stacks for simplicity.
+This also means that we will support max four variables and arguments, since I
+don't want the added complexity of dealing with stack frames in this post.
 
+We reserve RAX and RBX to perform arithmetic. RAX also holds the return value.
+
+The work registers for performing arithmetic will 
 **The stack:** The CPU already has a stack, so we'll just use that to store
 64-bit signed integer values. 
 
