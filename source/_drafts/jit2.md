@@ -96,11 +96,11 @@ using the [Shunting-yard algorithm][shunting-yard.wiki]:
 
     2 2 * 3 3 * -
 
-Moving from left to right, we push `2` on the stack, then push `2`, pop the two
-values off and put their product `4` on the stack. Push `3` and `3`, pop them
-off and push their product `9. The stack will now contain `9` on the top and
-`4` at the bottom. For the final subtraction, we pop them off, perform the
-subtraction and push the result `-5` on the stack.
+Moving from left to right, we push 2 on the stack, then push 2, pop the two
+values off and put their product 4 on the stack. Push 3 and 3, pop them off and
+push their product 9. The stack will now contain 9 on the top and 4 at the
+bottom. For the final subtraction, we pop them off, perform the subtraction and
+push the result -5 on the stack.
 
 Now, imagine that the expression was actually written in a programming language
 as
