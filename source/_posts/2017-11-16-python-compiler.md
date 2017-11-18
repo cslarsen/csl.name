@@ -833,6 +833,7 @@ guy [did that][pyast64].
 [pyast64]: https://github.com/benhoyt/pyast64
 [python.eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [python.opcodes]: https://github.com/python/cpython/blob/master/Include/opcode.h
+[reddit.comscpi]: https://www.reddit.com/r/compsci/comments/7dfic7/jit_compiling_a_tiny_subset_of_python_to_x8664/
 [register-allocation.wiki]: https://en.wikipedia.org/wiki/Register_allocation
 [registers.wiki]: https://en.wikipedia.org/wiki/Processor_register
 [rpn.wiki]: https://en.wikipedia.org/wiki/Reverse_Polish_notation
