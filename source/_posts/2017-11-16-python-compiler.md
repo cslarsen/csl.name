@@ -679,7 +679,7 @@ Finally,
     native_foo = signature(assembler.address)
     print(native_foo(2, 3))
 
-It prints -5.
+It prints -5. Yay!
 
 To disassemble the code, we can use the [Capstone disassembler][capstone] right
 within Python. It's not a built-in module, so you need to install it yourself.
@@ -744,6 +744,62 @@ should have restored RBX before exiting.
 But it would be interesting to compile larger functions with native function
 calls, loops and so on, and compare that with Python. At that point, I believe
 you'll see the native code going much faster.
+
+JITing automatically
+--------------------
+
+On [/r/compsci][reddit.comscpi] there was a comment that this really isn't
+just-in-time compilation until there is some mechanism that automatically swaps
+out a function with a compiled version. So let's try to do something about
+that.
+
+A pretty obvious approach is to require a little help from the user. Use a
+decorator. Recall that a decorator is really just a function that gets the
+freshly defined object as the first argument. If we install a little closure
+there that remembers the original function, we can then *literally* compile
+just-in-time when it is called for the first time. Again, *only* the decorated
+functions that are actually called will be compiled to native code.
+
+We'll start without anything:
+
+    def jit(function):
+        def frontend(*args, **kw):
+            # Just pass on the call to the original function
+            return function(*args, **kw)
+        return frontend
+
+With this, we can mark functions that we want to be compiled:
+
+    @jit
+    def foo(a, b):
+        return a*a - b*b
+
+So the inner `frontend` function then just needs to check if the function has
+already been compiled. If not, compile it and install it as the local function
+reference. If the compilation fails, don't swap out anything. The complete
+decorator looks like this:
+
+    def jit(function):
+        def frontend(*args, **kw):
+            if not hasattr(frontend, "function"):
+                # We haven't tried to compile the function yet.
+                try:
+                    # Compile function and set it as the active one
+                    native, asm = compile_native(function, verbose=False)
+                    frontend.function = native
+                except Exception as e:
+                    # Oops, the compilation failed. Just fall silently back to
+                    # the original function.
+                    frontend.function = function
+
+            # Call either the original or compiled function with the
+            # user-supplied arguments
+            return frontend.function(*args, **kw)
+
+        # Make all calls to the decorated function go through "frontend"
+        return frontend
+
+See the GitHub repository for an example program that uses this.
 
 What's next?
 ------------
