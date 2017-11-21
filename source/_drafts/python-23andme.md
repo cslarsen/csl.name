@@ -9,24 +9,35 @@ tags: python dna 23andme
 ---
 
 This post shows how to parse and interpret your raw genome data from
-[23andMe][23andme]. We will do so in Python, using a [Arv, a Python genome parser
-library][arv] that I wrote. With it, you'll be able to do things
-like
+[23andMe][23andme]. We will do so in Python, using a [Arv, a Python genome
+parser ][arv] that I wrote. With it, you'll be able to do things like
 
-    from arv import load, unphased_match as match
+    import arv
 
     genome = load("genome.txt")
 
-    print("You are a {gender} with {color} eyes and {complexion} skin.".format(
-      gender     = "man" if genome.y_chromosome else "woman",
-      complexion = "light" if genome["rs1426654"] == "AA" else "dark",
-      color      = match(genome["rs12913832"], {"AA": "brown",
-                                                "AG": "brown or green",
-                                                "GG": "blue"})))
+    if genome.y_chromosome:
+        print("You are a man")
+    else:
+        print("You are a woman")
+
+    if genome["rs1426654"]:
+        print("Your skin is of light complexion")
+    else:
+        print("Your skin is of dark complexion")
+
+    eye_color = arv.unphased_mach(genome["rs12913832"], {
+                  "AA": "brown",
+                  "AG": "brown or green",
+                  "GG": "blue"})
+
+    print("Your have %s eyes" % eye_color)
 
 In my case, this program will print
 
-    You are a man with blue eyes and light skin.
+    You are a man
+    Your skin is of light complexion
+    You have blue eyes
 
 [23andMe][23andme] is a company that sequences your personal genome from a
 personal saliva sample. With it, you can delve into your genomic ancestry,
@@ -41,7 +52,9 @@ Disclaimer
 Before continuing, it is important to note that I am just a hobbyist. This
 article may contain errors. Also, parsing genome data may be unlawful in some
 countries. Usually, it's okay if you only parse your personal data, for
-educational purposes. So that's what I'm going to do here.
+educational purposes. If you're going to try this yourself, you do it at
+your own risk. Do not rely on the results here — always consult a medical
+doctor.
 
 Installing the parser
 ---------------------
