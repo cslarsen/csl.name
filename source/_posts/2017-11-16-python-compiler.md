@@ -20,30 +20,26 @@ performing arithmetic on signed 64-bit values:
 
     >>> from jitcompiler import *
     >>> @jit
-    ... def foo(a, b):
-    ...   return a*a - b*b
+    ... def foo(a, b): return a*a - b*b
     ...
-    -- Installing JIT for <function foo at 0x102084cf8>
+    --- Installing JIT for <function foo at 0x100c28c08>
     >>> foo(2, 3)
-    -- JIT-compiling <function foo at 0x102084cf8>
-    -- Installed native code for <function foo at 0x102084cf8>
-    -- Calling function <CFunctionType object at 0x101fa6390>
+    --- JIT-compiling <function foo at 0x100c28c08>
     -5
-    >>> foo(1, 2)
-    -- Calling function <CFunctionType object at 0x101fa6390>
-    -3
+    >>> foo(3, 4)
+    -7
     >>> print(disassemble(foo))
-    0x101f79000 48 89 fb       mov rbx, rdi
-    0x101f79003 48 89 f8       mov rax, rdi
-    0x101f79006 48 0f af c3    imul rax, rbx
-    0x101f7900a 50             push rax
-    0x101f7900b 48 89 f3       mov rbx, rsi
-    0x101f7900e 48 89 f0       mov rax, rsi
-    0x101f79011 48 0f af c3    imul rax, rbx
-    0x101f79015 48 89 c3       mov rbx, rax
-    0x101f79018 58             pop rax
-    0x101f79019 48 29 d8       sub rax, rbx
-    0x101f7901c c3             ret 
+    0x100b1d000 48 89 fb       mov rbx, rdi
+    0x100b1d003 48 89 f8       mov rax, rdi
+    0x100b1d006 48 0f af c3    imul rax, rbx
+    0x100b1d00a 50             push rax
+    0x100b1d00b 48 89 f3       mov rbx, rsi
+    0x100b1d00e 48 89 f0       mov rax, rsi
+    0x100b1d011 48 0f af c3    imul rax, rbx
+    0x100b1d015 48 89 c3       mov rbx, rax
+    0x100b1d018 58             pop rax
+    0x100b1d019 48 29 d8       sub rax, rbx
+    0x100b1d01c c3             ret 
 
 Our strategy is to translate Python bytecode to an [intermediate
 representation][ir.wiki], which will then be optimized before being emitted as
