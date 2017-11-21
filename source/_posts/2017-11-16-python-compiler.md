@@ -2,7 +2,7 @@
 layout: post
 title: "JIT compiling a subset of Python to x86-64"
 date: 2017-11-16 20:52:12 +0100
-updated: 2017-11-16 20:52:12 +0100
+updated: 2017-11-21 19:16:02 +0100
 categories: Python assembly
 disqus: true
 tags: Python assembly
@@ -15,17 +15,35 @@ We will leverage the code written in [a previous post][previous-post] to bind
 native code to callable Python functions. The complete code is available at
 [github.com/cslarsen/minijit][minijit.github].
 
-At the end of this post, we will be able to compile Python functions:
+At the end of this post, we will be able to compile branchless Python functions
+performing arithmetic on signed 64-bit values:
 
-    >>> def foo(a, b):
+    >>> from jitcompiler import *
+    >>> @jit
+    ... def foo(a, b):
     ...   return a*a - b*b
     ...
-    >>> bar = compile_native(foo)
-    >>> bar(1, 2)
+    -- Installing JIT for <function foo at 0x102084cf8>
+    >>> foo(2, 3)
+    -- JIT-compiling <function foo at 0x102084cf8>
+    -- Installed native code for <function foo at 0x102084cf8>
+    -- Calling function <CFunctionType object at 0x101fa6390>
+    -5
+    >>> foo(1, 2)
+    -- Calling function <CFunctionType object at 0x101fa6390>
     -3
-
-The `bar` function above will execute on bare metal. We will restrict ourselves
-to compiling branchless functions that operate on integer arithmetic.
+    >>> print(disassemble(foo))
+    0x101f79000 48 89 fb       mov rbx, rdi
+    0x101f79003 48 89 f8       mov rax, rdi
+    0x101f79006 48 0f af c3    imul rax, rbx
+    0x101f7900a 50             push rax
+    0x101f7900b 48 89 f3       mov rbx, rsi
+    0x101f7900e 48 89 f0       mov rax, rsi
+    0x101f79011 48 0f af c3    imul rax, rbx
+    0x101f79015 48 89 c3       mov rbx, rax
+    0x101f79018 58             pop rax
+    0x101f79019 48 29 d8       sub rax, rbx
+    0x101f7901c c3             ret 
 
 Our strategy is to translate Python bytecode to an [intermediate
 representation][ir.wiki], which will then be optimized before being emitted as
