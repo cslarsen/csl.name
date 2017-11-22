@@ -126,7 +126,7 @@ The thing is, in postfix form, the evaluation order becomes explicit:
     call subtract
 
 The `multiply` and `subtract` functions find their arguments on the stack. For
-subtract, the two arguments consist of the products `2*2` and `3*3`.
+`subtract`, the two arguments consist of the products `2*2` and `3*3`.
 
 The use of a stack makes it possible to execute instructions linearly, and this
 is essentially how stack machines operate. With that, you will probably
@@ -139,8 +139,8 @@ Part two: Translating Python bytecode to IR
 We will now translate the bytecode instructions to an [intermediate
 representation (IR)][ir.wiki]. That is, in a form suitable for performing
 things like analysis, translation and optimization. Ours will be blissfully
-naive. We will forego things [single-static assignment (SSA)][ssa.wiki] and
-[register allocation][register-allocation.wiki] for the sake of simplicity.
+naive. We will forego things like [single-static assignment (SSA)][ssa.wiki]
+and [register allocation][register-allocation.wiki] for the sake of simplicity.
 
 Our IR will consist of pseudo-assembly instructions in a list, with a faint
 resemblance to [three address codes (TAC)][tac.wiki]. For example
