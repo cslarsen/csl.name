@@ -837,8 +837,9 @@ compiled ones. That's exactly what  [Numba][numba] does, but ours is just a
 drop in the ocean compared to that.
 
 While we took the approach of translating Python bytecode, another good
-technique is to use the `ast` module to traverse the abstract syntax tree. A
-guy [did that][pyast64].
+technique is to use the `ast` module to traverse the abstract syntax tree. Ben
+Hoyt [did exactly that in pyast64][pyast64], and I strongly recommend to take a
+look at his excellent code and post.
 
 [amd64.abi]: https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
 [capstone]: http://www.capstone-engine.org/lang_python.html
