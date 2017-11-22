@@ -8,19 +8,20 @@ disqus: true
 tags: Python assembly
 ---
 
-This post shows how to write a basic JIT compiler for the Python bytecode,
-using nothing but stock Python modules.
+This post shows how to write a basic JIT compiler for the Python bytecode, from
+scratch, using nothing but stock Python modules.
 
 We will leverage the code written in [a previous post][previous-post] to bind
 native code to callable Python functions. The complete code is available at
 [github.com/cslarsen/minijit][minijit.github].
 
 At the end of this post, we will be able to compile branchless Python functions
-performing arithmetic on signed 64-bit values:
+that perform arithmetic on signed 64-bit values:
 
     >>> from jitcompiler import *
     >>> @jit
-    ... def foo(a, b): return a*a - b*b
+    ... def foo(a, b):
+    ...     return a*a - b*b
     ...
     --- Installing JIT for <function foo at 0x100c28c08>
     >>> foo(2, 3)
@@ -43,8 +44,8 @@ performing arithmetic on signed 64-bit values:
 
 Our strategy is to translate Python bytecode to an [intermediate
 representation][ir.wiki], which will then be optimized before being emitted as
-x86-64 machine code. So the first part will be to understand how the bytecode
-works.
+x86-64 machine code. So the first part will be to understand how the Python
+bytecode works.
 
 Part one: How the Python bytecode works
 ---------------------------------------
@@ -96,8 +97,8 @@ operations can be serialized. For example, to compute an infix expression like
 
     2*2 - 3*3
 
-we need to jump back and forth, calculating products before subtracting.
-But in a _postfix_ system, we only need to scan forward.  For example, the
+we have to jump back and forth, calculating products before subtracting.
+But in a _postfix_ system, we need only scan forwards. For example, the
 above expression can be translated to [Reverse Polish Notation (RPN)][rpn.wiki]
 using the [shunting-yard algorithm][shunting-yard.wiki]:
 
@@ -110,13 +111,22 @@ the bottom. For the final subtraction, we pop them off, perform the subtraction
 and push the result -5 on the stack.
 
 Now, imagine that the expression was actually written in a programming
-language.
+language:
 
     subtract(multiply(2, 2), multiply(3, 3))
 
-The thing is, in postfix form, the order of evaluation becomes explicit:
+The thing is, in postfix form, the evaluation order becomes explicit:
 
-    push 2, push 2, multiply, push 3, push 3, multiply, subtract
+    push 2
+    push 2
+    call multiply
+    push 3
+    push 3
+    call multiply
+    call subtract
+
+The `multiply` and `subtract` functions find their arguments on the stack. For
+subtract, the two arguments consist of the products `2*2` and `3*3`.
 
 The use of a stack makes it possible to execute instructions linearly, and this
 is essentially how stack machines operate. With that, you will probably
@@ -130,10 +140,10 @@ We will now translate the bytecode instructions to an [intermediate
 representation (IR)][ir.wiki]. That is, in a form suitable for performing
 things like analysis, translation and optimization. Ours will be blissfully
 naive. We will forego things [single-static assignment (SSA)][ssa.wiki] and
-[register allocation][register-allocation.wiki] for the sake of simplicity, we
-will use something that resembles [three-address codes (TAC)][tac.wiki].
+[register allocation][register-allocation.wiki] for the sake of simplicity.
 
-Our IR will consist of pseudo-assembly instructions in a list. For example
+Our IR will consist of pseudo-assembly instructions in a list, with a faint
+resemblance to [three address codes (TAC)][tac.wiki]. For example
 
     ir = [("mov", "rax", 101),
           ("push", "rax", None)]
