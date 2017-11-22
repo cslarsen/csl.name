@@ -87,7 +87,7 @@ argument `a`.
 
 CPython — like the JVM, CLR, Forth and many others – is implemented as a [stack
 machine][stack-machine]. All the bytecode instructions operate on a _stack_ of
-objects. For example, `LOAD_FAST` will _push_ `a` reference to the variable `a`
+objects. For example, `LOAD_FAST` will _push_ a reference to the variable `a`
 on the stack, while `BINARY_MULTIPLY` will pop off two, multiply them together
 and put their product on the stack. For our purposes, we will treat the stack
 as holding _values_.
@@ -148,18 +148,18 @@ resemblance to [three address codes (TAC)][tac.wiki]. For example
     ir = [("mov", "rax", 101),
           ("push", "rax", None)]
 
-Contrary to TAC, we put operation first, followed by the destination and source
+Contrary to TAC, we put the operation first, followed by the destination and source
 registers.  We use `None` to indicate unused registers and arguments.  It would
 be a very good idea to use unique, abstract registers names like `reg1`, `reg2`
 and so on, because it facilitates [register
-allocation][register-allocation.wiki].  Out of scope.
+allocation][register-allocation.wiki]. Out of scope.
 
 We will reserve registers RAX and RBX for menial work like arithmetic, pushing
-and popping.  RAX must also hold the return value, because that's the
-convention.  The CPU already has a stack, so we'll use that as our data stack
+and popping. RAX must also hold the return value, because that's the
+convention. The CPU already has a stack, so we'll use that as our data stack
 mechanism.
 
-Registers RDI, RSI, RDC and RCX will be reserved for variables and arguments.
+Registers RDI, RSI, RDX and RCX will be reserved for variables and arguments.
 Per [AMD64 convention][amd64.abi], we expect to see function arguments passed
 in those registers, in that order. In real programs, the matter is a bit more
 involved.
@@ -214,7 +214,6 @@ We need to look up which registers holds which variable:
 
 The main method will look like
 
-
     def compile(self):
         while self.index < len(self.bytecode):
             op, arg = self.decode()
@@ -235,16 +234,17 @@ one argument, the bytecode will refer to the zeroth variable. Through the
 The `STORE_FAST` instruction does the reverse. It pops a value off the stack
 and stores it in the argument register:
 
-        yield "pop", "rax", None
-        yield "mov", self.variable(arg), "rax"
+    yield "pop", "rax", None
+    yield "mov", self.variable(arg), "rax"
 
 A binary instruction will pop two values off the stack. For example
 
-        elif op == "BINARY_MULTIPLY":
-            yield "pop", "rax", None
-            yield "pop", "rbx", None
-            yield "imul", "rax", "rbx"
-            yield "push", "rax", None
+    # ...
+    elif op == "BINARY_MULTIPLY":
+        yield "pop", "rax", None
+        yield "pop", "rbx", None
+        yield "imul", "rax", "rbx"
+        yield "push", "rax", None
 
 That's just about it. `LOAD_CONST` will use a special instruction for storing
 immediate values (i.e., constant integers). Here is the entire method:
@@ -290,6 +290,7 @@ immediate values (i.e., constant integers). Here is the entire method:
             elif op == "RETURN_VALUE":
                 yield "pop", "rax", None
                 yield "ret", None, None
+
             else:
                 raise NotImplementedError(op)
 
@@ -356,8 +357,7 @@ like `mov rax, rax`.
         while index < len(ir):
             op1, a1, b1 = fetch(index)
             op2, a2, b2 = fetch(index + 1)
-            op3, a3, b3 = fetch(index + 2)
-            op4, a4, b4 = fetch(index + 3)
+            # ...
 
             # Removed no-op movs
             if op1 == "mov" and a1 == b1:
@@ -515,13 +515,13 @@ instructions should be optimizable. Let's run two passes on the IR:
      ('ret', None, None)]
 
 We've now saved seven instructions. Our optimizer won't be able to improve this
-code any further. We could add more peephole optimizations, but another good
-technique would be to use a real register allocated so that we use the full
-spectrum of available registers. The IR compiler could then just assign values
-to unique registers like `reg1`, `reg2` and so on, then the allocator would
-choose how to populate the available registers properly. This is actually a hot
-topic for research, and especially for JIT compilation because the general
-problem is NP-complete.
+code any further. We could add even more peephole optimizations, but another
+good technique would be to use a real register allocated so that we use the
+full spectrum of available registers. The IR compiler could then just assign
+values to unique registers like `reg1`, `reg2` and so on, then the allocator
+would choose how to populate the available registers properly. This is actually
+a hot topic for research, and especially for JIT compilation because the
+general problem is NP-complete.
 
 Part four: Translating IR to x86-64 machine code
 ------------------------------------------------
