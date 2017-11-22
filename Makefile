@@ -14,7 +14,9 @@ bash:
 	docker run --rm -it csl.name /bin/bash
 
 build:
-	docker run --rm -it -v `pwd`/_site:/source/_site csl.name make -j -C /source
+	docker run --rm -it \
+		-v `pwd`/source:/source \
+		csl.name make -j -C /source doctor minify
 
 serve:
 	docker run --rm -it \

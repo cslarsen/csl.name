@@ -22,11 +22,11 @@ RUN mkdir /tmp/chibi && \
       make PREFIX=/usr install || exit 0
 
 # Add repo and install Ruby packages
-ADD source /source
-RUN cd /source && chmod go+rw Gemfile && \
+ADD source/Gemfile /tmp/Gemfile
+RUN cd /tmp && chmod go+rw Gemfile && \
       touch Gemfile.lock && chmod go+rw Gemfile.lock && \
       bundle install
+
 #RUN gem update
 #RUN bundle update
-RUN chmod -R go+xrw /source
 EXPOSE 4000
