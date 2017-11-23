@@ -15,6 +15,9 @@ We will leverage the code written in [a previous post][previous-post] to bind
 native code to callable Python functions. The complete code is available at
 [github.com/cslarsen/minijit][minijit.github].
 
+Update: This post *also* made the [front page of HN][hn.front]! Check out the
+[discussion][hn].
+
 At the end of this post, we will be able to compile branchless Python functions
 that perform arithmetic on signed 64-bit values:
 
@@ -104,8 +107,8 @@ using the [shunting-yard algorithm][shunting-yard.wiki]:
 
     2 2 * 3 3 * -
 
-Moving from left to right, we push 2 on the stack, then another 2. The `*` pops
-them both off the stack and pushes the their product 4. Push 3 and 3, pop them
+Moving from left to right, we push 2 on the stack, then another 2. For the `*`
+operation we pop them both off and push their product 4. Push 3 and 3, pop them
 off and push their product 9. The stack will now contain 9 on the top and 4 at
 the bottom. For the final subtraction, we pop them off, perform the subtraction
 and push the result -5 on the stack.
@@ -526,11 +529,11 @@ general problem is NP-complete.
 Part four: Translating IR to x86-64 machine code
 ------------------------------------------------
 
-So, we have translated Python bytecode to IR and we have done some
+So, we have translated Python bytecode to our IR and we have done some
 optimizations on it. We are finally ready to assemble it to machine code!
 
 Our approach will be to write an assembler class that emits instructions. If we
-use the same name for the emitter methods as in the IR code, and use the same
+use the same name for the emitter methods as in the IR, and use the same
 signature for all, then we can just blindly assemble the whole IR in a short
 loop:
 
@@ -543,8 +546,9 @@ loop:
 If the instruction is `mov rax, rbx`, then `emit` will point to `assembler.mov`
 and the call will therefore be `assembler.mov("rax", "rbx")`.
 
-Let's write an assembler class. We copy the code for `address`, `little_endian`
-and import `create_block` from the [code in the previous post][previous-post].
+Let's write an assembler class. We'll copy the code for `address`,
+`little_endian` and import `create_block` from the [code in the previous
+post][previous-post].
 
     class Assembler(object):
         def __init__(self, size):
@@ -833,7 +837,7 @@ register allocator, for example. Create more peephole optimizations. Add
 support for calling other functions, loops.
 
 With a decorator, you should be able to swap out class methods on the fly with
-compiled ones. That's exactly what  [Numba][numba] does, but ours is just a
+compiled ones. That's exactly what [Numba][numba] does, but ours is just a
 drop in the ocean compared to that.
 
 While we took the approach of translating Python bytecode, another good
@@ -847,7 +851,9 @@ look at his excellent code and post.
 [cpython-eval]: https://github.com/python/cpython/blob/1896793/Python/ceval.c#L1055
 [github]: https://github.com/cslarsen/minijit
 [hn.front]: https://news.ycombinator.com/front?day=2017-11-09
+[hn.front]: https://news.ycombinator.com/front?day=2017-11-21
 [hn]: https://news.ycombinator.com/item?id=15665581
+[hn]: https://news.ycombinator.com/item?id=15750700
 [ir.wiki]: https://en.wikipedia.org/wiki/Intermediate_representation
 [minijit.github]: https://github.com/cslarsen/minijit
 [mj.github]: https://github.com/cslarsen/minijit
