@@ -14,29 +14,29 @@ parser ][arv] that I wrote. With it, you'll be able to do things like
 
     import arv
 
-    genome = load("genome.txt")
+    genome = arv.load(filename)
 
-    if genome.y_chromosome:
-        print("You are a man")
-    else:
-        print("You are a woman")
+    male = genome.y_chromosome == True
 
-    if genome["rs1426654"]:
-        print("Your skin is of light complexion")
-    else:
-        print("Your skin is of dark complexion")
+    complexion = arv.unphased_match(genome["rs1426654"], {
+        "AA": "light",
+        "AG": "mixed",
+        "GG": "dark"})
 
-    eye_color = arv.unphased_mach(genome["rs12913832"], {
-                  "AA": "brown",
-                  "AG": "brown or green",
-                  "GG": "blue"})
+    eye_color = arv.unphased_match(genome["rs12913832"], {
+        "AA": "brown",
+        "AG": "brown or green",
+        "GG": "blue"})
 
-    print("Your have %s eyes" % eye_color)
+    print("You are a {gender} with {color} eyes and {complexion} skin.".format(
+      gender = "man" if male else "woman,
+      complexion = complexion,
+      color = eye_color))
 
 In my case, this program will print
 
     You are a man
-    Your skin is of light complexion
+    Your skin is light
     You have blue eyes
 
 [23andMe][23andme] is a company that sequences your personal genome from a
