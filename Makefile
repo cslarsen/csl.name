@@ -21,6 +21,7 @@ build:
 serve:
 	docker run --rm -it \
 		-p 4000:4000 \
+		-v `pwd`/source:/source \
 		-v `pwd`/source/_drafts:/source/_drafts \
 		-v `pwd`/source/_posts:/source/_posts \
 		csl.name make -j -C /source serve
